@@ -11,7 +11,6 @@ COPY build.gradle settings.gradle /app/
 COPY gradle /app/gradle
 
 # Build project
-
 RUN ./gradlew build --no-daemon -x test || return 0
 
 # Copy files
