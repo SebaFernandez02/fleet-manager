@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.users.domain.services;
 import ar.edu.ungs.fleet_manager.users.domain.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Set;
 
 @Component
@@ -22,6 +23,10 @@ public final class PermissionsFinder {
 
     public Permissions execute(UserId userId) {
         User user = this.userFinder.execute(userId);
+
+        if (user.roles().isEmpty()) {
+            return new Permissions(Collections.emptySet());
+        }
 
         return this.execute(user.roles());
     }
