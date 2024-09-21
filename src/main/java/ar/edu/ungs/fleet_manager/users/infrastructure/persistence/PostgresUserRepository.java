@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public final class PostgresUserRepository implements UserRepository, RowMapper<User> {
@@ -100,7 +98,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.date_created, 
                     u.date_updated
                 from users u
-                    inner join user_roles r on r.user_id = u.id 
+                    left join user_roles r on r.user_id = u.id 
                 where u.id = CAST(? as UUID)
             """;
 
@@ -125,7 +123,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.date_created, 
                     u.date_updated
                 from users u
-                    inner join user_roles r on r.user_id = u.id 
+                    left join user_roles r on r.user_id = u.id 
                 where u.username = ?
             """;
 
@@ -150,10 +148,43 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.date_created, 
                     u.date_updated
                 from users u
-                    inner join user_roles r on r.user_id = u.id
+                    left join user_roles r on r.user_id = u.id
             """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, rs -> {
+                Map<String, UserMapper> userMap = new HashMap<>();
+
+                while (rs.next()) {
+                    String userId = rs.getString("id");
+
+                    UserMapper user = userMap.get(userId);
+                    if (user == null) {
+                        user = new UserMapper(
+                                userId,
+                                rs.getString("username"),
+                                rs.getString("password"),
+                                rs.getString("full_name"),
+                                new ArrayList<>(),
+                                rs.getTimestamp("date_created").toLocalDateTime(),
+                                rs.getTimestamp("date_updated").toLocalDateTime()
+                        );
+                        userMap.put(userId, user);
+                    }
+
+                    String role = rs.getString("role");
+                    if (role != null) {
+                        user.getRoles().add(role);
+                    }
+                }
+
+                return userMap.values().stream().map(x -> User.build(x.getId(),
+                        x.getRoles(),
+                        x.getUsername(),
+                        x.getPassword(),
+                        x.getFullName(),
+                        x.getDateCreated(),
+                        x.getDateUpdated())).collect(Collectors.toList());
+            });
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -161,26 +192,21 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
 
     @Override
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        String id = null;
-        String username = null;
-        String password = null;
-        String fullName = null;
-        LocalDateTime dateCreated = null;
-        LocalDateTime dateUpdated = null;
+        String id = rs.getString("id");
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String fullName = rs.getString("full_name");
+        LocalDateTime dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
+        LocalDateTime dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
+
         List<String> roles = new ArrayList<>();
 
-        while (rs.next()) {
-            if (id == null) {
-                id = rs.getString("id");
-                username = rs.getString("username");
-                password = rs.getString("password");
-                fullName = rs.getString("full_name");
-                dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
-                dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
-            }
+        do {
+            String role = rs.getString("role");
 
-            roles.add(rs.getString("role"));
-        }
+            if (role != null)
+                roles.add(rs.getString("role"));
+        } while (rs.next());
 
         return User.build(id, roles, username, password, fullName, dateCreated, dateUpdated);
     }

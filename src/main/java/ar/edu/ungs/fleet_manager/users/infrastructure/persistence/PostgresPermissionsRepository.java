@@ -47,7 +47,7 @@ public final class PostgresPermissionsRepository implements PermissionsRepositor
         Set<Permission> permissions = new HashSet<>();
         Map<Module, Set<Operation>> values = new HashMap<>();
 
-        while (rs.next()) {
+        do {
             var module = Module.parse(rs.getString("module"));
 
             if (!values.containsKey(module)) {
@@ -57,7 +57,7 @@ public final class PostgresPermissionsRepository implements PermissionsRepositor
             var operation = Operation.parse(rs.getString("operation"));
 
             values.get(module).add(operation);
-        }
+        } while (rs.next());
 
 
         values.keySet().forEach(module -> permissions.add(new Permission(module, values.get(module))));
