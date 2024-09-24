@@ -18,6 +18,10 @@ public final class PermissionsFinder {
     }
 
     public Permissions execute(Set<Role> roles) {
+        if (roles.isEmpty()) {
+            return new Permissions(Collections.emptySet());
+        }
+
         return this.repository.findByRoles(roles.toArray(new Role[0]));
     }
 
