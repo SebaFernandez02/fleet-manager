@@ -8,5 +8,7 @@ public interface ProviderRepository {
 
     Optional<Provider> findById(ProviderId id);
 
+    Optional<Provider> findByCuit(ProviderCuit cuit);
+
     List<Provider> searchAll();
 }

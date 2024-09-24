@@ -1,9 +1,6 @@
 package ar.edu.ungs.fleet_manager.providers.domain.services;
 
-import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderName;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderRepository;
+import ar.edu.ungs.fleet_manager.providers.domain.*;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
@@ -20,5 +17,9 @@ public final class ProviderFinder {
 
     public Provider execute(ProviderId id) {
         return this.repository.findById(id).orElseThrow(() -> new NotFoundException(String.format("provider %s not found", id.value())));
+    }
+
+    public Provider execute(ProviderCuit cuit) {
+        return this.repository.findByCuit(cuit).orElseThrow(() -> new NotFoundException(String.format("provider %s not found", cuit.value())));
     }
 }
