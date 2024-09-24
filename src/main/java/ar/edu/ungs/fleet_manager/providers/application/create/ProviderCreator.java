@@ -2,10 +2,7 @@ package ar.edu.ungs.fleet_manager.providers.application.create;
 
 
 import ar.edu.ungs.fleet_manager.providers.application.ProviderRequest;
-import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderName;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderRepository;
+import ar.edu.ungs.fleet_manager.providers.domain.*;
 import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
@@ -23,7 +20,7 @@ public final class ProviderCreator {
     }
 
     public void execute(ProviderRequest request) {
-        this.ensureProviderNotExists(request.id());
+        this.ensureProviderNotExists(request.cuit());
 
         Provider provider = Provider.create(request.name(),
                 request.email(),
@@ -34,11 +31,11 @@ public final class ProviderCreator {
         this.repository.save(provider);
     }
 
-    private void ensureProviderNotExists(String id) {
+    private void ensureProviderNotExists(String cuit) {
         try {
-            this.finder.execute(new ProviderId(id));
+            this.finder.execute(new ProviderCuit(cuit));
 
-            throw new InvalidParameterException(String.format("the provider %s already exists", id));
+            throw new InvalidParameterException(String.format("the provider %s already exists", cuit));
         } catch (NotFoundException ignored) {}
     }
 }

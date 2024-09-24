@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.providers.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -53,6 +54,29 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
             """;
 
             Provider result = this.jdbcTemplate.queryForObject(sql, this, id.value());
+
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Provider> findByCuit(ProviderCuit cuit) {
+        try {
+            var sql = """
+                select 
+                id, 
+                name, 
+                email, 
+                cuit, 
+                phone_number, 
+                address
+                from providers p
+                where p.cuit = ?
+            """;
+
+            Provider result = this.jdbcTemplate.queryForObject(sql, this, cuit.value());
 
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException e) {
