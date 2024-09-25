@@ -9,7 +9,8 @@ public enum Role {
     SUPERVISOR,
     ADMIN,
     OPERATOR,
-    CUSTOMER;
+    CUSTOMER,
+    DEVELOPER;
 
     public static Role parse(String role) {
         try {
