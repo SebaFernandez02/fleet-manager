@@ -1,4 +1,4 @@
-package ar.edu.ungs.fleet_manager.vehicles.application;
+package ar.edu.ungs.fleet_manager.shared.aplication;
 
 import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;
 

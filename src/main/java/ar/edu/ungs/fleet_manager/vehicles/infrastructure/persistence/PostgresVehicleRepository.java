@@ -1,6 +1,5 @@
 package ar.edu.ungs.fleet_manager.vehicles.infrastructure.persistence;
 
-import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleRepository;
@@ -25,6 +24,29 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
 
     @Override
     public void save(Vehicle vehicle) {
+        this.findById(vehicle.id())
+                .ifPresentOrElse(x -> update(vehicle), () -> create(vehicle));
+    }
+
+    private void update(Vehicle vehicle) {
+        var sql = """
+           update vehicles 
+           set status = ?, model = ?, brand = ?, year = ?, latitude = ?, longitude = ?, date_created = ?, date_updated = ?
+           where id = ?
+           """;
+        this.jdbcTemplate.update(sql,
+                vehicle.status().name(),
+                vehicle.model().value(),
+                vehicle.brand().value(),
+                vehicle.year().value(),
+                vehicle.coordinates().latitude(),
+                vehicle.coordinates().longitude(),
+                vehicle.dateCreated(),
+                vehicle.dateUpdated(),
+                vehicle.id().value());
+    }
+
+    private void create(Vehicle vehicle) {
         var sql = """
                     insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated) 
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?)

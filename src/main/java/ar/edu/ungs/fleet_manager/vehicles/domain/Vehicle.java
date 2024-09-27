@@ -99,7 +99,7 @@ public final class Vehicle {
         this.dateUpdated = LocalDateTime.now();
     }
 
-    public void maintenence() {
+    public void maintenance() {
         this.status = VehicleStatus.MAINTENANCE;
         this.dateUpdated = LocalDateTime.now();
     }
@@ -111,6 +111,22 @@ public final class Vehicle {
     public void updateCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    public boolean isNotAvailable() {
+        return !VehicleStatus.AVAILABLE.equals(this.status);
+    }
+
+    public boolean isReserved() {
+        return VehicleStatus.RESERVED.equals(this.status);
+    }
+
+    public boolean isAvailable() {
+        return VehicleStatus.AVAILABLE.equals(this.status);
+    }
+
+    public boolean isInMaintenance() {
+        return VehicleStatus.MAINTENANCE.equals(this.status);
     }
 
     public LocalDateTime dateCreated() {

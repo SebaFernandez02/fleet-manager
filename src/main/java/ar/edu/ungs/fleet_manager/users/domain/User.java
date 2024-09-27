@@ -103,4 +103,8 @@ public final class User {
     public LocalDateTime dateUpdated() {
         return dateUpdated;
     }
+
+    public boolean isCustomer() {
+        return roles().contains(Role.CUSTOMER);
+    }
 }
