@@ -1,6 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.application.update;
 
-import ar.edu.ungs.fleet_manager.vehicles.application.CoordinatesRequest;
+import ar.edu.ungs.fleet_manager.shared.aplication.CoordinatesRequest;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleRepository;

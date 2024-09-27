@@ -1,6 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.infrastructure.controllers;
 
-import ar.edu.ungs.fleet_manager.vehicles.application.CoordinatesRequest;
+import ar.edu.ungs.fleet_manager.shared.aplication.CoordinatesRequest;
 import ar.edu.ungs.fleet_manager.vehicles.application.update.VehicleCoordinatesUpdater;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
