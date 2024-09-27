@@ -1,6 +1,6 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
-import java.time.LocalDateTime;
+
 import java.util.Objects;
 
 public final class Product {

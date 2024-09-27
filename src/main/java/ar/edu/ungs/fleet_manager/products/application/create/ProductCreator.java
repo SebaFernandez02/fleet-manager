@@ -21,8 +21,7 @@ public final class ProductCreator {
                 request.brand(),
                 request.description(),
                 request.category(),
-                new String(""),
-                new String(""));
+                request.quantity());
 
         this.repository.save(product);
 

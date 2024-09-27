@@ -2,7 +2,6 @@ package ar.edu.ungs.fleet_manager.products.application;
 
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 
-import java.time.LocalDateTime;
 
 public record ProductResponse(String id,
                               String name,
