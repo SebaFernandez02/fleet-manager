@@ -22,7 +22,8 @@ public final class ProductCreator {
                 request.name(),
                 request.brand(),
                 request.category(),
-                request.purchaseDate());
+                new String(""),
+                new String(""));
 
         this.repository.save(product);
 

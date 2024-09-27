@@ -41,9 +41,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     public Optional<Product> findById(ProductId id) {
         try{
             var sql = """
-                        select * from products where id = ?           
+                        select id, name, brand, category, quantity, description from products where id = ?
                     """;
-            Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
+            Product result = this.jdbcTemplate.queryForObject(sql, this, Integer.parseInt(id.value()));
             return Optional.ofNullable(result);
 
         }catch(EmptyResultDataAccessException e){
@@ -74,9 +74,10 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var name = rs.getString("name");
         var brand = rs.getString("brand");
         var category = rs.getString("category");
-        var purchaseDate = rs.getTimestamp("purchaseDate").toLocalDateTime();
+        var quantity = rs.getString("quantity");
+        var description = rs.getString("description");
 
-        return Product.create(id,name,brand,category,purchaseDate);
+        return Product.create(id,name,brand,category,quantity,description);
 
     }
 }
