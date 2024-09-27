@@ -31,7 +31,8 @@ public final class Product {
                                  String name,
                                  String brand,
                                  String category,
-                                 LocalDateTime purchaseDate) {
+                                 String quantity,
+                                 String description) {
 
         return new Product(new ProductId(id),
                 new ProductName(name),

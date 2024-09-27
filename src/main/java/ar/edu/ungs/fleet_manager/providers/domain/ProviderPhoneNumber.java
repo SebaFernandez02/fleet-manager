@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProviderPhoneNumber(String value) {
     public ProviderPhoneNumber {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the brand value is invalid");
+            throw new InvalidParameterException("the phone number value is invalid");
         }
     }
 }

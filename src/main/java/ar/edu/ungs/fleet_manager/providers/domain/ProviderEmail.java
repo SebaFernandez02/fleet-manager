@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProviderEmail(String value) {
     public ProviderEmail {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the brand value is invalid");
+            throw new InvalidParameterException("the email value is invalid");
         }
     }
 }
