@@ -12,8 +12,6 @@ public final class ProductCreator {
 
     public ProductCreator(ProductRepository repository) {
         this.repository = repository;
-
-//jkkjk
     }
 
     public void execute(ProductRequest request){
@@ -21,6 +19,7 @@ public final class ProductCreator {
         Product product = Product.create(request.id(),
                 request.name(),
                 request.brand(),
+                request.description(),
                 request.category(),
                 new String(""),
                 new String(""));

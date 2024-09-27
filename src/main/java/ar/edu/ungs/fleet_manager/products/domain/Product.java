@@ -9,36 +9,43 @@ public final class Product {
     private final ProductId id;
     private final ProductName name;
     private final ProductBrand brand;
+    private final ProductDescription description;
     private final ProductCategory category;
+    private Integer quantity;
 
-    private final LocalDateTime purchaseDate;
 
 
     public Product(ProductId id,
                    ProductName name,
                    ProductBrand brand,
+                   ProductDescription description,
                    ProductCategory category,
-                   LocalDateTime purchaseDate) {
+                   Integer quantity) {
 
         this.id = id;
         this.name = name;
         this.brand = brand;
         this.category = category;
-        this.purchaseDate = purchaseDate;
+        this.description= description;
+        this.quantity = quantity;
+
     }
 
     public static Product create(String id,
                                  String name,
                                  String brand,
+                                 String description,
                                  String category,
-                                 String quantity,
-                                 String description) {
+                                 Integer quantity) {
+
+
 
         return new Product(new ProductId(id),
                 new ProductName(name),
                 new ProductBrand(brand),
+                (description == null || description.isEmpty()) ? new ProductDescription("No description was provided for this product") : new ProductDescription(description),
                 new ProductCategory(category),
-                LocalDateTime.now());
+                quantity);
     }
 
     public ProductId id() { return id;}
@@ -49,13 +56,15 @@ public final class Product {
 
     public ProductCategory category() { return category;}
 
+    public ProductDescription description() { return description;}
+
+    public Integer quantity(){return quantity;}
 
 
-    public LocalDateTime purchaseDate() { return purchaseDate;}
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, category, purchaseDate);
+        return Objects.hash(id, name, brand, description ,category, quantity);
     }
 
     @Override
@@ -63,7 +72,7 @@ public final class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name,product.name) && Objects.equals(brand,product.brand) && Objects.equals(category,product.category) && Objects.equals(purchaseDate, product.purchaseDate);
+        return Objects.equals(id, product.id) && Objects.equals(name,product.name) && Objects.equals(brand,product.brand) && Objects.equals(description,product.description) && Objects.equals(category,product.category);
     }
 
     @Override
@@ -72,8 +81,10 @@ public final class Product {
                 "id=" + id +
                 ", name=" + name+
                 ", brand=" + brand +
+                ", description=" + description +
                 ", category=" + category +
-                ", purchaseDate" + purchaseDate +
+                ", quantity=" + quantity +
+
                 "}";
     }
 }

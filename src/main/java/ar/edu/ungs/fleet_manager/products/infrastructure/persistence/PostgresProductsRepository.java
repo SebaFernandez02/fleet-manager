@@ -26,14 +26,15 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     @Override
     public void save(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, purchaseDate)
-                    values(?, ?, ?, ?, ?) 
+                    insert into products(id, name, brand, description, category, quantity)
+                    values(?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql, product.id().value()
         ,       product.name().value(),
                 product.brand().value(),
                 product.category().value(),
-                product.purchaseDate());
+                product.quantity(),
+                product.description().value());
 
     }
 
@@ -41,9 +42,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     public Optional<Product> findById(ProductId id) {
         try{
             var sql = """
-                        select id, name, brand, category, quantity, description from products where id = ?
+                        select * from products where id = ?
                     """;
-            Product result = this.jdbcTemplate.queryForObject(sql, this, Integer.parseInt(id.value()));
+            Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
             return Optional.ofNullable(result);
 
         }catch(EmptyResultDataAccessException e){
@@ -56,7 +57,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
 
             var sql = """
-                        SELECT * FROM products 
+                        SELECT * FROM products
                     """;
            return this.jdbcTemplate.query(sql, this);
 
@@ -73,11 +74,11 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var id = rs.getString("id");
         var name = rs.getString("name");
         var brand = rs.getString("brand");
-        var category = rs.getString("category");
-        var quantity = rs.getString("quantity");
         var description = rs.getString("description");
+        var category = rs.getString("category");
+        var quantity = rs.getInt("quantity");
 
-        return Product.create(id,name,brand,category,quantity,description);
+        return Product.create(id,name,brand,description,category,quantity);
 
     }
 }

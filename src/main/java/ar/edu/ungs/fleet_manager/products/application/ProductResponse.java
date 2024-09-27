@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 public record ProductResponse(String id,
                               String name,
                               String brand,
+                              String description,
                               String category,
-                              LocalDateTime purchaseDate) {
+                             Integer quantity) {
 
 
 
@@ -17,7 +18,8 @@ public record ProductResponse(String id,
         return new ProductResponse(product.id().value(),
                                     product.name().value(),
                                     product.brand().value(),
+                                    product.description().value(),
                                     product.category().value(),
-                                    product.purchaseDate());
+                                    product.quantity());
     }
 }
