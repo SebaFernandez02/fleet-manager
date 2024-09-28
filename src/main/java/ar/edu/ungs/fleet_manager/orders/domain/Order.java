@@ -1,13 +1,17 @@
 package ar.edu.ungs.fleet_manager.orders.domain;
 
+import ar.edu.ungs.fleet_manager.products.domain.ProductId;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 public final class Order {
     private OrderId id;
-    private OrderProvider provider;
-    private OrderProduct product;
+    private ProviderId provider;
+    private ProductId product;
     private OrderQuantity quantity;
     private OrderAmount amount;
     private LocalDateTime dateCreated;
@@ -15,7 +19,7 @@ public final class Order {
     private OrderStatus status;
 
 
-    public Order(OrderId id, OrderProvider provider, OrderProduct product, OrderQuantity quantity, OrderAmount amount,LocalDateTime dateCreated, LocalDateTime dateUpdated,  OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, ProductId product, OrderQuantity quantity, OrderAmount amount,LocalDateTime dateCreated, LocalDateTime dateUpdated,  OrderStatus status) {
         this.id = id;
         this.provider = provider;
         this.product = product;
@@ -26,16 +30,16 @@ public final class Order {
         this.status = status;
     }
 
-    public static Order create(String provider,
-                               String product,
+    public static Order create(String providerId,
+                               String productId,
                                Integer quantity,
-                               Integer amount){
+                               BigDecimal amount){
 
         final String initialStatus = "ACTIVE";
 
         return build(UUID.randomUUID().toString(),
-                provider,
-                product,
+                providerId,
+                productId,
                 quantity,
                 amount,
                 LocalDateTime.now(),
@@ -44,17 +48,17 @@ public final class Order {
     }
 
     public static Order build(String id,
-                              String provider,
-                              String product,
+                              String providerId,
+                              String productId,
                               Integer quantity,
-                              Integer amount,
+                              BigDecimal amount,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated,
                               String status){
 
         return new Order(new OrderId(id),
-                new OrderProvider(provider),
-                new OrderProduct(product),
+                new ProviderId(providerId),
+                new ProductId(productId),
                 new OrderQuantity(quantity),
                 new OrderAmount(amount),
                 dateCreated,
@@ -66,11 +70,11 @@ public final class Order {
         return id;
     }
 
-    public OrderProvider provider() {
+    public ProviderId providerId() {
         return provider;
     }
 
-    public OrderProduct product() {
+    public ProductId productId() {
         return product;
     }
 

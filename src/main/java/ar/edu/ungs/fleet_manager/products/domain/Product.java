@@ -4,6 +4,7 @@ package ar.edu.ungs.fleet_manager.products.domain;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public final class Product {
     private final ProductId id;
@@ -28,12 +29,12 @@ public final class Product {
         this.quantity = quantity;
     }
 
-    public static Product create(String id,
-                                 String name,
+    public static Product create(String name,
                                  String brand,
                                  String description,
                                  String category) {
-        return new Product(new ProductId(id),
+        return new Product(
+                new ProductId(UUID.randomUUID().toString()),
                 new ProductName(name),
                 new ProductBrand(brand),
                 new ProductDescription(description),
@@ -67,6 +68,10 @@ public final class Product {
     public ProductDescription description() { return description;}
 
     public ProductQuantity quantity(){return quantity;}
+
+    public void add(Integer quantity) {
+        this.quantity = new ProductQuantity(this.quantity.value() * quantity);
+    }
 
     @Override
     public int hashCode() {

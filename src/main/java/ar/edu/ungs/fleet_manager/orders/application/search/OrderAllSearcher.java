@@ -9,6 +9,7 @@ import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +35,8 @@ public final class OrderAllSearcher {
     }
 
     private OrderResponse apply(Order order) {
-        Provider provider = this.providerFinder.execute(new ProviderCuit(order.provider().value()));
-        Product product = this.productFinder.execute(new ProductId(order.product().value()));
+        Provider provider = this.providerFinder.execute(new ProviderId(order.providerId().value()));
+        Product product = this.productFinder.execute(new ProductId(order.productId().value()));
 
         return OrderResponse.map(order, provider, product);
     }

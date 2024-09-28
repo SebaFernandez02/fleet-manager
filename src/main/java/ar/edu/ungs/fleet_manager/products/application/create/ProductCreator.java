@@ -15,8 +15,7 @@ public final class ProductCreator {
     }
 
     public void execute(ProductRequest request){
-        Product product = Product.create(request.id(),
-                                         request.name(),
+        Product product = Product.create(request.name(),
                                          request.brand(),
                                          request.description(),
                                          request.category());

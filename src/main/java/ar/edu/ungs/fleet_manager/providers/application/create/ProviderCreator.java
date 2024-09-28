@@ -13,8 +13,7 @@ public final class ProviderCreator {
     private final ProviderRepository repository;
     private final ProviderFinder finder;
 
-    public ProviderCreator(ProviderRepository repository,
-                           ProviderFinder finder) {
+    public ProviderCreator(ProviderRepository repository, ProviderFinder finder) {
         this.repository = repository;
         this.finder = finder;
     }

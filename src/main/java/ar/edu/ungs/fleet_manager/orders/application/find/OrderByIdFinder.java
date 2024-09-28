@@ -24,11 +24,10 @@ public final class OrderByIdFinder {
         this.providerFinder = providerFinder;
     }
 
-    public OrderResponse execute(String orderId/*, String productId, String providerCuit*/){
+    public OrderResponse execute(String orderId){
         Order order = this.orderFinder.execute(new OrderId(orderId));
-        Product product = this.productFinder.execute(new ProductId(order.product().value()));
-        Provider provider = this.providerFinder.execute(new ProviderCuit(order.provider().value()));
-
+        Product product = this.productFinder.execute(order.productId());
+        Provider provider = this.providerFinder.execute(order.providerId());
 
         return OrderResponse.map(order, provider, product);
     }

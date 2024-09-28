@@ -6,13 +6,14 @@ import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.providers.application.ProviderResponse;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record OrderResponse (String id,
                              ProviderResponse provider,
                              ProductResponse product,
                              Integer quantity,
-                             Integer amount,
+                             BigDecimal amount,
                              LocalDateTime dateCreated,
                              LocalDateTime dateUpdated,
                              String status){
