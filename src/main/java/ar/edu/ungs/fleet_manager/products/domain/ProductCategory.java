@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductCategory(String value) {
     public ProductCategory {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the product category is invalid");
+            throw new InvalidParameterException("the productId category is invalid");
         }
     }
 }

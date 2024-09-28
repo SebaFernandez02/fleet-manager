@@ -35,7 +35,7 @@ public final class ProviderCreator {
         try {
             this.finder.execute(new ProviderCuit(cuit));
 
-            throw new InvalidParameterException(String.format("the provider %s already exists", cuit));
+            throw new InvalidParameterException(String.format("the providerId %s already exists", cuit));
         } catch (NotFoundException ignored) {}
     }
 }

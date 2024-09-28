@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record OrderProduct(String value) {
     public OrderProduct {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the product value is invalid");
+            throw new InvalidParameterException("the productId value is invalid");
         }
     }
 

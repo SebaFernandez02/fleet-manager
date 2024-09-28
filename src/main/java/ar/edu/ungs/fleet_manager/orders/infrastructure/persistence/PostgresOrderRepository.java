@@ -26,7 +26,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     @Override
     public void save(Order order) {
         var sql = """
-                    insert into orders (id, provider, product, quantity, amount, date_created, date_updated, status)
+                    insert into orders (id, providerId, productId, quantity, amount, date_created, date_updated, status)
                     values (CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?)
                   """;
         this.jdbcTemplate.update(sql,
@@ -46,8 +46,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             var sql = """
                 select 
                 id, 
-                provider, 
-                product, 
+                providerId, 
+                productId, 
                 quantity,
                 amount, 
                 date_created, 
@@ -71,8 +71,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             var sql = """
                 select
                     id,
-                    provider,
-                    product,
+                    providerId,
+                    productId,
                     quantity,
                     amount, 
                     date_created, 
@@ -93,15 +93,15 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             var sql = """
                 select 
                 id, 
-                provider, 
-                product, 
+                providerId, 
+                productId, 
                 quantity,
                 amount, 
                 date_created, 
                 date_updated, 
                 status
                 from orders o
-                where o.product = ? and status = 'ACTIVE'
+                where o.productId = ? and status = 'ACTIVE'
             """;
 
             Order result = this.jdbcTemplate.queryForObject(sql, this, product.value());
@@ -115,8 +115,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     @Override
     public Order mapRow(ResultSet rs, int rowNum) throws SQLException {
         var id = rs.getString("id");
-        var provider = rs.getString("provider");
-        var product = rs.getString("product");
+        var provider = rs.getString("providerId");
+        var product = rs.getString("productId");
         var quantity = rs.getInt("quantity");
         var amount = rs.getInt("amount");
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();

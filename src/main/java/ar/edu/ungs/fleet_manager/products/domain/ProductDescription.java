@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductDescription(String value) {
     public ProductDescription {
         if(value == null || value.isEmpty()){
-            throw new InvalidParameterException("the product description cannot be null or empty");
+            throw new InvalidParameterException("the productId description cannot be null or empty");
         }
     }
 }

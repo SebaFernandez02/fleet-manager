@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductQuantity(Integer value) {
     public ProductQuantity {
         if(value == null || value < 0){
-            throw new InvalidParameterException("the product quantity cannot be null or negative");
+            throw new InvalidParameterException("the productId quantity cannot be null or negative");
         }
     }
 }

@@ -19,6 +19,6 @@ public final class ProductFinder {
     public Product execute(ProductId id){
 
         return this.productRepository.findById(id)
-                                    .orElseThrow(() -> new NotFoundException(String.format("product %s not found", id.value())));
+                                    .orElseThrow(() -> new NotFoundException(String.format("productId %s not found", id.value())));
     }
 }

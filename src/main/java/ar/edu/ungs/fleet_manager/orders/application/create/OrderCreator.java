@@ -5,7 +5,6 @@ import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderProduct;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import org.springframework.stereotype.Component;
@@ -23,10 +22,10 @@ public final class OrderCreator {
     }
 
     public void execute (OrderRequest request){
-        this.ensureThisOrderNotExists(request.product());
+        this.ensureThisOrderNotExists(request.productId());
 
-        Order order = Order.create(request.provider(),
-                                   request.product(),
+        Order order = Order.create(request.providerId(),
+                                   request.productId(),
                                    request.quantity(),
                                    request.amount());
 

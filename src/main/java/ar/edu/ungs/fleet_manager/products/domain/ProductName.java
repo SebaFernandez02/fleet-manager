@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductName(String value) {
     public ProductName {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the product name cannot be null or empty");
+            throw new InvalidParameterException("the productId name cannot be null or empty");
         }
     }
 

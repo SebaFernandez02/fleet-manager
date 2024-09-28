@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductId (String value) {
     public ProductId {
         if (value == null || value.isBlank()) {
-            throw new InvalidParameterException("the product identifier is invalid");
+            throw new InvalidParameterException("the productId identifier is invalid");
         }
     }
 }

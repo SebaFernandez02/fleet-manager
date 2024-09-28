@@ -16,10 +16,10 @@ public final class ProviderFinder {
     }
 
     public Provider execute(ProviderId id) {
-        return this.repository.findById(id).orElseThrow(() -> new NotFoundException(String.format("provider %s not found", id.value())));
+        return this.repository.findById(id).orElseThrow(() -> new NotFoundException(String.format("providerId %s not found", id.value())));
     }
 
     public Provider execute(ProviderCuit cuit) {
-        return this.repository.findByCuit(cuit).orElseThrow(() -> new NotFoundException(String.format("provider %s not found", cuit.value())));
+        return this.repository.findByCuit(cuit).orElseThrow(() -> new NotFoundException(String.format("providerId %s not found", cuit.value())));
     }
 }

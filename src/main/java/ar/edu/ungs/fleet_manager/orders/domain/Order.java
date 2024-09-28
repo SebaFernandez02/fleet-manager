@@ -111,8 +111,8 @@ public final class Order {
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", provider=" + provider +
-                ", product=" + product +
+                ", providerId=" + provider +
+                ", productId=" + product +
                 ", amount=" + amount +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
