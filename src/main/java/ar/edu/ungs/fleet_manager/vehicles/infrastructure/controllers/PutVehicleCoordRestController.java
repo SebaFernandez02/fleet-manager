@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PutVehicleRestController {
+public class PutVehicleCoordRestController {
     private final VehicleCoordinatesUpdater vehicleCoordinatesUpdater;
 
-    public PutVehicleRestController(VehicleCoordinatesUpdater vehicleCoordinatesUpdater) {
+    public PutVehicleCoordRestController(VehicleCoordinatesUpdater vehicleCoordinatesUpdater) {
         this.vehicleCoordinatesUpdater = vehicleCoordinatesUpdater;
     }
 

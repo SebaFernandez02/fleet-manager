@@ -89,6 +89,11 @@ public final class Vehicle {
         return status;
     }
 
+    public void unavailabler(){
+        this.status = VehicleStatus.UNAVAILABLE;
+        this.dateUpdated = LocalDateTime.now();
+    }
+
     public void release() {
         this.status = VehicleStatus.AVAILABLE;
         this.dateUpdated = LocalDateTime.now();
@@ -113,9 +118,7 @@ public final class Vehicle {
         this.dateUpdated = LocalDateTime.now();
     }
 
-    public boolean isNotAvailable() {
-        return !VehicleStatus.AVAILABLE.equals(this.status);
-    }
+    public boolean isNotAvailable() { return VehicleStatus.UNAVAILABLE.equals(this.status);}
 
     public boolean isReserved() {
         return VehicleStatus.RESERVED.equals(this.status);

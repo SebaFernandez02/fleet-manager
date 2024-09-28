@@ -24,6 +24,6 @@ public final class VehicleCoordinatesUpdater {
 
         vehicle.updateCoordinates(newCoordinates);
 
-        this.repository.save(vehicle);
+        this.repository.updateCoordinates(vehicle);
     }
 }

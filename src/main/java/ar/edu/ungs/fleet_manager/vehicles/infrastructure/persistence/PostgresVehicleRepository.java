@@ -25,26 +25,56 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     @Override
     public void save(Vehicle vehicle) {
         this.findById(vehicle.id())
-                .ifPresentOrElse(x -> update(vehicle), () -> create(vehicle));
+                .ifPresentOrElse(x -> updateInfo(vehicle), () -> create(vehicle));
+    }
+    @Override
+    public void updateCoordinates(Vehicle vehicle) {
+            this.findById(vehicle.id())
+                    .ifPresent(x -> updateCoord(vehicle));
+    }
+    @Override
+    public void saveStatus(Vehicle vehicle){
+        this.findById(vehicle.id())
+                .ifPresent(x-> updateStatus(vehicle));
     }
 
-    private void update(Vehicle vehicle) {
+    private void updateInfo(Vehicle vehicle) {
         var sql = """
            update vehicles 
-           set status = ?, model = ?, brand = ?, year = ?, latitude = ?, longitude = ?, date_created = ?, date_updated = ?
+           model = ?, brand = ?, year = ?
+           where id = ?
+           """;
+        this.jdbcTemplate.update(sql,
+                vehicle.model().value(),
+                vehicle.brand().value(),
+                vehicle.year().value(),
+                vehicle.id().value());
+    }
+
+    private void updateStatus(Vehicle vehicle) {
+        var sql = """
+           update vehicles 
+           set status = ?
            where id = ?
            """;
         this.jdbcTemplate.update(sql,
                 vehicle.status().name(),
-                vehicle.model().value(),
-                vehicle.brand().value(),
-                vehicle.year().value(),
-                vehicle.coordinates().latitude(),
-                vehicle.coordinates().longitude(),
-                vehicle.dateCreated(),
-                vehicle.dateUpdated(),
                 vehicle.id().value());
     }
+
+    private void updateCoord(Vehicle vehicle) {
+        var sql = """
+           update vehicles 
+           set latitude = ?, longitude = ?
+           where id = ?
+           """;
+        this.jdbcTemplate.update(sql,
+                vehicle.coordinates().latitude(),
+                vehicle.coordinates().longitude(),
+                vehicle.id().value());
+    }
+
+
 
     private void create(Vehicle vehicle) {
         var sql = """
