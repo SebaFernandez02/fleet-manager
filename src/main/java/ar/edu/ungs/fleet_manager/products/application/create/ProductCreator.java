@@ -15,19 +15,12 @@ public final class ProductCreator {
     }
 
     public void execute(ProductRequest request){
-
         Product product = Product.create(request.id(),
-                request.name(),
-                request.brand(),
-                request.description(),
-                request.category(),
-                request.quantity());
+                                         request.name(),
+                                         request.brand(),
+                                         request.description(),
+                                         request.category());
 
         this.repository.save(product);
-
     }
-
-
-
-
 }

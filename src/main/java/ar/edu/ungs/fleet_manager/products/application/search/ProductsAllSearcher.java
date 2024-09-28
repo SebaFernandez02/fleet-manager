@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public final class ProductsSearchAll {
+public final class ProductsAllSearcher {
 
     private final ProductRepository repository;
 
-    public ProductsSearchAll(ProductRepository productRepository) {
+    public ProductsAllSearcher(ProductRepository productRepository) {
         this.repository = productRepository;
     }
 
@@ -20,10 +20,7 @@ public final class ProductsSearchAll {
                 .stream()
                 .map(ProductResponse::map)
                 .toList();
-
-
     }
-
 }
 
 

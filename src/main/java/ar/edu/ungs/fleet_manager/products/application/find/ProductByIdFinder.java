@@ -7,11 +7,10 @@ import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProductFindByID {
-
+public class ProductByIdFinder {
     private final ProductFinder productFinder;
 
-    public ProductFindByID(ProductFinder productFinder) {
+    public ProductByIdFinder(ProductFinder productFinder) {
         this.productFinder = productFinder;
     }
 

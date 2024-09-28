@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PostProductRestController {
-
     private final ProductCreator creator;
-
 
     public PostProductRestController(ProductCreator creator) {
         this.creator = creator;
@@ -24,6 +22,4 @@ public class PostProductRestController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-
 }

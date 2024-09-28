@@ -27,7 +27,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     public void save(Product product) {
         var sql = """
                     insert into products(id, name, brand, description, category, quantity)
-                    values(?, ?, ?, ?, ?, ?)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql, product.id().value()
         ,       product.name().value(),
@@ -35,14 +35,13 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.category().value(),
                 product.quantity(),
                 product.description().value());
-
     }
 
     @Override
     public Optional<Product> findById(ProductId id) {
         try{
             var sql = """
-                        select * from products where id = ?
+                        select * from products where id = CAST(? as UUID)
                     """;
             Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
             return Optional.ofNullable(result);
@@ -70,7 +69,6 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     @Override
     public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-
         var id = rs.getString("id");
         var name = rs.getString("name");
         var brand = rs.getString("brand");
@@ -78,7 +76,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var category = rs.getString("category");
         var quantity = rs.getInt("quantity");
 
-        return Product.create(id,name,brand,description,category,quantity);
+        return Product.build(id,name,brand,description,category,quantity);
 
     }
 }

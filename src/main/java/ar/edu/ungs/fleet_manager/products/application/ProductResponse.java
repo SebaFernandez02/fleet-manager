@@ -8,7 +8,7 @@ public record ProductResponse(String id,
                               String brand,
                               String description,
                               String category,
-                             Integer quantity) {
+                              Integer quantity) {
 
 
 
@@ -19,6 +19,6 @@ public record ProductResponse(String id,
                                     product.brand().value(),
                                     product.description().value(),
                                     product.category().value(),
-                                    product.quantity());
+                                    product.quantity().value());
     }
 }

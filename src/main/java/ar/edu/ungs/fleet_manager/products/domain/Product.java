@@ -1,26 +1,24 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
 
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
+
 import java.util.Objects;
 
 public final class Product {
-
-
     private final ProductId id;
     private final ProductName name;
     private final ProductBrand brand;
     private final ProductDescription description;
     private final ProductCategory category;
-    private Integer quantity;
-
-
+    private ProductQuantity quantity;
 
     public Product(ProductId id,
                    ProductName name,
                    ProductBrand brand,
                    ProductDescription description,
                    ProductCategory category,
-                   Integer quantity) {
+                   ProductQuantity quantity) {
 
         this.id = id;
         this.name = name;
@@ -28,24 +26,34 @@ public final class Product {
         this.category = category;
         this.description= description;
         this.quantity = quantity;
-
     }
 
     public static Product create(String id,
                                  String name,
                                  String brand,
                                  String description,
-                                 String category,
-                                 Integer quantity) {
-
-
-
+                                 String category) {
         return new Product(new ProductId(id),
                 new ProductName(name),
                 new ProductBrand(brand),
-                (description == null || description.isEmpty()) ? new ProductDescription("No description was provided for this product") : new ProductDescription(description),
+                new ProductDescription(description),
                 new ProductCategory(category),
-                quantity);
+                new ProductQuantity(0));
+    }
+
+    public static Product build(String id,
+                                 String name,
+                                 String brand,
+                                 String description,
+                                 String category,
+                                 Integer quantity) {
+        return new Product(
+                new ProductId(id),
+                new ProductName(name),
+                new ProductBrand(brand),
+                new ProductDescription(description),
+                new ProductCategory(category),
+                new ProductQuantity(quantity));
     }
 
     public ProductId id() { return id;}
@@ -58,9 +66,7 @@ public final class Product {
 
     public ProductDescription description() { return description;}
 
-    public Integer quantity(){return quantity;}
-
-
+    public ProductQuantity quantity(){return quantity;}
 
     @Override
     public int hashCode() {
@@ -84,7 +90,6 @@ public final class Product {
                 ", description=" + description +
                 ", category=" + category +
                 ", quantity=" + quantity +
-
                 "}";
     }
 }

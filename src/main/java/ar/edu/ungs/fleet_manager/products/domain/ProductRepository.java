@@ -1,6 +1,5 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
-import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
