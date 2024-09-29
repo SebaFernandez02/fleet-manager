@@ -44,47 +44,6 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 vehicle.id().value());
     }
 
-
-
-
-    private void updateInfo(Vehicle vehicle) {
-        var sql = """
-           update vehicles 
-           model = ?, brand = ?, year = ?, status = ?, latitude = ?, longitude = ?
-           where id = ?
-           """;
-        this.jdbcTemplate.update(sql,
-                vehicle.model().value(),
-                vehicle.brand().value(),
-                vehicle.year().value(),
-                vehicle.id().value());
-    }
-
-    private void updateStatus(Vehicle vehicle) {
-        var sql = """
-           update vehicles 
-           set status = ?
-           where id = ?
-           """;
-        this.jdbcTemplate.update(sql,
-                vehicle.status().name(),
-                vehicle.id().value());
-    }
-
-    private void updateCoord(Vehicle vehicle) {
-        var sql = """
-           update vehicles 
-           set latitude = ?, longitude = ?
-           where id = ?
-           """;
-        this.jdbcTemplate.update(sql,
-                vehicle.coordinates().latitude(),
-                vehicle.coordinates().longitude(),
-                vehicle.id().value());
-    }
-
-
-
     private void create(Vehicle vehicle) {
         var sql = """
                     insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated) 
