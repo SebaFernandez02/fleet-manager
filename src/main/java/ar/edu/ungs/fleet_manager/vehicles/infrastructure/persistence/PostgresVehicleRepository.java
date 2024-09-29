@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Component
 public final class PostgresVehicleRepository implements VehicleRepository, RowMapper<Vehicle> {
+
     private final JdbcTemplate jdbcTemplate;
 
     public PostgresVehicleRepository(JdbcTemplate jdbcTemplate) {
