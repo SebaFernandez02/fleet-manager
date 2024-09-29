@@ -25,23 +25,32 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     @Override
     public void save(Vehicle vehicle) {
         this.findById(vehicle.id())
-                .ifPresentOrElse(x -> updateInfo(vehicle), () -> create(vehicle));
+                .ifPresentOrElse(x -> update(vehicle), () -> create(vehicle));
     }
-    @Override
-    public void updateCoordinates(Vehicle vehicle) {
-            this.findById(vehicle.id())
-                    .ifPresent(x -> updateCoord(vehicle));
+
+    private void update(Vehicle vehicle){
+        var sql = """
+           update vehicles SET
+           model = ?, brand = ?, year = ?,  status = ?, latitude = ?, longitude = ?
+           where id = ?
+           """;
+        this.jdbcTemplate.update(sql,
+                vehicle.model().value(),
+                vehicle.brand().value(),
+                vehicle.year().value(),
+                vehicle.status().name(),
+                vehicle.coordinates().latitude(),
+                vehicle.coordinates().longitude(),
+                vehicle.id().value());
     }
-    @Override
-    public void saveStatus(Vehicle vehicle){
-        this.findById(vehicle.id())
-                .ifPresent(x-> updateStatus(vehicle));
-    }
+
+
+
 
     private void updateInfo(Vehicle vehicle) {
         var sql = """
            update vehicles 
-           model = ?, brand = ?, year = ?
+           model = ?, brand = ?, year = ?, status = ?, latitude = ?, longitude = ?
            where id = ?
            """;
         this.jdbcTemplate.update(sql,

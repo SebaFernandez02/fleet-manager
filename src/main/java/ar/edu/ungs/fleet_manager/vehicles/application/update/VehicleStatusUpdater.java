@@ -25,13 +25,10 @@ public final class VehicleStatusUpdater {
 
         switch(statusToUpdate){
             case RESERVED -> vehicle.reserve();
-          //  case RESERVED -> new VehicleReserver(finder,repository).execute(new VehicleId(id));
             case UNAVAILABLE -> vehicle.unavailabler();
-            //   case AVAILABLE -> new VehicleReleaser(finder,repository).execute(new VehicleId(id));
             case AVAILABLE -> vehicle.release();
-            //  case MAINTENANCE -> new VehicleMaintainer(finder,repository).execute(new VehicleId(id));
-            case MAINTENANCE -> vehicle.reserve();
+            case MAINTENANCE -> vehicle.maintenance();
         }
-        this.repository.saveStatus(vehicle);
+        this.repository.save(vehicle);
     }
 }

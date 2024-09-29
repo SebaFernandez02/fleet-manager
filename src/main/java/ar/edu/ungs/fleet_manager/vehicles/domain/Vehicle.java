@@ -1,13 +1,15 @@
 package ar.edu.ungs.fleet_manager.vehicles.domain;
 
+import ar.edu.ungs.fleet_manager.vehicles.application.VehicleInfoRequest;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Vehicle {
     private final VehicleId id;
-    private final VehicleModel model;
-    private final VehicleBrand brand;
-    private final VehicleYear year;
+    private  VehicleModel model;
+    private  VehicleBrand brand;
+    private  VehicleYear year;
     private VehicleStatus status;
     private Coordinates coordinates;
     private final LocalDateTime dateCreated;
@@ -140,6 +142,11 @@ public final class Vehicle {
         return dateUpdated;
     }
 
+    public void updateInfo(VehicleInfoRequest request){
+        this.model = new VehicleModel(request.model());
+        this.brand = new VehicleBrand(request.brand());
+        this.year = new VehicleYear(request.year());
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
