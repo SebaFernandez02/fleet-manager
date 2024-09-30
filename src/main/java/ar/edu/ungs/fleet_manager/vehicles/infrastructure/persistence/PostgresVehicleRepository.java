@@ -28,20 +28,19 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 .ifPresentOrElse(x -> update(vehicle), () -> create(vehicle));
     }
 
-    private void update(Vehicle vehicle) {
+    private void update(Vehicle vehicle){
         var sql = """
-           update vehicles 
-           set status = ?, model = ?, brand = ?, year = ?, latitude = ?, longitude = ?, date_created = ?, date_updated = ?
+           update vehicles SET
+           model = ?, brand = ?, year = ?,  status = ?, latitude = ?, longitude = ?, date_updated = ?
            where id = ?
            """;
         this.jdbcTemplate.update(sql,
-                vehicle.status().name(),
                 vehicle.model().value(),
                 vehicle.brand().value(),
                 vehicle.year().value(),
+                vehicle.status().name(),
                 vehicle.coordinates().latitude(),
                 vehicle.coordinates().longitude(),
-                vehicle.dateCreated(),
                 vehicle.dateUpdated(),
                 vehicle.id().value());
     }
