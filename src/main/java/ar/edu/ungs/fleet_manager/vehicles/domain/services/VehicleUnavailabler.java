@@ -21,7 +21,7 @@ public final class VehicleUnavailabler {
             return;
         }
 
-        vehicle.unavailabler();
+        vehicle.unavailable();
 
         this.repository.save(vehicle);
     }

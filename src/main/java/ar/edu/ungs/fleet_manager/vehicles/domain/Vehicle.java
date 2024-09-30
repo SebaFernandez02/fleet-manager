@@ -1,15 +1,13 @@
 package ar.edu.ungs.fleet_manager.vehicles.domain;
 
-import ar.edu.ungs.fleet_manager.vehicles.application.VehicleInfoRequest;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Vehicle {
     private final VehicleId id;
-    private  VehicleModel model;
-    private  VehicleBrand brand;
-    private  VehicleYear year;
+    private VehicleModel model;
+    private VehicleBrand brand;
+    private VehicleYear year;
     private VehicleStatus status;
     private Coordinates coordinates;
     private final LocalDateTime dateCreated;
@@ -79,20 +77,40 @@ public final class Vehicle {
         return model;
     }
 
+    public void updateModel(String model) {
+        this.model = new VehicleModel(model);
+        this.dateUpdated = LocalDateTime.now();
+    }
+
     public VehicleYear year() {
         return year;
+    }
+
+    public void updateYear(Integer year) {
+        this.year = new VehicleYear(year);
+        this.dateUpdated = LocalDateTime.now();
     }
 
     public VehicleBrand brand() {
         return brand;
     }
 
+    public void updateBrand(String brand) {
+        this.brand = new VehicleBrand(brand);
+        this.dateUpdated = LocalDateTime.now();
+    }
+
     public VehicleStatus status() {
         return status;
     }
 
-    public void unavailabler(){
+    public void unavailable(){
         this.status = VehicleStatus.UNAVAILABLE;
+        this.dateUpdated = LocalDateTime.now();
+    }
+
+    public void available() {
+        this.status = VehicleStatus.AVAILABLE;
         this.dateUpdated = LocalDateTime.now();
     }
 
@@ -115,8 +133,8 @@ public final class Vehicle {
         return coordinates;
     }
 
-    public void updateCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    public void updateCoordinates(Double latitude, Double longitude) {
+        this.coordinates = new Coordinates(latitude, longitude);
         this.dateUpdated = LocalDateTime.now();
     }
 
@@ -142,11 +160,6 @@ public final class Vehicle {
         return dateUpdated;
     }
 
-    public void updateInfo(VehicleInfoRequest request){
-        this.model = new VehicleModel(request.model());
-        this.brand = new VehicleBrand(request.brand());
-        this.year = new VehicleYear(request.year());
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

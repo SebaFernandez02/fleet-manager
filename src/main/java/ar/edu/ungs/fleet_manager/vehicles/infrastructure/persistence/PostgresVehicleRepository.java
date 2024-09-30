@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @Component
 public final class PostgresVehicleRepository implements VehicleRepository, RowMapper<Vehicle> {
-
     private final JdbcTemplate jdbcTemplate;
 
     public PostgresVehicleRepository(JdbcTemplate jdbcTemplate) {
@@ -32,7 +31,7 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     private void update(Vehicle vehicle){
         var sql = """
            update vehicles SET
-           model = ?, brand = ?, year = ?,  status = ?, latitude = ?, longitude = ?
+           model = ?, brand = ?, year = ?,  status = ?, latitude = ?, longitude = ?, date_updated = ?
            where id = ?
            """;
         this.jdbcTemplate.update(sql,
@@ -42,6 +41,7 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 vehicle.status().name(),
                 vehicle.coordinates().latitude(),
                 vehicle.coordinates().longitude(),
+                vehicle.dateUpdated(),
                 vehicle.id().value());
     }
 
