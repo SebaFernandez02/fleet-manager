@@ -35,16 +35,16 @@ public final class Order {
                                Integer quantity,
                                BigDecimal amount){
 
-        final String initialStatus = "ACTIVE";
+        final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
-                providerId,
-                productId,
-                quantity,
-                amount,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                initialStatus);
+                    providerId,
+                    productId,
+                    quantity,
+                    amount,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    initialStatus);
     }
 
     public static Order build(String id,
