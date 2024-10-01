@@ -1,8 +1,5 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
-
-import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
-
 import java.util.Objects;
 import java.util.UUID;
 
@@ -32,14 +29,15 @@ public final class Product {
     public static Product create(String name,
                                  String brand,
                                  String description,
-                                 String category) {
+                                 String category,
+                                 Integer quantity) {
         return new Product(
                 new ProductId(UUID.randomUUID().toString()),
                 new ProductName(name),
                 new ProductBrand(brand),
                 new ProductDescription(description),
                 new ProductCategory(category),
-                new ProductQuantity(0));
+                new ProductQuantity(quantity));
     }
 
     public static Product build(String id,
