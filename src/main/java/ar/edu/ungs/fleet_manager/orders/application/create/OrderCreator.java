@@ -3,7 +3,6 @@ package ar.edu.ungs.fleet_manager.orders.application.create;
 import ar.edu.ungs.fleet_manager.orders.application.OrderRequest;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
-import ar.edu.ungs.fleet_manager.orders.domain.OrderTemplate;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderTemplateRepository;
 import org.springframework.stereotype.Component;
 
@@ -11,11 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public final class OrderCreator {
     private final OrderRepository repository;
-    private final OrderTemplateRepository templateRepository;
 
-    public OrderCreator(OrderRepository repository, OrderTemplateRepository templateRepository) {
+    public OrderCreator(OrderRepository repository) {
         this.repository = repository;
-        this.templateRepository = templateRepository;
     }
 
     public void execute (OrderRequest request){

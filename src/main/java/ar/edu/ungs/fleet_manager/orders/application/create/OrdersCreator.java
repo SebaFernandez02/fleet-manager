@@ -1,13 +1,9 @@
 package ar.edu.ungs.fleet_manager.orders.application.create;
 
 import ar.edu.ungs.fleet_manager.orders.application.OrderRequest;
-import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderTemplate;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderTemplateFinder;
-import ar.edu.ungs.fleet_manager.orders.infrastructure.persistence.PostgresOrderRepository;
-import ar.edu.ungs.fleet_manager.orders.infrastructure.persistence.PostgresOrderTemplateRepository;
-import ar.edu.ungs.fleet_manager.products.application.ProductResponse;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductsWithoutStockSearcher;
