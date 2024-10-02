@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PostOrderRestController {
-    private OrderCreator creator;
+    private final OrderCreator creator;
 
     public PostOrderRestController(OrderCreator creator) {
         this.creator = creator;
@@ -18,6 +18,7 @@ public class PostOrderRestController {
 
     @PostMapping ("/api/orders")
     public ResponseEntity<?> handle (@RequestBody OrderRequest request){
+
         this.creator.execute(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
