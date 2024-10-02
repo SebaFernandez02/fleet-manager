@@ -20,6 +20,7 @@ public final class OrderCreator {
                                    request.quantity(),
                                    request.amount());
 
+
         this.repository.save(order);
     }
 }

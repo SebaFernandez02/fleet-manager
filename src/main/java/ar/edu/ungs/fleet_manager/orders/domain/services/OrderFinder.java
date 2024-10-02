@@ -18,4 +18,8 @@ public class OrderFinder {
     public Order execute(OrderId id) {
         return this.repository.findById(id).orElseThrow(() -> new NotFoundException(String.format("order %s not found", id.value())));
     }
+
+    public Order execute(ProductId id){
+        return this.repository.findByProduct(id).orElseThrow(() -> new NotFoundException(String.format("order %s not found", id.value())));
+    }
 }

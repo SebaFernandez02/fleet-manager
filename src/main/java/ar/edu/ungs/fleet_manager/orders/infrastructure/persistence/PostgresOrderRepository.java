@@ -141,7 +141,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
                 date_updated, 
                 status
                 from orders o
-                where o.product_id = CAST(? as UUID) and status = 'ACTIVE'
+                where o.product_id = CAST(? as UUID) and status = 'CREATED'
             """;
 
             Order result = this.jdbcTemplate.queryForObject(sql, this, product.value());

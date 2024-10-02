@@ -90,6 +90,21 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     }
 
     @Override
+    public List<Product> searchAllNoStock() {
+        try{
+
+            var sql = """
+                            SELECT * FROM products where quantity = 0
+                        """;
+            return this.jdbcTemplate.query(sql, this);
+
+        }catch (EmptyResultDataAccessException e){
+            return Collections.emptyList();
+
+        }
+    }
+
+    @Override
     public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");
