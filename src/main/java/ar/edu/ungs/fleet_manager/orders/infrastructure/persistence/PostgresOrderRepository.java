@@ -131,17 +131,9 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     public Optional<Order> findByProduct(ProductId product) {
         try {
             var sql = """
-                select 
-                id, 
-                provider_id, 
-                product_id, 
-                quantity,
-                amount, 
-                date_created, 
-                date_updated, 
-                status
+                select *
                 from orders o
-                where o.product_id = CAST(? as UUID) and status = 'CREATED'
+                where o.product_id = CAST(? as UUID) and status in ('CREATED', 'APPROVED')
             """;
 
             Order result = this.jdbcTemplate.queryForObject(sql, this, product.value());
@@ -169,6 +161,6 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             throw new PostgresException(e.getMessage());
         }
 
-        }
+    }
 
 }

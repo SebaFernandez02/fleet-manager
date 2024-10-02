@@ -29,26 +29,26 @@ public class OrdersCreator {
 
     public void execute() {
         List<Product> products = this.productSearcher.execute();
-        for (Product product : products) {
-            try {
-                orderFinder.execute(product.id());
 
-            }catch (NotFoundException ignored){
-                findByProduct(product.id()).ifPresent(template -> {
-                    OrderRequest order = new OrderRequest(template.provider(),
-                            template.product(),
-                            template.quantity(),
-                            template.amount());
-                    this.creator.execute(order);
-                });
+        products.forEach(product -> {
+            if (!this.containsPendingOrder(product)) {
+                this.findByProduct(product).ifPresent(this.creator::execute);
             }
+        });
+    }
 
+    private Boolean containsPendingOrder(Product product) {
+        try {
+            orderFinder.execute(product.id());
+            return true;
+        } catch (NotFoundException ignored) {
+            return false;
         }
     }
 
-    private Optional<OrderTemplate> findByProduct(ProductId id){
+    private Optional<OrderTemplate> findByProduct(Product product){
         try {
-            return Optional.of(this.finder.execute(id.value()));
+            return Optional.of(this.finder.execute(product.id()));
         }catch (NotFoundException ignore){
             return Optional.empty();
         }

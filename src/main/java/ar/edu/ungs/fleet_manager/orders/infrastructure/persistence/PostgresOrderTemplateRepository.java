@@ -21,18 +21,35 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
     }
 
     @Override
-    public void save(OrderTemplate order) {
+    public void save(OrderTemplate template) {
+        this.findByProduct(template.productId()).ifPresentOrElse(this::update, () -> this.create(template));
+    }
+
+    private void update(OrderTemplate template) {
+        var sql = """
+            update order_template
+            set provider_id = CAST(? as UUID),
+                quantity = ?,
+                amount = ?
+            where product_id = CAST(? as UUID)
+          """;
+
+        this.jdbcTemplate.update(sql, template.providerId().value(),
+                                      template.quantity().value(),
+                                      template.amount().value(),
+                                      template.productId().value());
+    }
+
+    private void create(OrderTemplate template) {
         var sql = """
                     insert into order_template (product_id , provider_id, quantity, amount)
                     values (CAST(? as UUID), CAST(? as UUID), ?, ?)
                   """;
-        this.jdbcTemplate.update(sql,
-                order.product(),
-                order.provider(),
-                order.quantity(),
-                order.amount());
+        this.jdbcTemplate.update(sql, template.productId().value(),
+                                      template.productId().value(),
+                                      template.quantity().value(),
+                                      template.amount().value());
     }
-
 
 
     @Override
@@ -63,6 +80,6 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
         var quantity = rs.getInt("quantity");
         var amount = rs.getBigDecimal("amount");
 
-        return new OrderTemplate(providerId, productId, quantity, amount);
+        return OrderTemplate.build(providerId, productId, quantity, amount);
     }
 }

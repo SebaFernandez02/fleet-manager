@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.orders.application.create;
 import ar.edu.ungs.fleet_manager.orders.application.OrderRequest;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
+import ar.edu.ungs.fleet_manager.orders.domain.OrderTemplate;
 import org.springframework.stereotype.Component;
 
 
@@ -20,6 +21,12 @@ public final class OrderCreator {
                                    request.quantity(),
                                    request.amount());
 
+
+        this.repository.save(order);
+    }
+
+    public void execute(OrderTemplate template){
+        Order order = Order.from(template);
 
         this.repository.save(order);
     }

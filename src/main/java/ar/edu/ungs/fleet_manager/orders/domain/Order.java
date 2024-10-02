@@ -10,13 +10,13 @@ import java.util.UUID;
 
 public final class Order {
     private final OrderId id;
-    private final ProviderId provider;
-    private ProductId product;
-    private OrderQuantity quantity;
-    private OrderAmount amount;
-    private final LocalDateTime dateCreated;
-    private LocalDateTime dateUpdated;
     private OrderStatus status;
+    private final ProviderId provider;
+    private final ProductId product;
+    private final OrderQuantity quantity;
+    private final OrderAmount amount;
+    private final LocalDateTime dateCreated;
+    private final LocalDateTime dateUpdated;
 
 
     public Order(OrderId id, ProviderId provider, ProductId product, OrderQuantity quantity, OrderAmount amount,LocalDateTime dateCreated, LocalDateTime dateUpdated,  OrderStatus status) {
@@ -64,6 +64,13 @@ public final class Order {
                 dateCreated,
                 dateUpdated,
                 OrderStatus.parse(status));
+    }
+
+    public static Order from(OrderTemplate template) {
+        return create(template.providerId().value(),
+                      template.productId().value(),
+                      template.quantity().value(),
+                      template.amount().value());
     }
 
     public OrderId id() {
