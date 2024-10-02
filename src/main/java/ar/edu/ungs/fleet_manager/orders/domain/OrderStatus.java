@@ -15,7 +15,7 @@ public enum OrderStatus {
         try {
             return valueOf(status.toUpperCase(Locale.ROOT));
         } catch (Exception e) {
-            throw new InvalidParameterException("status invalid");
+            throw new InvalidParameterException("Invalid status: " + status);
         }
     }
 }
