@@ -7,7 +7,8 @@ import java.util.Locale;
 public enum VehicleStatus {
     AVAILABLE,
     RESERVED,
-    MAINTENANCE;
+    MAINTENANCE,
+    UNAVAILABLE;
 
     public static VehicleStatus parse(String status) {
         try {

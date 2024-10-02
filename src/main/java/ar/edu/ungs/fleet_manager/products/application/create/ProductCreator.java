@@ -18,7 +18,8 @@ public final class ProductCreator {
         Product product = Product.create(request.name(),
                                          request.brand(),
                                          request.description(),
-                                         request.category());
+                                         request.category(),
+                                         request.quantity());
 
         this.repository.save(product);
     }
