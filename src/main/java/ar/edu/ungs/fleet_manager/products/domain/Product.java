@@ -5,10 +5,10 @@ import java.util.UUID;
 
 public final class Product {
     private final ProductId id;
-    private final ProductName name;
-    private final ProductBrand brand;
-    private final ProductDescription description;
-    private final ProductCategory category;
+    private ProductName name;
+    private ProductBrand brand;
+    private ProductDescription description;
+    private ProductCategory category;
     private ProductQuantity quantity;
 
     public Product(ProductId id,
@@ -59,11 +59,27 @@ public final class Product {
 
     public ProductName name() { return name;}
 
+    public void updateName(String value) {
+        this.name = new ProductName(value);
+    }
+
     public ProductBrand brand() { return brand;}
 
     public ProductCategory category() { return category;}
 
+    public void updateBrand(String value) {
+        this.brand = new ProductBrand(value);
+    }
+
+    public void updateCategory(String value) {
+        this.category = new ProductCategory(value);
+    }
+
     public ProductDescription description() { return description;}
+
+    public void updateDescription(String value) {
+        this.description = new ProductDescription(value);
+    }
 
     public ProductQuantity quantity(){return quantity;}
 

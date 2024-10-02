@@ -26,8 +26,10 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     @Override
     public void save(Product product) {
-        System.out.println(product.toString());
+        this.findById(product.id()).ifPresentOrElse(this::update, () -> this.create(product));
+    }
 
+    private void create(Product product) {
         var sql = """
                     insert into products(id, name, brand, category, quantity, description)
                     values(CAST(? as UUID), ?, ?, ?, ?, ?)
@@ -39,7 +41,21 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.category().value(),
                 product.quantity().value(),
                 product.description().value());
-        System.out.println(product.id().value());
+    }
+
+    private void update(Product product) {
+        var sql = """
+                UPDATE products
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?
+                WHERE id = CAST(? as UUID)
+            """;
+        this.jdbcTemplate.update(sql,
+                product.name().value(),
+                product.brand().value(),
+                product.category().value(),
+                product.quantity().value(),
+                product.description().value(),
+                product.id().value());
     }
 
 
