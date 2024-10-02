@@ -24,8 +24,6 @@ public final class OrderCreator {
                                    request.quantity(),
                                    request.amount());
 
-        OrderTemplate template = new OrderTemplate(request.providerId(), request.productId(), request.quantity(), request.amount());
-        this.templateRepository.save(template);
 
         this.repository.save(order);
     }

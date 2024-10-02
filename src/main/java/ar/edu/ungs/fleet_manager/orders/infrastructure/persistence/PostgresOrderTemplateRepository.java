@@ -23,7 +23,7 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
     @Override
     public void save(OrderTemplate order) {
         var sql = """
-                    insert into order_templates (product_id , provider_id, quantity, amount)
+                    insert into order_template (product_id , provider_id, quantity, amount)
                     values (CAST(? as UUID), CAST(? as UUID), ?, ?)
                   """;
         this.jdbcTemplate.update(sql,
@@ -43,8 +43,8 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
                 product_id, 
                 provider_id, 
                 quantity,
-                amount, 
-                from order_templates o
+                amount
+                from order_template o
                 where o.product_id = CAST(? as UUID)
             """;
 

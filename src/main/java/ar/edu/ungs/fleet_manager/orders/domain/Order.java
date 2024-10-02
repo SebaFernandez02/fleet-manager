@@ -35,7 +35,7 @@ public final class Order {
                                Integer quantity,
                                BigDecimal amount){
 
-        final String initialStatus = "ACTIVE";
+        final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
                 providerId,

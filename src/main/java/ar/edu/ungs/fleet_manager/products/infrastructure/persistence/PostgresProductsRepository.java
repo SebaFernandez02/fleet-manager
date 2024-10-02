@@ -72,7 +72,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
 
             var sql = """
-                            SELECT * FROM products where quantity = '0'
+                            SELECT * FROM products where quantity = 0
                         """;
             return this.jdbcTemplate.query(sql, this);
 
