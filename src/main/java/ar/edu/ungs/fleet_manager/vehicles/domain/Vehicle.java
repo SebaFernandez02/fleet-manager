@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public final class Vehicle {
     private final VehicleId id;
-    private final VehicleModel model;
-    private final VehicleBrand brand;
-    private final VehicleYear year;
+    private VehicleModel model;
+    private VehicleBrand brand;
+    private VehicleYear year;
     private VehicleStatus status;
     private Coordinates coordinates;
     private final LocalDateTime dateCreated;
@@ -77,16 +77,41 @@ public final class Vehicle {
         return model;
     }
 
+    public void updateModel(String model) {
+        this.model = new VehicleModel(model);
+        this.dateUpdated = LocalDateTime.now();
+    }
+
     public VehicleYear year() {
         return year;
+    }
+
+    public void updateYear(Integer year) {
+        this.year = new VehicleYear(year);
+        this.dateUpdated = LocalDateTime.now();
     }
 
     public VehicleBrand brand() {
         return brand;
     }
 
+    public void updateBrand(String brand) {
+        this.brand = new VehicleBrand(brand);
+        this.dateUpdated = LocalDateTime.now();
+    }
+
     public VehicleStatus status() {
         return status;
+    }
+
+    public void unavailable(){
+        this.status = VehicleStatus.UNAVAILABLE;
+        this.dateUpdated = LocalDateTime.now();
+    }
+
+    public void available() {
+        this.status = VehicleStatus.AVAILABLE;
+        this.dateUpdated = LocalDateTime.now();
     }
 
     public void release() {
@@ -108,14 +133,12 @@ public final class Vehicle {
         return coordinates;
     }
 
-    public void updateCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
+    public void updateCoordinates(Double latitude, Double longitude) {
+        this.coordinates = new Coordinates(latitude, longitude);
         this.dateUpdated = LocalDateTime.now();
     }
 
-    public boolean isNotAvailable() {
-        return !VehicleStatus.AVAILABLE.equals(this.status);
-    }
+    public boolean isNotAvailable() { return VehicleStatus.UNAVAILABLE.equals(this.status);}
 
     public boolean isReserved() {
         return VehicleStatus.RESERVED.equals(this.status);

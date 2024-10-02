@@ -5,7 +5,10 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 import java.util.Locale;
 
 public enum OrderStatus {
-    ACTIVE,
+    CREATED,
+    REJECTED,
+    APPROVED,
+    COMPLETED,
     INACTIVE;
 
     public static OrderStatus parse(String status) {

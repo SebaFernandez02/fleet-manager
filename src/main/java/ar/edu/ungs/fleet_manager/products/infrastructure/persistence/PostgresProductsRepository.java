@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public final class PostgresProductsRepository implements ProductRepository, RowMapper<Product> {
@@ -25,17 +26,38 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     @Override
     public void save(Product product) {
+        this.findById(product.id()).ifPresentOrElse(this::update, () -> this.create(product));
+    }
+
+    private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, description, category, quantity)
+                    insert into products(id, name, brand, category, quantity, description)
                     values(CAST(? as UUID), ?, ?, ?, ?, ?)
                 """;
-        this.jdbcTemplate.update(sql, product.id().value()
-        ,       product.name().value(),
+        this.jdbcTemplate.update(sql,
+                product.id().value(),
+                product.name().value(),
                 product.brand().value(),
                 product.category().value(),
-                product.quantity(),
+                product.quantity().value(),
                 product.description().value());
     }
+
+    private void update(Product product) {
+        var sql = """
+                UPDATE products
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?
+                WHERE id = CAST(? as UUID)
+            """;
+        this.jdbcTemplate.update(sql,
+                product.name().value(),
+                product.brand().value(),
+                product.category().value(),
+                product.quantity().value(),
+                product.description().value(),
+                product.id().value());
+    }
+
 
     @Override
     public Optional<Product> findById(ProductId id) {

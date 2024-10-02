@@ -38,13 +38,13 @@ public final class Order {
         final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
-                providerId,
-                productId,
-                quantity,
-                amount,
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                initialStatus);
+                    providerId,
+                    productId,
+                    quantity,
+                    amount,
+                    LocalDateTime.now(),
+                    LocalDateTime.now(),
+                    initialStatus);
     }
 
     public static Order build(String id,
