@@ -9,12 +9,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class Order {
-    private OrderId id;
-    private ProviderId provider;
+    private final OrderId id;
+    private final ProviderId provider;
     private ProductId product;
     private OrderQuantity quantity;
     private OrderAmount amount;
-    private LocalDateTime dateCreated;
+    private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
     private OrderStatus status;
 
@@ -97,6 +97,13 @@ public final class Order {
     public OrderQuantity quantity() {
         return quantity;
     }
+
+    public void setStatus(String status){
+        this.status = OrderStatus.parse(status);
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {
