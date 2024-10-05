@@ -29,4 +29,15 @@ public final class ProductUpdater {
 
         this.repository.save(product);
     }
+
+    public void updateQuantity(String id,Integer quantity){
+
+        Product product = this.productFinder.execute(new ProductId(id));
+
+        product.updateQuantity(quantity);
+
+        this.repository.save(product);
+
+    }
+
 }

@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.orders.domain;
 
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -105,8 +106,14 @@ public final class Order {
         return quantity;
     }
 
-    public void setStatus(String status){
-        this.status = OrderStatus.parse(status);
+    public void setStatus(String value){
+
+        if(OrderStatus.parse(value).equals(this.status)){
+            throw new InvalidParameterException("The Order status is already " + "'" +this.status.name() + "'");
+        }
+        else{this.status = OrderStatus.parse(value);}
+
+
     }
 
 

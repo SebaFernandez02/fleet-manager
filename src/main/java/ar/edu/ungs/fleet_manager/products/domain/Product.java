@@ -83,6 +83,12 @@ public final class Product {
 
     public ProductQuantity quantity(){return quantity;}
 
+    public void updateQuantity(Integer value){
+
+        Integer quantity = this.quantity().value()+value;
+
+        this.quantity = new ProductQuantity(quantity);}
+
     public void add(Integer quantity) {
         this.quantity = new ProductQuantity(this.quantity.value() * quantity);
     }
