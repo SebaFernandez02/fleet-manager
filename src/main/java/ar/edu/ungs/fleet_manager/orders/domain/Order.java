@@ -14,13 +14,12 @@ public final class Order {
     private OrderStatus status;
     private final ProviderId provider;
     private final ProductId product;
-    private final OrderQuantity quantity;
+    private final Quantity quantity;
     private final OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
-
-    public Order(OrderId id, ProviderId provider, ProductId product, OrderQuantity quantity, OrderAmount amount,LocalDateTime dateCreated, LocalDateTime dateUpdated,  OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, ProductId product, Quantity quantity, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
         this.id = id;
         this.provider = provider;
         this.product = product;
@@ -60,7 +59,7 @@ public final class Order {
         return new Order(new OrderId(id),
                 new ProviderId(providerId),
                 new ProductId(productId),
-                new OrderQuantity(quantity),
+                new Quantity(quantity),
                 new OrderAmount(amount),
                 dateCreated,
                 dateUpdated,
@@ -102,22 +101,21 @@ public final class Order {
         return status;
     }
 
-    public OrderQuantity quantity() {
+    public boolean isCompleted() {
+        return this.status.equals(OrderStatus.COMPLETED);
+    }
+
+    public Quantity quantity() {
         return quantity;
     }
 
-    public void setStatus(String value){
-
-        if(OrderStatus.parse(value).equals(this.status)){
+    public void setStatus(OrderStatus statusToUpdate){
+        if(statusToUpdate.equals(this.status)){
             throw new InvalidParameterException("The Order status is already " + "'" +this.status.name() + "'");
         }
-        else{this.status = OrderStatus.parse(value);}
 
-
+        this.status = statusToUpdate;
     }
-
-
-
 
     @Override
     public boolean equals(Object o) {
