@@ -119,6 +119,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
                     date_updated,
                     status
                 from orders o
+                order by date_updated desc, date_created desc
             """;
 
             return this.jdbcTemplate.query(sql, this);
