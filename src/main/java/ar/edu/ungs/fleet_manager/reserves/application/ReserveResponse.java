@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.reserves.application;
 
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
+import ar.edu.ungs.fleet_manager.reserves.domain.Trip;
 
 import java.time.LocalDateTime;
 
@@ -8,7 +9,7 @@ public record ReserveResponse(String id,
                               String vehicleId,
                               String userId,
                               String status,
-                              ReserveTripResponse trip,
+                              Trip trip,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated) {
     public static ReserveResponse map(Reserve aggregate) {
@@ -16,7 +17,7 @@ public record ReserveResponse(String id,
                 aggregate.vehicleId().value(),
                 aggregate.userId().value(),
                 aggregate.status().name(),
-                ReserveTripResponse.map(aggregate.trip()),
+                aggregate.trip(),
                 aggregate.dateCreated(),
                 aggregate.dateUpdated());
     }

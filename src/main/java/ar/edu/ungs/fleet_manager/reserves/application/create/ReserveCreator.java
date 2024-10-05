@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.reserves.application.create;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
+import ar.edu.ungs.fleet_manager.reserves.domain.services.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
@@ -18,11 +19,13 @@ public class ReserveCreator {
     private final ReserveRepository repository;
     private final VehicleFinder finder;
     private final UserFinder userFinder;
+    private final TripCalculator tripCalculator;
 
-    public ReserveCreator(ReserveRepository repository, VehicleFinder finder, UserFinder userFinder) {
+    public ReserveCreator(ReserveRepository repository, VehicleFinder finder, UserFinder userFinder, TripCalculator tripCalculator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
+        this.tripCalculator = tripCalculator;
     }
 
     public void execute(ReserveRequest request) {
@@ -34,9 +37,11 @@ public class ReserveCreator {
 
         ensureVehicleIsAvailable(vehicle);
 
-        var coordinates = new Coordinates(request.to().latitude(), request.to().latitude());
+        var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
 
-        var reserve = Reserve.create(vehicle, user, coordinates);
+        var trip = this.tripCalculator.execute(vehicle.coordinates(), destination);
+
+        var reserve = Reserve.create(vehicle, user, trip);
 
         this.repository.save(reserve);
     }

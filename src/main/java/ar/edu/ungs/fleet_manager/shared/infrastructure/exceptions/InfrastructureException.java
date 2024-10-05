@@ -1,6 +1,6 @@
 package ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions;
 
-public abstract class InfrastructureException extends RuntimeException{
+public class InfrastructureException extends RuntimeException {
     private final String code;
 
     public InfrastructureException(String message) {

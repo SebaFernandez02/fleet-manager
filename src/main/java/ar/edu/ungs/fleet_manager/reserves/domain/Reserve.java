@@ -35,10 +35,9 @@ public final class Reserve {
 
     public static Reserve create(Vehicle vehicle,
                                  User user,
-                                 Coordinates coordinates) {
+                                 Trip trip) {
         ReserveStatus status = ReserveStatus.CREATED;
         VehicleId vehicleId = vehicle.id();
-        Trip trip = new Trip(vehicle.coordinates(), coordinates);
         LocalDateTime dateTime = LocalDateTime.now();
 
         return new Reserve(ReserveId.create(), status, vehicleId, user.id(), trip, dateTime, dateTime);
@@ -48,15 +47,11 @@ public final class Reserve {
                                 String status,
                                 String vehicleId,
                                 String userId,
-                                double latitudeFrom,
-                                double longitudeFrom,
-                                double latitudeTo,
-                                double longitudeTo,
+                                Trip trip,
                                 LocalDateTime dateCreated,
                                 LocalDateTime dateUpdated) {
         ReserveId reserveId = new ReserveId(id);
         ReserveStatus reserveStatus = ReserveStatus.valueOf(status);
-        Trip trip = new Trip(new Coordinates(latitudeFrom, longitudeFrom), new Coordinates(latitudeTo, longitudeTo));
 
         return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, dateCreated, dateUpdated);
     }
