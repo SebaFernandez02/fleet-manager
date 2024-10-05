@@ -26,7 +26,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     @Override
     public void save(Product product) {
-        this.findById(product.id()).ifPresentOrElse(this::update, () -> this.create(product));
+        this.findById(product.id()).ifPresentOrElse(x -> this.update(product), () -> this.create(product));
     }
 
     private void create(Product product) {
@@ -56,6 +56,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.quantity().value(),
                 product.description().value(),
                 product.id().value());
+
     }
 
 

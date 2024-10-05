@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 public record OrderTemplate(ProviderId providerId,
                             ProductId productId,
-                            OrderQuantity quantity,
+                            Quantity quantity,
                             OrderAmount amount) {
 
     public static OrderTemplate build(String providerId,
@@ -17,7 +17,7 @@ public record OrderTemplate(ProviderId providerId,
                                       BigDecimal amount) {
         return new OrderTemplate(new ProviderId(providerId),
                                  new ProductId(productId),
-                                 new OrderQuantity(quantity),
+                                 new Quantity(quantity),
                                  new OrderAmount(amount));
     }
 }

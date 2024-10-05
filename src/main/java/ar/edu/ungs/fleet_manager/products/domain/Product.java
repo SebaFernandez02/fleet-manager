@@ -1,5 +1,7 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
+import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -9,14 +11,14 @@ public final class Product {
     private ProductBrand brand;
     private ProductDescription description;
     private ProductCategory category;
-    private ProductQuantity quantity;
+    private Quantity quantity;
 
     public Product(ProductId id,
                    ProductName name,
                    ProductBrand brand,
                    ProductDescription description,
                    ProductCategory category,
-                   ProductQuantity quantity) {
+                   Quantity quantity) {
 
         this.id = id;
         this.name = name;
@@ -37,7 +39,7 @@ public final class Product {
                 new ProductBrand(brand),
                 new ProductDescription(description),
                 new ProductCategory(category),
-                new ProductQuantity(quantity));
+                new Quantity(quantity));
     }
 
     public static Product build(String id,
@@ -52,7 +54,7 @@ public final class Product {
                 new ProductBrand(brand),
                 new ProductDescription(description),
                 new ProductCategory(category),
-                new ProductQuantity(quantity));
+                new Quantity(quantity));
     }
 
     public ProductId id() { return id;}
@@ -81,10 +83,14 @@ public final class Product {
         this.description = new ProductDescription(value);
     }
 
-    public ProductQuantity quantity(){return quantity;}
+    public Quantity quantity(){return quantity;}
 
-    public void add(Integer quantity) {
-        this.quantity = new ProductQuantity(this.quantity.value() * quantity);
+    public void add(Quantity quantity) {
+        this.quantity = new Quantity(this.quantity.value() + quantity.value());
+    }
+
+    public void substract(Quantity quantity) {
+        this.quantity = new Quantity(this.quantity.value() - quantity.value());
     }
 
     @Override

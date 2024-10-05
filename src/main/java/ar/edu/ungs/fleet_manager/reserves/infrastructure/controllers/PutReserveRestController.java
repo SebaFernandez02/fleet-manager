@@ -14,7 +14,7 @@ public class PutReserveRestController {
         this.updater = updater;
     }
 
-    @PutMapping("/api/reserves/{id}/{status}")
+    @PutMapping("/api/reserves/{id}/status/{status}")
     public ResponseEntity<?> handle(@PathVariable String id, @PathVariable String status) {
         this.updater.execute(id, status);
 

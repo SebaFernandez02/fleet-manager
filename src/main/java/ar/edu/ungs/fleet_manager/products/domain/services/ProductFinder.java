@@ -1,10 +1,12 @@
 package ar.edu.ungs.fleet_manager.products.domain.services;
 
+import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Component
 public final class ProductFinder {
@@ -17,7 +19,6 @@ public final class ProductFinder {
     }
 
     public Product execute(ProductId id){
-
         return this.productRepository.findById(id)
                                     .orElseThrow(() -> new NotFoundException(String.format("productId %s not found", id.value())));
     }
