@@ -31,19 +31,13 @@ public final class Control {
         this.assigned = assigned;
     }
 
-    public static Control create(String type,
+ public static Control create(String type,
                                  String subject,
                                  String description,
-                                 String idVehicle){
-        String priority;
+                                 String idVehicle) {
         String assigned = "";
-        if (type.equals("CORRECTIVE")){
-            priority = "HIGH";
-        }else if (type.equals("PREDICTIVE")){
-            priority = "LOW";
-        }else {
-            priority = "HIGH";
-        }
+        String priority = type.equalsIgnoreCase("PREDICTIVE") ? "LOW" : "HIGH";
+
         return build(UUID.randomUUID().toString(),
                      type,
                      subject,
