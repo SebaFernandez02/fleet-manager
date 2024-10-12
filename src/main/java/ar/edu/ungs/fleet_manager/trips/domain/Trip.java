@@ -1,4 +1,4 @@
-package ar.edu.ungs.fleet_manager.reserves.domain;
+package ar.edu.ungs.fleet_manager.trips.domain;
 
 import java.util.List;
 

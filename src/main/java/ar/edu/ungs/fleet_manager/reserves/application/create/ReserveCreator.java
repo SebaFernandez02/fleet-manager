@@ -3,7 +3,7 @@ package ar.edu.ungs.fleet_manager.reserves.application.create;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
-import ar.edu.ungs.fleet_manager.reserves.domain.services.TripCalculator;
+import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;

@@ -2,10 +2,10 @@ package ar.edu.ungs.fleet_manager.reserves.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.reserves.domain.*;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions.InfrastructureException;
+import ar.edu.ungs.fleet_manager.trips.domain.Trip;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +16,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Component

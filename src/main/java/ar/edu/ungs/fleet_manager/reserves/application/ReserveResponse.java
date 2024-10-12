@@ -1,7 +1,7 @@
 package ar.edu.ungs.fleet_manager.reserves.application;
 
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
-import ar.edu.ungs.fleet_manager.reserves.domain.Trip;
+import ar.edu.ungs.fleet_manager.trips.domain.Trip;
 
 import java.time.LocalDateTime;
 

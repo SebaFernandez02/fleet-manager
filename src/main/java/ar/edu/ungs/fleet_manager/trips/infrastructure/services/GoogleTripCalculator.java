@@ -1,9 +1,9 @@
-package ar.edu.ungs.fleet_manager.reserves.infrastructure.services;
+package ar.edu.ungs.fleet_manager.trips.infrastructure.services;
 
-import ar.edu.ungs.fleet_manager.reserves.domain.Point;
-import ar.edu.ungs.fleet_manager.reserves.domain.Route;
-import ar.edu.ungs.fleet_manager.reserves.domain.Trip;
-import ar.edu.ungs.fleet_manager.reserves.domain.services.TripCalculator;
+import ar.edu.ungs.fleet_manager.trips.domain.Point;
+import ar.edu.ungs.fleet_manager.trips.domain.Route;
+import ar.edu.ungs.fleet_manager.trips.domain.Trip;
+import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions.InfrastructureException;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;

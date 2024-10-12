@@ -1,4 +1,4 @@
-package ar.edu.ungs.fleet_manager.reserves.domain;
+package ar.edu.ungs.fleet_manager.trips.domain;
 
 import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;
 
