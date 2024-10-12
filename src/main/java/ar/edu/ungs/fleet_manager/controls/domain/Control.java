@@ -17,7 +17,7 @@ public final class Control {
     private ControlPriority priority;
     private final LocalDateTime date;
     private ControlStatus status;
-    private ControlAssigned assigned;
+    private UserId operatorId;
 
     public Control(ControlId id, ControlType type, ControlSubject subject, ControlDescription description, VehicleId idVehicle, ControlPriority priority, LocalDateTime date, ControlStatus status, ControlAssigned assigned) {
         this.id = id;
