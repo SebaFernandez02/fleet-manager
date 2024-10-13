@@ -1,8 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.infrastructure.persistence;
 
-import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
-import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
-import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleRepository;
+import ar.edu.ungs.fleet_manager.vehicles.domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -105,6 +103,30 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
             """;
 
             return this.jdbcTemplate.query(sql, this);
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<Vehicle> searchAllByModel(VehicleBrand brand, VehicleModel model, VehicleYear year) {
+        try {
+            var sql = """
+                select 
+                    id, 
+                    status, 
+                    model, 
+                    brand,
+                    year,  
+                    latitude, 
+                    longitude, 
+                    date_created, 
+                    date_updated
+                from vehicles v
+                where brand = ? and model = ? and year = ? 
+            """;
+
+            return this.jdbcTemplate.query(sql, this, brand.value(), model.value(), year.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }

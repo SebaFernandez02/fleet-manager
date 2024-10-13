@@ -10,4 +10,6 @@ public interface VehicleRepository {
     Optional<Vehicle> findById(VehicleId id);
 
     List<Vehicle> searchAll();
+
+    List<Vehicle> searchAllByModel(VehicleBrand brand, VehicleModel model, VehicleYear year);
 }
