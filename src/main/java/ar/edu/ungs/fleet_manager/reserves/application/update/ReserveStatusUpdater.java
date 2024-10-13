@@ -42,7 +42,6 @@ public final class ReserveStatusUpdater {
         var vehicleId = reserve.vehicleId();
 
         switch (reserveStatus) {
-            // case CREATED -> this.controlCreator.execute(vehicleId);
             case ACTIVATED -> this.vehicleReserver.execute(vehicleId);
             case REJECTED, COMPLETED, CANCELLED -> this.vehicleReleaser.execute(vehicleId);
         }

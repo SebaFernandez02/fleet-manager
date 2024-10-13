@@ -107,4 +107,8 @@ public final class User {
     public boolean isCustomer() {
         return roles().contains(Role.CUSTOMER);
     }
+
+    public boolean isOperator() {
+        return roles().contains(Role.OPERATOR);
+    }
 }
