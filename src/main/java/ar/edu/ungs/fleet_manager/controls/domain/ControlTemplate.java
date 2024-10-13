@@ -7,33 +7,29 @@ public final class ControlTemplate {
     private ControlSubject subject;
     private ControlDescription description;
     private ControlPriority priority;
-    private ControlAssigned assigned;
 
-    public ControlTemplate(ControlId id, ControlSubject subject, ControlDescription description, ControlPriority priority, ControlAssigned assigned) {
+    public ControlTemplate(ControlId id, ControlSubject subject, ControlDescription description, ControlPriority priority) {
         this.id = id;
         this.subject = subject;
         this.description = description;
         this.priority = priority;
-        this.assigned = assigned;
     }
 
-    public static ControlTemplate create(String subject, String description, String priority, String assigned){
+    public static ControlTemplate create(String subject, String description, String priority){
 
         return build(UUID.randomUUID().toString(),
                     subject,
                     description,
-                    priority,
-                    assigned);
+                    priority);
     }
 
 
-    public static ControlTemplate build(String id, String subject, String description, String priority, String assigned){
+    public static ControlTemplate build(String id, String subject, String description, String priority){
 
         return new ControlTemplate(new ControlId(id),
                                    new ControlSubject(subject),
                                    new ControlDescription(description),
-                                   ControlPriority.parse(priority),
-                                   new ControlAssigned(assigned));
+                                   ControlPriority.parse(priority));
     }
 
     public ControlId id() {
@@ -52,7 +48,4 @@ public final class ControlTemplate {
         return priority;
     }
 
-    public ControlAssigned assigned() {
-        return assigned;
-    }
 }
