@@ -8,9 +8,4 @@ public record ControlSubject(String value) {
             throw new InvalidParameterException("the subject value is invalid");
         }
     }
-
-    @Override
-    public String value() {
-        return value;
-    }
 }

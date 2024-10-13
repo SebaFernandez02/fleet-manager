@@ -6,6 +6,4 @@ public final class ControlId extends Identifier {
     public ControlId(String value) {
         super(value);
     }
-
-
 }

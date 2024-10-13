@@ -15,20 +15,20 @@ public record ControlResponse (String id,
                                String description,
                                VehicleResponse vehicle,
                                String priority,
-                               LocalDateTime date,
+                               LocalDateTime dateCreated,
+                               LocalDateTime dateUpdated,
                                String status,
                                UserResponse operator) {
-
-
-    public static ControlResponse map(Control control, Vehicle vehicle, User operator, Permissions permissions){
+    public static ControlResponse map(Control control, Vehicle vehicle, User operator){
         return new ControlResponse(control.id().value(),
                                    control.type().toString(),
                                    control.subject().value(),
                                    control.description().value(),
                                    VehicleResponse.map(vehicle),
                                    control.priority().toString(),
-                                   control.date(),
+                                   control.dateCreated(),
+                                   control.dateUpdated(),
                                    control.status().toString(),
-                                   UserResponse.map(operator, permissions));
+                                   UserResponse.map(operator));
     }
 }

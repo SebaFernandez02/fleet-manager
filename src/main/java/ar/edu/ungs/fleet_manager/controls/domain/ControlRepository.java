@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ControlRepository {
-
     void save(Control control);
 
     Optional<Control> findById(ControlId id);
 
     List<Control> searchAll();
-
-    //Optional<Control> findByType(ControlType type);
 }

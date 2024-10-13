@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public final class PostCorrectiveControlRestController {
-    private ControlCreator creator;
+public final class PostCorrectiveRestController {
+    private final ControlCreator creator;
 
-    public PostCorrectiveControlRestController(ControlCreator creator) {
+    public PostCorrectiveRestController(ControlCreator creator) {
         this.creator = creator;
     }
 
-    @PostMapping ("/api/controls/corrective")
+    @PostMapping ("/api/controls")
     public ResponseEntity<?> handle(@RequestBody ControlRequest request){
 
-        this.creator.execute(request, "CORRECTIVE");
+        this.creator.execute(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

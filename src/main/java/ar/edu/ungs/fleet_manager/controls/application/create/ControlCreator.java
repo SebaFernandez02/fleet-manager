@@ -3,41 +3,56 @@ package ar.edu.ungs.fleet_manager.controls.application.create;
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
-import ar.edu.ungs.fleet_manager.users.application.UserResponse;
-import ar.edu.ungs.fleet_manager.users.application.find.UserByIdFinder;
-import ar.edu.ungs.fleet_manager.users.application.search.UserAllSearcher;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
+import ar.edu.ungs.fleet_manager.users.domain.User;
+import ar.edu.ungs.fleet_manager.users.domain.UserId;
+import ar.edu.ungs.fleet_manager.users.domain.services.UserFinder;
+import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
+import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
+import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleMaintainer;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-
 
 @Component
 public final class ControlCreator {
     private final ControlRepository repository;
-    private final UserAllSearcher userAllSearcher;
+    private final UserFinder userFinder;
+    private final VehicleFinder vehicleFinder;
+    private final VehicleMaintainer vehicleMaintainer;
 
-    public ControlCreator(ControlRepository repository, UserAllSearcher userAllSearcher) {
+    public ControlCreator(ControlRepository repository, UserFinder userFinder, VehicleFinder vehicleFinder, VehicleMaintainer vehicleMaintainer) {
         this.repository = repository;
-        this.userAllSearcher = userAllSearcher;
+        this.userFinder = userFinder;
+        this.vehicleFinder = vehicleFinder;
+        this.vehicleMaintainer = vehicleMaintainer;
     }
 
-    public void execute(ControlRequest request, String type){
-        List<UserResponse> users = this.userAllSearcher.execute();
+    public void execute(ControlRequest request){
+        this.ensureUserOperatorValid(request);
+        this.ensureVehicleValid(request);
 
-        for(UserResponse user : users){
+        Control control = Control.create(request.type(),
+                                         request.subject(),
+                                         request.description(),
+                                         request.vehicleId(),
+                                         request.operatorId());
 
-            if(user.roles().contains("OPERATOR")){
+        this.repository.save(control);
+        this.vehicleMaintainer.execute(control.vehicleId());
+    }
 
-                Control control = Control.create(type,
-                        request.subject(),
-                        request.description(),
-                        request.vehicleId(),
-                        user.id());
+    private void ensureVehicleValid(ControlRequest request) {
+        vehicleFinder.execute(new VehicleId(request.vehicleId()));
+    }
 
-                this.repository.save(control);
-                return;
-            }
+    private void ensureUserOperatorValid(ControlRequest request) {
+        if (request.operatorId() == null) {
+            return;
         }
 
+        User user = this.userFinder.execute(new UserId(request.operatorId()));
+
+        if (!user.isOperator()) {
+            throw new InvalidParameterException("the user id is not a operator");
+        }
     }
 }

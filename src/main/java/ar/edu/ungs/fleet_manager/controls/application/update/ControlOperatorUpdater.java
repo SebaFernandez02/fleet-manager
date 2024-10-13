@@ -1,9 +1,11 @@
 package ar.edu.ungs.fleet_manager.controls.application.update;
 
+import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlId;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
 import ar.edu.ungs.fleet_manager.controls.domain.services.ControlFinder;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.application.UserRequest;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
@@ -24,13 +26,23 @@ public final class ControlOperatorUpdater {
     }
 
 
-    public void execute(String id, UserRequest operator) {
-        User user = this.userFinder.execute(new Username(operator.username()));
+    public void execute(String id, String userId) {
+        UserId operatorId = new UserId(userId);
+
+        ensureUserOperatorValid(operatorId);
 
         Control control = this.controlFinder.execute(new ControlId(id));
 
-        control.setOperatorId(user.id());
+        control.setOperatorId(operatorId);
 
         this.repository.save(control);
+    }
+
+    private void ensureUserOperatorValid(UserId operatorId) {
+        User user = this.userFinder.execute(operatorId);
+
+        if (!user.isOperator()) {
+            throw new InvalidParameterException("the user id is not a operator");
+        }
     }
 }

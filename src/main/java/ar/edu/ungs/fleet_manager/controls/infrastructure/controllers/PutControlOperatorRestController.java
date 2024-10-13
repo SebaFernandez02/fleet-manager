@@ -16,9 +16,9 @@ public final class PutControlOperatorRestController {
         this.updater = updater;
     }
 
-    @PutMapping ("/api/controls/{id}/operator")
-    public ResponseEntity<?> handle(@PathVariable String id, @RequestBody UserRequest operator){
-        this.updater.execute(id, operator);
+    @PutMapping ("/api/controls/{id}/operator/{userId}")
+    public ResponseEntity<?> handle(@PathVariable String id, @PathVariable String userId){
+        this.updater.execute(id, userId);
 
         return ResponseEntity.ok().build();
     }

@@ -1,6 +1,5 @@
 package ar.edu.ungs.fleet_manager.controls.application.search;
 
-import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.application.ControlResponse;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
@@ -32,11 +31,10 @@ public final class ControlAllSearcher {
         return this.repository.searchAll().stream().map(this::apply).toList();
     }
 
-    private ControlResponse apply (Control control){
+    private ControlResponse apply(Control control){
         Vehicle vehicle = this.vehicleFinder.execute(control.vehicleId());
         User user = this.userFinder.execute(control.operatorId());
-        Permissions permissions = this.permissionsFinder.execute(user.id());
 
-        return ControlResponse.map(control, vehicle, user, permissions);
+        return ControlResponse.map(control, vehicle, user);
     }
 }

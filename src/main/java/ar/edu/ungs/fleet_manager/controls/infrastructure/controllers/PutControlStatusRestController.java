@@ -14,7 +14,7 @@ public final class PutControlStatusRestController {
         this.updater = updater;
     }
 
-    @PutMapping ("/api/controls/{id}/{status}")
+    @PutMapping ("/api/controls/{id}/status/{status}")
     public ResponseEntity<?> handle(@PathVariable String id, @PathVariable String status){
         this.updater.execute(id, status);
 
