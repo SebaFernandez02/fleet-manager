@@ -34,6 +34,7 @@ public final class ControlCreator {
                                          request.subject(),
                                          request.description(),
                                          request.vehicleId(),
+                                         request.priority(),
                                          request.operatorId());
 
         this.repository.save(control);

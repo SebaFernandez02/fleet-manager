@@ -45,6 +45,7 @@ public final class Control {
                                  String subject,
                                  String description,
                                  String vehicleId,
+                                 String priority,
                                  String operatorId){
         return build(UUID.randomUUID().toString(),
                      type,
@@ -53,7 +54,7 @@ public final class Control {
                      subject,
                      description,
                      vehicleId,
-                     type.equalsIgnoreCase("PREDICTIVE") ? "LOW" : "HIGH",
+                     priority,
                      LocalDateTime.now(), LocalDateTime.now());
     }
 
