@@ -60,7 +60,7 @@ public class ReserveCreator {
         ControlRequest request = new ControlRequest("PREVENTIVE",
                                                     "Control preventivo de vehiculo previo a su viaje",
                                                     "Por favor, realizar verificación técnica de forma general",
-                                                    vehicle.id().value(), null);
+                                                    vehicle.id().value(), "LOW", null);
 
         this.controlCreator.execute(request);
     }
