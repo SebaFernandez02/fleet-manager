@@ -5,5 +5,5 @@ public enum ReserveStatus {
     ACTIVATED,
     COMPLETED,
     CANCELLED,
-    REJECTED;
+    REJECTED
 }
