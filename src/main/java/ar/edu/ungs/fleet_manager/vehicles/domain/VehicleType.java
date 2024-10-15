@@ -5,10 +5,10 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 import java.util.Locale;
 
 public enum VehicleType {
-    CAMION,
-    AUTOMOVIL,
-    MOTOCICLETA,
-    CAMIONETA;
+    TRUCK,
+    CAR,
+    MOTORCYCLE,
+    VAN;
 
     public static VehicleType parse(String status) {
         try {
