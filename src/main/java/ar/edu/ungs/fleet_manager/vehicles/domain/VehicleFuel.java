@@ -5,10 +5,10 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 import java.util.Locale;
 
 public enum VehicleFuel {
-    NAFTA,
+    NAPHTHA,
     DIESEL,
     GAS,
-    ELECTRICO;
+    ELECTRIC;
 
     public static VehicleFuel parse(String status) {
         try {
