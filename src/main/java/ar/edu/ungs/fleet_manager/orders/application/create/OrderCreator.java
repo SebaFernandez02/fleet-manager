@@ -17,8 +17,7 @@ public final class OrderCreator {
 
     public void execute (OrderRequest request){
         Order order = Order.create(request.providerId(),
-                                   request.productId(),
-                                   request.quantity(),
+                                   request.products(),
                                    request.amount());
 
 

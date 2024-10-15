@@ -5,12 +5,14 @@ import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderId;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
-import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
 import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+
 
 @Component
 public final class OrderByIdFinder {
@@ -26,9 +28,17 @@ public final class OrderByIdFinder {
 
     public OrderResponse execute(String orderId){
         Order order = this.orderFinder.execute(new OrderId(orderId));
-        Product product = this.productFinder.execute(order.productId());
+
+
+
+      //  Product product = this.productFinder.execute(order.productId());
+
+        List<Product> products = order.products().keySet().stream()
+                .map(this.productFinder::execute)
+                .toList();
+
         Provider provider = this.providerFinder.execute(order.providerId());
 
-        return OrderResponse.map(order, provider, product);
+        return OrderResponse.map(order, provider, products);
     }
 }

@@ -22,7 +22,7 @@ public class OrderStatusUpdater {
         this.productQuantityAdder = productQuantityAdder;
     }
 
-    public void execute(String id, String status)  {
+    public void execute(String id, String status) {
         OrderStatus statusToUpdate = OrderStatus.parse(status);
 
         Order order = this.orderFinder.execute(new OrderId(id));
@@ -32,7 +32,8 @@ public class OrderStatusUpdater {
         this.repository.save(order);
 
         if (order.isCompleted()) {
-            this.productQuantityAdder.execute(order.productId(), order.quantity());
+
+            order.products().forEach(this.productQuantityAdder::execute);
         }
     }
 }

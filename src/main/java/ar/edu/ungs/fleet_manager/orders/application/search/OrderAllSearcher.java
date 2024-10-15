@@ -5,10 +5,8 @@ import ar.edu.ungs.fleet_manager.orders.application.OrderResponse;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
-import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 import org.springframework.stereotype.Component;
@@ -36,8 +34,12 @@ public final class OrderAllSearcher {
 
     private OrderResponse apply(Order order) {
         Provider provider = this.providerFinder.execute(new ProviderId(order.providerId().value()));
-        Product product = this.productFinder.execute(new ProductId(order.productId().value()));
+       // Product product = this.productFinder.execute(new ProductId(order.productId().value()));
+        List<Product> products = order.products().keySet().stream()
+                .map(this.productFinder::execute)
+                .toList();
 
-        return OrderResponse.map(order, provider, product);
+
+        return OrderResponse.map(order, provider, products);
     }
 }

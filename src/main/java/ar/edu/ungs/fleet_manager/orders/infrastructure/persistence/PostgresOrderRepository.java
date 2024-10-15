@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Component
@@ -38,14 +36,23 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     private void create(Order order)  {
         try {
             var sql = """
-                      insert into orders (id, provider_id, product_id, quantity, amount, date_created, date_updated, status)
-                      values (CAST(? as UUID), CAST(? as UUID), CAST(? as UUID), ?, ?, ?, ?, ?)
+                      insert into orders (id, provider_id, products, amount, date_created, date_updated, status)
+                      values (CAST(? as UUID), CAST(? as UUID), ?::jsonb, ?, ?, ?, ?)
                     """;
+
+            String productsJson = order.products().entrySet().stream()
+                    .map(entry -> String.format(
+                            "{\"id\": \"%s\", \"quantity\": %d}",
+                            entry.getKey().value(), entry.getValue().value()
+                    ))
+                    .reduce((acc, json) -> acc + "," + json) // Esto combina todos los elementos del stream en un solo resultado
+                    .map(result -> "[" + result + "]")
+                    .orElse("[]");
+
             this.jdbcTemplate.update(sql,
                     order.id().value(),
                     order.providerId().value(),
-                    order.productId().value(),
-                    order.quantity().value(),
+                    productsJson,
                     order.amount().value(),
                     order.dateCreated(),
                     order.dateUpdated(),
@@ -58,18 +65,28 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
 
         var sql = """
                     update orders set
-                    quantity = ?, amount = ?, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID), product_id = CAST(? AS UUID)
+                    quantity = ?, amount = ?, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID), 
+                    products = products || ?::jsonb
                     where id = CAST(? AS UUID)
                   """;
         try {
+
+            String productsJson = order.products().entrySet().stream()
+                    .map(entry -> String.format(
+                            "{\"id\": \"%s\", \"quantity\": %d}",
+                            entry.getKey().value(), entry.getValue().value()
+                    ))
+                    .reduce((acc, json) -> acc + "," + json)
+                    .map(result -> "[" + result + "]")
+                    .orElse("[]");
+
             this.jdbcTemplate.update(sql,
-                    order.quantity().value(),
+                    productsJson,
                     order.amount().value(),
                     order.dateCreated(),
                     order.dateUpdated(),
                     order.status().name(),
                     order.providerId().value(),
-                    order.productId().value(),
                     order.id().value());
         }catch(DataAccessException e){
 
@@ -112,9 +129,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
                 select
                     id,
                     provider_id,
-                    product_id,
-                    quantity,
                     amount,
+                    products,
                     date_created,
                     date_updated,
                     status
@@ -150,18 +166,67 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
         try {
             var id = rs.getString("id");
             var providerId = rs.getString("provider_id");
-            var productId = rs.getString("product_id");
-            var quantity = rs.getInt("quantity");
+            var productsJson= rs.getString("products");
             var amount = rs.getBigDecimal("amount");
             var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
             var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
             var status = rs.getString("status");
 
-            return Order.build(id, providerId, productId, quantity, amount, dateCreated, dateUpdated, status);
+            var products = parseProductsFromJson(productsJson);
+
+            return Order.build(id, providerId, products, amount, dateCreated, dateUpdated, status);
         }catch (SQLException e){
             throw new PostgresException(e.getMessage());
         }
 
     }
+
+    private Map<String, Integer> parseProductsFromJson(String productsJson) {
+
+
+        productsJson = productsJson.trim();
+        if (productsJson.equals("[]") || productsJson.equals("{}")) {
+            return Collections.emptyMap();
+        }
+
+        productsJson = productsJson.substring(1, productsJson.length() - 1);
+
+        Map<String, Integer> productMap = new HashMap<>();
+
+        String[] productsArray = productsJson.split("\\},\\{");
+
+        for (String product : productsArray) {
+            // Limpiar los corchetes
+            product = product.replace("{", "").replace("}", "").trim();
+
+            // Dividir en pares clave-valor
+            String[] keyValuePairs = product.split(",\\s*");
+
+            String id = null;
+            Integer quantity = null;
+
+            for (String pair : keyValuePairs) {
+                String[] entry = pair.split(":\\s*");
+                if (entry.length == 2) {
+                    String key = entry[0].replace("\"", "").trim();
+                    String value = entry[1].trim();
+
+                    if ("id".equals(key)) {
+                        id = value;
+                    } else if ("quantity".equals(key)) {
+                        quantity = Integer.valueOf(value);
+                    }
+                }
+            }
+
+            if (id != null && quantity != null) {
+                productMap.put(id, quantity);
+            }
+        }
+
+        return productMap;
+    }
+
+
 
 }

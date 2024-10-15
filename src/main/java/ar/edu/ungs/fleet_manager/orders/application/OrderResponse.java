@@ -8,21 +8,20 @@ import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record OrderResponse (String id,
                              ProviderResponse provider,
-                             ProductResponse product,
-                             Integer quantity,
+                             List<ProductResponse> productResponses,
                              BigDecimal amount,
                              LocalDateTime dateCreated,
                              LocalDateTime dateUpdated,
                              String status){
 
-    public static OrderResponse map(Order order, Provider provider, Product product ) {
+    public static OrderResponse map(Order order, Provider provider, List<Product> products ) {
         return new OrderResponse(order.id().value(),
                 ProviderResponse.map(provider),
-                ProductResponse.map(product),
-                order.quantity().value(),
+                ProductResponse.map(products),
                 order.amount().value(),
                 order.dateCreated(),
                 order.dateUpdated(),

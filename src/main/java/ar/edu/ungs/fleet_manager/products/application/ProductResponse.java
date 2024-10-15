@@ -2,6 +2,8 @@ package ar.edu.ungs.fleet_manager.products.application;
 
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 
+import java.util.List;
+
 
 public record ProductResponse(String id,
                               String name,
@@ -21,4 +23,14 @@ public record ProductResponse(String id,
                                     product.category().value(),
                                     product.quantity().value());
     }
+
+    public static List<ProductResponse> map(List<Product> products){
+        return products.stream()
+                .map(ProductResponse::map) //
+                .toList();
+    }
+
+
+
+
 }
