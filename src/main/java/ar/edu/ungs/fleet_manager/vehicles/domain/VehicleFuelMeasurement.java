@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 import java.util.Locale;
 
 public enum VehicleFuelMeasurement {
-    LITRO,
+    LITER,
     GALON;
 
     public static VehicleFuelMeasurement parse(String status) {
