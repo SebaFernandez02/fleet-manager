@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record OrderResponse (String id,
+public record OrderResponse(String id,
                              ProviderResponse provider,
                              List<ProductResponse> productResponses,
                              BigDecimal amount,

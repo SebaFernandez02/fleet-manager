@@ -6,46 +6,34 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public final class Order {
     private final OrderId id;
     private OrderStatus status;
     private final ProviderId provider;
-    private Map<ProductId,Quantity> products;
-    //private final ProductId product;
-    //private final Quantity quantity;
+    private final List<OrderProduct> products;
     private final OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
-    public Order(OrderId id, ProviderId provider,Map<ProductId, Quantity> products, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, List<OrderProduct> products, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
         this.id = id;
         this.provider = provider;
         this.products = products;
-        //this.product = product;
-        //this.quantity = quantity;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.amount = amount;
         this.status = status;
     }
 
-    public static Order create(String providerId,
-                               Map<String, Integer> products,
-                               BigDecimal amount){
-
+    public static Order create(String providerId){
         final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
                     providerId,
-                   // productId,
-                   // quantity,
-                    products,
-                    amount,
+                    new ArrayList<>(),
+                    BigDecimal.ZERO,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
                     initialStatus);
@@ -53,42 +41,18 @@ public final class Order {
 
     public static Order build(String id,
                               String providerId,
-                              //String productId,
-                              //Integer quantity,
-                              Map<String,Integer> products,
+                              List<OrderProduct> products,
                               BigDecimal amount,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated,
                               String status){
-
-        Map<ProductId, Quantity> productMap = products.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> new ProductId(entry.getKey()),
-                        entry -> new Quantity(entry.getValue())
-                ));
-
-
         return new Order(new OrderId(id),
-                new ProviderId(providerId),
-               // new ProductId(productId),
-               // new Quantity(quantity),
-                productMap,
-                new OrderAmount(amount),
-                dateCreated,
-                dateUpdated,
-                OrderStatus.parse(status));
-    }
-
-    public static Order from(OrderTemplate template) {
-
-        Map<String, Integer> products = template.products().entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey().value(),
-                        entry -> entry.getValue().value()
-                ));
-        return create(template.providerId().value(),
-                      products,
-                      template.amount().value());
+                        new ProviderId(providerId),
+                        products,
+                        new OrderAmount(amount),
+                        dateCreated,
+                        dateUpdated,
+                        OrderStatus.parse(status));
     }
 
     public OrderId id() {
@@ -99,10 +63,7 @@ public final class Order {
         return provider;
     }
 
-  //  public ProductId productId() {return product;}
-
-    public Map<ProductId,Quantity> products() {return products;}
-
+    public List<OrderProduct> products() {return products;}
 
     public LocalDateTime dateCreated() {
         return dateCreated;
@@ -123,8 +84,6 @@ public final class Order {
     public boolean isCompleted() {
         return this.status.equals(OrderStatus.COMPLETED);
     }
-
- //   public Quantity quantity() {return quantity;}
 
     public void setStatus(OrderStatus statusToUpdate){
         if(statusToUpdate.equals(this.status)){
@@ -163,5 +122,11 @@ public final class Order {
                 ", dateUpdated=" + dateUpdated +
                 ", status=" + status +
                 '}';
+    }
+
+    public void add(ProductId productId, Quantity quantity, BigDecimal amount) {
+        OrderProduct orderProduct = new OrderProduct(productId, quantity, amount);
+
+        this.products.add(orderProduct);
     }
 }

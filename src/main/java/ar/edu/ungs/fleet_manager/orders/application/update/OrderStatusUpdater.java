@@ -32,8 +32,7 @@ public class OrderStatusUpdater {
         this.repository.save(order);
 
         if (order.isCompleted()) {
-
-            order.products().forEach(this.productQuantityAdder::execute);
+            order.products().forEach(x -> this.productQuantityAdder.execute(x.productId(), x.quantity()));
         }
     }
 }

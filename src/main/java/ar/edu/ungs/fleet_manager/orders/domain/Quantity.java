@@ -8,9 +8,4 @@ public record Quantity(Integer value) {
             throw new InvalidParameterException("the quantity value is invalid");
         }
     }
-
-    @Override
-    public Integer value() {
-        return value;
-    }
 }

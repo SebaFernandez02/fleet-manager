@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.orders.infrastructure.controllers;
 
-import ar.edu.ungs.fleet_manager.orders.application.update.OrderStatusUpdater;
+import ar.edu.ungs.fleet_manager.orders.application.AddOrderProductRequest;
+import ar.edu.ungs.fleet_manager.orders.application.update.OrderProductAdder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -8,15 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PutOrderRestController {
-    private final OrderStatusUpdater updater;
+    private final OrderProductAdder adder;
 
-    public PutOrderRestController(OrderStatusUpdater updater) {
-        this.updater = updater;
+    public PutOrderRestController(OrderProductAdder adder) {
+        this.adder = adder;
     }
 
-    @PutMapping("/api/orders/{id}")
-    public ResponseEntity<?> handle(@PathVariable String id, @PathVariable String status) {
-        this.updater.execute(id, status);
+    @PutMapping("/api/orders/products")
+    public ResponseEntity<?> handle(@PathVariable String id, @PathVariable AddOrderProductRequest request) {
+        this.adder.execute(request);
 
         return ResponseEntity.ok().build();
     }

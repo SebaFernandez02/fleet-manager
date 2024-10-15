@@ -10,6 +10,7 @@ import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -28,16 +29,8 @@ public final class OrderByIdFinder {
 
     public OrderResponse execute(String orderId){
         Order order = this.orderFinder.execute(new OrderId(orderId));
-
-
-
-      //  Product product = this.productFinder.execute(order.productId());
-
-        List<Product> products = order.products().keySet().stream()
-                .map(this.productFinder::execute)
-                .toList();
-
         Provider provider = this.providerFinder.execute(order.providerId());
+        List<Product> products = Collections.emptyList();
 
         return OrderResponse.map(order, provider, products);
     }
