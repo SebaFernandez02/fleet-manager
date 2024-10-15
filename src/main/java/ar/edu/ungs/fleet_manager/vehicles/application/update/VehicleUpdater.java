@@ -38,6 +38,15 @@ public final class VehicleUpdater {
         ofNullable(request.model()).ifPresent(vehicle::updateModel);
         ofNullable(request.brand()).ifPresent(vehicle::updateBrand);
         ofNullable(request.year()).ifPresent(vehicle::updateYear);
+        ofNullable(request.type()).ifPresent(vehicle::updateType);
+        ofNullable(request.color()).ifPresent(vehicle::updateColor);
+        ofNullable(request.fuelType()).ifPresent(vehicle::updateFuelType);
+        ofNullable(request.fuelMeasurement()).ifPresent(vehicle::updateFuelMeasurement);
+        ofNullable(request.fuelConsumption()).ifPresent(vehicle::updateFuelConsumption);
+        ofNullable(request.cantAxles()).ifPresent(vehicle::updateAxles);
+        ofNullable(request.cantSeats()).ifPresent(vehicle::updateSeats);
+        ofNullable(request.load()).ifPresent(vehicle::updateLoad);
+        of(request.hasTrailer()).ifPresent(vehicle::updateHasTrailer);
         ofNullable(request.status()).filter(this::isAvailable)
                                     .ifPresent(s -> vehicle.available());
         ofNullable(request.coordinates()).ifPresent(coordinatesRequest -> solveCoordinates(vehicle, coordinatesRequest));
