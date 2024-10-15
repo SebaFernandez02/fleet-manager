@@ -27,6 +27,15 @@ public final class VehicleCreator {
                                          request.model(),
                                          request.brand(),
                                          request.year(),
+                                         request.type(),
+                                         request.color(),
+                                         request.fuelType(),
+                                         request.fuelMeasurement(),
+                                         request.fuelConsumption(),
+                                         request.cantAxles(),
+                                         request.cantSeats(),
+                                         request.load(),
+                                         request.hasTrailer(),
                                          request.coordinates().latitude(),
                                          request.coordinates().longitude());
 
