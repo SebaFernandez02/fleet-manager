@@ -31,8 +31,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql,
                 product.id().value(),
@@ -40,13 +40,15 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.brand().value(),
                 product.category().value(),
                 product.quantity().value(),
-                product.description().value());
+                product.description().value(),
+                product.measurement().name(),
+                product.price().value());
     }
 
     private void update(Product product) {
         var sql = """
                 UPDATE products
-                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?
                 WHERE id = CAST(? as UUID)
             """;
         this.jdbcTemplate.update(sql,
@@ -55,6 +57,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.category().value(),
                 product.quantity().value(),
                 product.description().value(),
+                product.measurement().name(),
+                product.price().value(),
                 product.id().value());
 
     }
@@ -113,8 +117,10 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var description = rs.getString("description");
         var category = rs.getString("category");
         var quantity = rs.getInt("quantity");
+        var measurement = rs.getString("measurement");
+        var price = rs.getBigDecimal("price");
 
-        return Product.build(id,name,brand,description,category,quantity);
+        return Product.build(id,name,brand,description,category,quantity, measurement, price);
 
     }
 }
