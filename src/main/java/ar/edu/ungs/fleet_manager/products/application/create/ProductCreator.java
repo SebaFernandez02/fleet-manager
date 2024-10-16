@@ -19,7 +19,9 @@ public final class ProductCreator {
                                          request.brand(),
                                          request.description(),
                                          request.category(),
-                                         request.quantity());
+                                         request.quantity(),
+                                         request.measurement(),
+                                         request.price());
 
         this.repository.save(product);
     }
