@@ -69,7 +69,7 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
 
     private void create(Vehicle vehicle) {
         var sql = """
-                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated color, fuel_type, fuel_measurement, fuel_consumption, axles, seats, load, has_trailer, type) 
+                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated, color, fuel_type, fuel_measurement, fuel_consumption, axles, seats, load, has_trailer, type) 
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
         this.jdbcTemplate.update(sql, vehicle.id().value(),
