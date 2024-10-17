@@ -28,9 +28,10 @@ public final class OrderByIdFinder {
     }
 
     public OrderResponse execute(String orderId){
+
         Order order = this.orderFinder.execute(new OrderId(orderId));
         Provider provider = this.providerFinder.execute(order.providerId());
-        List<Product> products = Collections.emptyList();
+        List<Product> products = this.productFinder.searchList(order.products().stream().toList());
 
         return OrderResponse.map(order, provider, products);
     }

@@ -12,7 +12,7 @@ public final class Order {
     private final OrderId id;
     private OrderStatus status;
     private final ProviderId provider;
-    private final List<OrderProduct> products;
+    private  List<OrderProduct> products;
     private final OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
@@ -20,7 +20,7 @@ public final class Order {
     public Order(OrderId id, ProviderId provider, List<OrderProduct> products, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
         this.id = id;
         this.provider = provider;
-        this.products = products;
+        this.products = new ArrayList<>(products);
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.amount = amount;
@@ -33,7 +33,7 @@ public final class Order {
         return build(UUID.randomUUID().toString(),
                     providerId,
                     new ArrayList<>(),
-                    BigDecimal.ZERO,
+                    BigDecimal.ONE,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
                     initialStatus);
