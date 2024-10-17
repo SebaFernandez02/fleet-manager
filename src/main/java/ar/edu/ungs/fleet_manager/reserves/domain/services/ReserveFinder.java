@@ -23,11 +23,11 @@ public final class ReserveFinder {
         return this.repository.findById(id).orElseThrow(() -> new NotFoundException("vehicle not found"));
     }
 
-    public Reserve execute(VehicleId id) {
+    public Reserve execute(VehicleId id, ReserveStatus... status) {
         return this.repository.findByVehicleId(id)
                               .stream()
-                              .filter(x -> x.status().equals(ReserveStatus.ACTIVATED))
+                              .filter(x -> List.of(status).contains(x.status()))
                               .findFirst()
-                              .orElseThrow(() -> new NotFoundException("vehicle not found"));
+                              .orElseThrow(() -> new NotFoundException("reserve not found"));
     }
 }

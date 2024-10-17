@@ -34,7 +34,7 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
         try {
             var sql = "update controls set status = ?, operator_id = CAST(? as UUID), date_updated = ? where id = CAST(? as UUID)";
 
-            this.jdbcTemplate.update(sql, control.status().name(), control.operatorId().value(), control.dateUpdated(), control.id().value());
+            this.jdbcTemplate.update(sql, control.status().name(), control.operatorId() == null ? null : control.operatorId().value(), control.dateUpdated(), control.id().value());
         }catch(DataAccessException e){
             throw new PostgresException(e);
         }
