@@ -1,8 +1,8 @@
 package ar.edu.ungs.fleet_manager.reserves.domain;
 
+import ar.edu.ungs.fleet_manager.trips.domain.Trip;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
-import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 

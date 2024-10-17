@@ -1,9 +1,11 @@
 package ar.edu.ungs.fleet_manager.reserves.application.create;
 
+import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
+import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
-import ar.edu.ungs.fleet_manager.reserves.domain.services.TripCalculator;
+import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
@@ -20,12 +22,18 @@ public class ReserveCreator {
     private final VehicleFinder finder;
     private final UserFinder userFinder;
     private final TripCalculator tripCalculator;
+    private final ControlCreator controlCreator;
 
-    public ReserveCreator(ReserveRepository repository, VehicleFinder finder, UserFinder userFinder, TripCalculator tripCalculator) {
+    public ReserveCreator(ReserveRepository repository,
+                          VehicleFinder finder,
+                          UserFinder userFinder,
+                          TripCalculator tripCalculator,
+                          ControlCreator controlCreator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
         this.tripCalculator = tripCalculator;
+        this.controlCreator = controlCreator;
     }
 
     public void execute(ReserveRequest request) {
@@ -44,6 +52,17 @@ public class ReserveCreator {
         var reserve = Reserve.create(vehicle, user, trip);
 
         this.repository.save(reserve);
+
+        this.createControl(vehicle);
+    }
+
+    private void createControl(Vehicle vehicle) {
+        ControlRequest request = new ControlRequest("PREVENTIVE",
+                                                    "Control preventivo de vehiculo previo a su viaje",
+                                                    "Por favor, realizar verificación técnica de forma general",
+                                                    vehicle.id().value(), "LOW", null);
+
+        this.controlCreator.execute(request);
     }
 
     private void ensureUserIsCustomer(User user) {

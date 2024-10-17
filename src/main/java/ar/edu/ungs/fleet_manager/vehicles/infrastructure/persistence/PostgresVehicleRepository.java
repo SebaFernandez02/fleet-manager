@@ -1,8 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.infrastructure.persistence;
 
-import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
-import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
-import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleRepository;
+import ar.edu.ungs.fleet_manager.vehicles.domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,7 +29,22 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     private void update(Vehicle vehicle){
         var sql = """
            update vehicles SET
-           model = ?, brand = ?, year = ?,  status = ?, latitude = ?, longitude = ?, date_updated = ?
+                model = ?, 
+                brand = ?, 
+                year = ?,
+                status = ?, 
+                latitude = ?, 
+                longitude = ?, 
+                date_updated = ?, 
+                color = ?, 
+                fuel_type = ?, 
+                fuel_measurement = ?, 
+                fuel_consumption = ?, 
+                axles = ?, 
+                seats = ?, 
+                load = ?, 
+                has_trailer = ?,
+                type = ?
            where id = ?
            """;
         this.jdbcTemplate.update(sql,
@@ -42,13 +55,22 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 vehicle.coordinates().latitude(),
                 vehicle.coordinates().longitude(),
                 vehicle.dateUpdated(),
+                vehicle.color().value(),
+                vehicle.fuelType().name(),
+                vehicle.fuelMeasurement().name(),
+                vehicle.fuelConsumption().value(),
+                vehicle.cantAxles().value(),
+                vehicle.cantSeats().value(),
+                vehicle.load().value(),
+                vehicle.hasTrailer(),
+                vehicle.type().name(),
                 vehicle.id().value());
     }
 
     private void create(Vehicle vehicle) {
         var sql = """
-                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated) 
-                    values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated color, fuel_type, fuel_measurement, fuel_consumption, axles, seats, load, has_trailer, type) 
+                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """;
         this.jdbcTemplate.update(sql, vehicle.id().value(),
                 vehicle.status().name(),
@@ -58,7 +80,16 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 vehicle.coordinates().latitude(),
                 vehicle.coordinates().longitude(),
                 vehicle.dateCreated(),
-                vehicle.dateUpdated());
+                vehicle.dateUpdated(),
+                vehicle.color().value(),
+                vehicle.fuelType().name(),
+                vehicle.fuelMeasurement().name(),
+                vehicle.fuelConsumption().value(),
+                vehicle.cantAxles().value(),
+                vehicle.cantSeats().value(),
+                vehicle.load().value(),
+                vehicle.hasTrailer(),
+                vehicle.type().name());
     }
 
     @Override
@@ -70,11 +101,20 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                     status, 
                     model, 
                     brand, 
-                    year, 
+                    year,
                     latitude, 
                     longitude, 
                     date_created, 
-                    date_updated
+                    date_updated, 
+                    color,
+                    fuel_type,
+                    fuel_measurement,
+                    fuel_consumption,
+                    axles,
+                    seats,
+                    load,
+                    has_trailer,
+                    type
                 from vehicles v
                 where v.id = ?
             """;
@@ -91,20 +131,62 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     public List<Vehicle> searchAll() {
         try {
             var sql = """
+                select
+                    id,
+                    status,
+                    model,
+                    brand,
+                    year,
+                    latitude,
+                    longitude,
+                    date_created,
+                    date_updated,
+                    color,
+                    fuel_type,
+                    fuel_measurement,
+                    fuel_consumption,
+                    axles,
+                    seats,
+                    load,
+                    has_trailer,
+                    type
+                from vehicles v
+            """;
+
+            return this.jdbcTemplate.query(sql, this);
+        } catch (EmptyResultDataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<Vehicle> searchAllByModel(VehicleBrand brand, VehicleModel model, VehicleYear year) {
+        try {
+            var sql = """
                 select 
                     id, 
                     status, 
                     model, 
                     brand,
-                    year,  
+                    year,
                     latitude, 
                     longitude, 
                     date_created, 
-                    date_updated
+                    date_updated,
+                    color,
+                    fuel_type,
+                    fuel_measurement,
+                    fuel_consumption,
+                    axles,
+                    seats,
+                    load,
+                    has_trailer,
+                    type 
                 from vehicles v
+                where brand = ? and model = ? and year = ? 
             """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, brand.value(), model.value(), year.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -117,11 +199,20 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
         var model = rs.getString("model");
         var brand = rs.getString("brand");
         var year = rs.getInt("year");
+        var color = rs.getString("color");
+        var fuelType = rs.getString("fuel_type");
+        var fuelMeasurement = rs.getString("fuel_measurement");
+        var fuelConsumption = rs.getInt("fuel_consumption");
+        var axles = rs.getInt("axles");
+        var seats = rs.getInt("seats");
+        var load = rs.getInt("load");
+        var hasTrailer = rs.getBoolean("has_trailer");
         var latitude = rs.getDouble("latitude");
         var longitude = rs.getDouble("longitude");
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
+        var type = rs.getString("type");
 
-        return Vehicle.build(id, model, brand, year, status, latitude, longitude, dateCreated, dateUpdated);
+        return Vehicle.build(id, model, brand, year, type,color, fuelType, fuelMeasurement, fuelConsumption, axles, seats, load, hasTrailer, status, latitude, longitude, dateCreated, dateUpdated);
     }
 }

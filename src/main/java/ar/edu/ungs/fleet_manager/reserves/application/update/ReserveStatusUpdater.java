@@ -41,10 +41,9 @@ public final class ReserveStatusUpdater {
     private void solveVehicleState(Reserve reserve, ReserveStatus reserveStatus) {
         var vehicleId = reserve.vehicleId();
 
-        if (reserveStatus == ReserveStatus.ACTIVATED) {
-            this.vehicleReserver.execute(vehicleId);
-        } else {
-            this.vehicleReleaser.execute(vehicleId);
+        switch (reserveStatus) {
+            case ACTIVATED -> this.vehicleReserver.execute(vehicleId);
+            case REJECTED, COMPLETED, CANCELLED -> this.vehicleReleaser.execute(vehicleId);
         }
     }
 }
