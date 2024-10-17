@@ -5,6 +5,9 @@ import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
+import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
+import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.domain.User;
@@ -21,17 +24,20 @@ public class ReserveCreator {
     private final ReserveRepository repository;
     private final VehicleFinder finder;
     private final UserFinder userFinder;
+    private final ReserveFinder reserveFinder;
     private final TripCalculator tripCalculator;
     private final ControlCreator controlCreator;
 
     public ReserveCreator(ReserveRepository repository,
                           VehicleFinder finder,
                           UserFinder userFinder,
+                          ReserveFinder reserveFinder,
                           TripCalculator tripCalculator,
                           ControlCreator controlCreator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
+        this.reserveFinder = reserveFinder;
         this.tripCalculator = tripCalculator;
         this.controlCreator = controlCreator;
     }
@@ -44,6 +50,7 @@ public class ReserveCreator {
         var vehicle = this.finder.execute(new VehicleId(request.vehicleId()));
 
         ensureVehicleIsAvailable(vehicle);
+        ensureVehicleNotContainsReserve(vehicle);
 
         var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
 
@@ -54,6 +61,16 @@ public class ReserveCreator {
         this.repository.save(reserve);
 
         this.createControl(vehicle);
+    }
+
+    private void ensureVehicleNotContainsReserve(Vehicle vehicle) {
+        try {
+            reserveFinder.execute(vehicle.id(), ReserveStatus.CREATED, ReserveStatus.ACTIVATED);
+
+            throw new InvalidParameterException("vehicle contains an reserve");
+        } catch (NotFoundException ignored) {
+
+        }
     }
 
     private void createControl(Vehicle vehicle) {

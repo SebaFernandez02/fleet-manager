@@ -8,6 +8,7 @@ import ar.edu.ungs.fleet_manager.controls.domain.services.ControlFinder;
 import ar.edu.ungs.fleet_manager.reserves.application.search.ReservesByVehicleSearcher;
 import ar.edu.ungs.fleet_manager.reserves.application.update.ReserveStatusUpdater;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
+import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
@@ -59,7 +60,7 @@ public final class ControlStatusUpdater {
         }
 
         try {
-            Reserve reserve = this.reserveFinder.execute(control.vehicleId());
+            Reserve reserve = this.reserveFinder.execute(control.vehicleId(), ReserveStatus.CREATED);
 
             this.reserveStatusUpdater.execute(reserve.id().value(), "ACTIVATED");
         } catch (NotFoundException ignored) {

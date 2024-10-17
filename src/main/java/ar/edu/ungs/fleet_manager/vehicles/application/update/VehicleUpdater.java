@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.vehicles.application.update;
 import ar.edu.ungs.fleet_manager.alerts.domain.AlertStrategy;
 import ar.edu.ungs.fleet_manager.alerts.domain.services.AlertCreator;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
+import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
 import ar.edu.ungs.fleet_manager.shared.aplication.CoordinatesRequest;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
@@ -58,7 +59,7 @@ public final class VehicleUpdater {
         vehicle.updateCoordinates(coordinatesRequest.latitude(), coordinatesRequest.longitude());
 
         try {
-            Reserve reserve = reserveFinder.execute(vehicle.id());
+            Reserve reserve = reserveFinder.execute(vehicle.id(), ReserveStatus.ACTIVATED);
 
             if (this.tripOutOfRangeValidator.execute(reserve.trip(), vehicle.coordinates())) {
                 this.alertCreator.execute(AlertStrategy.OUT_OF_RANGE, vehicle.id());
