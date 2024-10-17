@@ -1,16 +1,15 @@
 package ar.edu.ungs.fleet_manager.orders.application.find;
 
+import ar.edu.ungs.fleet_manager.orders.application.OrderProductResponse;
 import ar.edu.ungs.fleet_manager.orders.application.OrderResponse;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderId;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
-import ar.edu.ungs.fleet_manager.products.domain.Product;
-import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
-import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
+import ar.edu.ungs.fleet_manager.products.application.find.ProductByIdFinder;
+import ar.edu.ungs.fleet_manager.providers.application.ProviderResponse;
+import ar.edu.ungs.fleet_manager.providers.application.find.ProviderByIdFinder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -18,21 +17,19 @@ import java.util.List;
 @Component
 public final class OrderByIdFinder {
     private final OrderFinder orderFinder;
-    private final ProductFinder productFinder;
-    private final ProviderFinder providerFinder;
+    private final ProductByIdFinder productFinder;
+    private final ProviderByIdFinder providerFinder;
 
-    public OrderByIdFinder(OrderFinder orderFinder, ProductFinder productFinder, ProviderFinder providerFinder) {
+    public OrderByIdFinder(OrderFinder orderFinder, ProductByIdFinder productFinder, ProviderByIdFinder providerFinder) {
         this.orderFinder = orderFinder;
         this.productFinder = productFinder;
         this.providerFinder = providerFinder;
     }
 
     public OrderResponse execute(String orderId){
-
         Order order = this.orderFinder.execute(new OrderId(orderId));
-        Provider provider = this.providerFinder.execute(order.providerId());
-        List<Product> products = this.productFinder.searchList(order.products().stream().toList());
-
+        ProviderResponse provider = this.providerFinder.execute(order.providerId().value());
+        List<OrderProductResponse> products = order.items().stream().map(x -> new OrderProductResponse(this.productFinder.execute(x.productId().value()), x.quantity().value())).toList();
         return OrderResponse.map(order, provider, products);
     }
 }

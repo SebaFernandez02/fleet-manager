@@ -12,15 +12,15 @@ public final class Order {
     private final OrderId id;
     private OrderStatus status;
     private final ProviderId provider;
-    private  List<OrderProduct> products;
+    private final List<OrderProduct> items;
     private final OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
-    public Order(OrderId id, ProviderId provider, List<OrderProduct> products, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, List<OrderProduct> items, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
         this.id = id;
         this.provider = provider;
-        this.products = new ArrayList<>(products);
+        this.items = new ArrayList<>(items);
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.amount = amount;
@@ -63,7 +63,7 @@ public final class Order {
         return provider;
     }
 
-    public List<OrderProduct> products() {return products;}
+    public List<OrderProduct> items() {return items;}
 
     public LocalDateTime dateCreated() {
         return dateCreated;
@@ -99,7 +99,7 @@ public final class Order {
         Order order = (Order) o;
         return Objects.equals(id, order.id) &&
                 Objects.equals(provider, order.provider) &&
-                Objects.equals(products, order.products) &&
+                Objects.equals(items, order.items) &&
                 Objects.equals(amount, order.amount) &&
                 Objects.equals(dateCreated, order.dateCreated) &&
                 Objects.equals(dateUpdated, order.dateUpdated) &&
@@ -108,7 +108,7 @@ public final class Order {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, provider, products, amount, dateCreated, dateUpdated, status);
+        return Objects.hash(id, provider, items, amount, dateCreated, dateUpdated, status);
     }
 
     @Override
@@ -116,7 +116,7 @@ public final class Order {
         return "Order{" +
                 "id=" + id +
                 ", provider=" + provider +
-                ", products=" + products +
+                ", products=" + items +
                 ", amount=" + amount +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
@@ -127,6 +127,6 @@ public final class Order {
     public void add(ProductId productId, Quantity quantity, BigDecimal amount) {
         OrderProduct orderProduct = new OrderProduct(productId, quantity, amount);
 
-        this.products.add(orderProduct);
+        this.items.add(orderProduct);
     }
 }

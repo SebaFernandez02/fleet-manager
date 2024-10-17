@@ -20,8 +20,8 @@ public final class OrderProductAdder {
         this.orderFinder = orderFinder;
     }
 
-    public void execute(AddOrderProductRequest request) {
-        Order order = this.orderFinder.execute(new OrderId(request.orderId()));
+    public void execute(String id, AddOrderProductRequest request) {
+        Order order = this.orderFinder.execute(new OrderId(id));
 
         Product product = this.productFinder.execute(new ProductId(request.productId()));
 

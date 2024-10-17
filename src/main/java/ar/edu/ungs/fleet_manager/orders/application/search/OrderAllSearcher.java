@@ -1,29 +1,24 @@
 package ar.edu.ungs.fleet_manager.orders.application.search;
 
-
+import ar.edu.ungs.fleet_manager.orders.application.OrderProductResponse;
 import ar.edu.ungs.fleet_manager.orders.application.OrderResponse;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
-import ar.edu.ungs.fleet_manager.orders.domain.OrderProduct;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
-import ar.edu.ungs.fleet_manager.products.domain.Product;
+import ar.edu.ungs.fleet_manager.products.application.find.ProductByIdFinder;
 
-import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
-import ar.edu.ungs.fleet_manager.providers.domain.Provider;
-import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
-import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
-import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
+import ar.edu.ungs.fleet_manager.providers.application.ProviderResponse;
+import ar.edu.ungs.fleet_manager.providers.application.find.ProviderByIdFinder;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 @Component
 public final class OrderAllSearcher {
     private final OrderRepository repository;
-    private final ProviderFinder providerFinder;
-    private final ProductFinder productFinder;
+    private final ProviderByIdFinder providerFinder;
+    private final ProductByIdFinder productFinder;
 
-    public OrderAllSearcher(OrderRepository repository, ProviderFinder providerFinder, ProductFinder productFinder) {
+    public OrderAllSearcher(OrderRepository repository, ProviderByIdFinder providerFinder, ProductByIdFinder productFinder) {
         this.repository = repository;
         this.providerFinder = providerFinder;
         this.productFinder = productFinder;
@@ -37,10 +32,8 @@ public final class OrderAllSearcher {
     }
 
     private OrderResponse apply(Order order) {
-        Provider provider = this.providerFinder.execute(new ProviderId(order.providerId().value()));
-
-        List<Product> products = this.productFinder.searchList(order.products().stream().toList());
-
+        ProviderResponse provider = this.providerFinder.execute(order.providerId().value());
+        List<OrderProductResponse> products = order.items().stream().map(x -> new OrderProductResponse(this.productFinder.execute(x.productId().value()), x.quantity().value())).toList();
         return OrderResponse.map(order, provider, products);
     }
 }

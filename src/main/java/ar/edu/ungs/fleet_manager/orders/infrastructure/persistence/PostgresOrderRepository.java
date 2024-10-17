@@ -5,26 +5,25 @@ import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-
 @Component
 public final class PostgresOrderRepository implements OrderRepository, RowMapper<Order> {
     private final JdbcTemplate jdbcTemplate;
+    private final ObjectMapper mapper;
 
-
-    public PostgresOrderRepository(JdbcTemplate jdbcTemplate) {
+    public PostgresOrderRepository(JdbcTemplate jdbcTemplate, ObjectMapper mapper) {
         this.jdbcTemplate = jdbcTemplate;
-
+        this.mapper = mapper;
     }
 
     @Override
@@ -36,25 +35,22 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     private void create(Order order) {
         try {
             var sql = """
-                      insert into orders (id, provider_id, products, amount, date_created, date_updated, status)
-                      values (CAST(? as UUID), CAST(? as UUID), ?::jsonb, ?, ?, ?, ?)
+                      insert into orders (id, provider_id, items, amount, date_created, date_updated, status)
+                      values (CAST(? as UUID), CAST(? as UUID), ?, ?, ?, ?, ?)
                     """;
-//            var productos = order.products();
-//            String productsJson = JsonConfig.createJsonMapper().writeValueAsString(order.products());
 
-            String productsJson = "{}";
-
+            String itemsJson = mapper.writeValueAsString(order.items().stream().map(OrderProductDto::map).toList());
 
             this.jdbcTemplate.update(sql,
                     order.id().value(),
                     order.providerId().value(),
-                    productsJson,
+                    itemsJson,
                     order.amount().value(),
                     order.dateCreated(),
                     order.dateUpdated(),
                     order.status().name());
-        } catch (DataAccessException e) {
-            throw new PostgresException(e);
+        } catch (DataAccessException | JsonProcessingException e) {
+            throw new PostgresException(e.getMessage());
         }
     }
 
@@ -62,33 +58,22 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
 
         var sql = """
                   update orders set
-                   products = products || ?::jsonb, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID)
+                   items = ?, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID)
                   where id = CAST(? AS UUID)
                 """;
         try {
 
-            //   var productos = order.products();
-            //   String productsJson = JsonConfig.createJsonMapper().writeValueAsString(order.products());
-            String productsJson = order.products().stream()
-                    .map(product -> String.format(
-                            "{\"id\": \"%s\", \"quantity\": %d, \"amount\": %s}",
-                            product.productId().value(),
-                            product.quantity().value(),
-                            product.amount().toPlainString()
-                    ))
-                    .reduce((acc, json) -> acc + "," + json)
-                    .map(result -> "[" + result + "]")
-                    .orElse("[]");
+            String itemsJson = mapper.writeValueAsString(order.items().stream().map(OrderProductDto::map).toList());
 
             this.jdbcTemplate.update(sql,
-                    productsJson,
+                    itemsJson,
                     order.dateCreated(),
                     order.dateUpdated(),
                     order.status().name(),
                     order.providerId().value(),
                     order.id().value());
-        } catch (DataAccessException e) {
-            throw new PostgresException(e);
+        } catch (DataAccessException | JsonProcessingException e) {
+            throw new PostgresException(e.getMessage());
         }
     }
 
@@ -96,16 +81,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     public Optional<Order> findById(OrderId id) {
         try {
             var sql = """
-                        select
-                        id,
-                        provider_id,
-                        products,
-                        product_id,
-                        quantity,
-                        amount,
-                        date_created,
-                        date_updated,
-                        status
+                        select *
                         from orders o
                         where o.id = CAST(? as UUID)
                     """;
@@ -122,16 +98,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     public List<Order> searchAll() {
         try {
             var sql = """
-                        select
-                            id,
-                            provider_id,
-                            amount,
-                            products,
-                            date_created,
-                            date_updated,
-                            status
+                        select *
                         from orders o
-                        where o.products is not null
                         order by date_updated desc, date_created desc
                     """;
 
@@ -163,73 +131,16 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
         try {
             var id = rs.getString("id");
             var providerId = rs.getString("provider_id");
-            var productsJson = rs.getString("products");
+            var itemsJson = rs.getString("items");
             var amount = rs.getBigDecimal("amount");
             var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
             var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
             var status = rs.getString("status");
+            var products = mapper.readValue(itemsJson, new TypeReference<List<OrderProductDto>>(){}).stream().map(OrderProductDto::map).toList();
 
-
-            var  products = parseProductsFromJson(productsJson);
-
-
-
-
-            //var products = objectMapper.readValue(productsJson, new TypeReference<List<OrderProduct>>(){});
             return Order.build(id, providerId, products, amount, dateCreated, dateUpdated, status);
-        } catch (SQLException e) {
-            throw new PostgresException(e);
+        } catch (SQLException | JsonProcessingException e) {
+            throw new PostgresException(e.getMessage());
         }
     }
-
-    private List<OrderProduct> parseProductsFromJson(String productsJson) {
-        productsJson = productsJson.trim();
-
-        if (productsJson.equals("[]") || productsJson.equals("{}")) {
-            return List.of();
-        }
-
-        productsJson = productsJson.substring(1, productsJson.length() - 1);
-        String[] productsArray = productsJson.split("\\},\\{");
-
-        List<OrderProduct> productList = new ArrayList<>();
-
-        for (String product : productsArray) {
-            product = product.replace("{", "").replace("}", "").trim();
-
-            String[] keyValuePairs = product.split(",\\s*");
-
-            String id = null;
-            Integer quantity = null;
-            BigDecimal amount = null;
-
-            for (String pair : keyValuePairs) {
-                String[] entry = pair.split(":\\s*");
-
-                if (entry.length == 2) {
-                    String key = entry[0].replace("\"", "").trim();
-                    String value = entry[1].replace("\"", "").trim();
-
-                    switch (key) {
-                        case "id":
-                            id = value;
-                            break;
-                        case "quantity":
-                            quantity = Integer.valueOf(value);
-                            break;
-                        case "amount":
-                            amount = new BigDecimal(value);
-                            break;
-                    }
-                }
-            }
-
-            if (id != null && quantity != null) {
-                productList.add(new OrderProduct(new ProductId(id), new Quantity(quantity), amount));
-
-
-            }
-        }
-            return productList;
-        }
-    }
+}
