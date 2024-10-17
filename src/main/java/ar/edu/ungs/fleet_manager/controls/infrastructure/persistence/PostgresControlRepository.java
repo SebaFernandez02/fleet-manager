@@ -55,7 +55,7 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
                                      control.vehicleId().value(),
                                      control.priority().name(),
                                      control.status().name(),
-                                     control.operatorId().value(),
+                                     control.operatorId() == null ? null : control.operatorId().value(),
                                      control.dateCreated(),
                                      control.dateUpdated());
         } catch (NestedRuntimeException e) {
