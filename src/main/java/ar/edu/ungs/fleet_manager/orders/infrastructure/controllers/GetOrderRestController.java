@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class GetOrderRestController {
-    private OrderByIdFinder finder;
+    private final OrderByIdFinder finder;
 
     public GetOrderRestController(OrderByIdFinder finder) {
         this.finder = finder;

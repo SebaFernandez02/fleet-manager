@@ -6,42 +6,34 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public final class Order {
     private final OrderId id;
     private OrderStatus status;
     private final ProviderId provider;
-    private final ProductId product;
-    private final Quantity quantity;
+    private final List<OrderProduct> items;
     private final OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
-    public Order(OrderId id, ProviderId provider, ProductId product, Quantity quantity, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, List<OrderProduct> items, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
         this.id = id;
         this.provider = provider;
-        this.product = product;
-        this.quantity = quantity;
+        this.items = new ArrayList<>(items);
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.amount = amount;
         this.status = status;
     }
 
-    public static Order create(String providerId,
-                               String productId,
-                               Integer quantity,
-                               BigDecimal amount){
-
+    public static Order create(String providerId){
         final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
                     providerId,
-                    productId,
-                    quantity,
-                    amount,
+                    new ArrayList<>(),
+                    BigDecimal.ONE,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
                     initialStatus);
@@ -49,28 +41,18 @@ public final class Order {
 
     public static Order build(String id,
                               String providerId,
-                              String productId,
-                              Integer quantity,
+                              List<OrderProduct> products,
                               BigDecimal amount,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated,
                               String status){
-
         return new Order(new OrderId(id),
-                new ProviderId(providerId),
-                new ProductId(productId),
-                new Quantity(quantity),
-                new OrderAmount(amount),
-                dateCreated,
-                dateUpdated,
-                OrderStatus.parse(status));
-    }
-
-    public static Order from(OrderTemplate template) {
-        return create(template.providerId().value(),
-                      template.productId().value(),
-                      template.quantity().value(),
-                      template.amount().value());
+                        new ProviderId(providerId),
+                        products,
+                        new OrderAmount(amount),
+                        dateCreated,
+                        dateUpdated,
+                        OrderStatus.parse(status));
     }
 
     public OrderId id() {
@@ -81,9 +63,7 @@ public final class Order {
         return provider;
     }
 
-    public ProductId productId() {
-        return product;
-    }
+    public List<OrderProduct> items() {return items;}
 
     public LocalDateTime dateCreated() {
         return dateCreated;
@@ -105,10 +85,6 @@ public final class Order {
         return this.status.equals(OrderStatus.COMPLETED);
     }
 
-    public Quantity quantity() {
-        return quantity;
-    }
-
     public void setStatus(OrderStatus statusToUpdate){
         if(statusToUpdate.equals(this.status)){
             throw new InvalidParameterException("The Order status is already " + "'" +this.status.name() + "'");
@@ -116,30 +92,41 @@ public final class Order {
 
         this.status = statusToUpdate;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Order order = (Order) o;
-        return Objects.equals(id, order.id) && Objects.equals(provider, order.provider) && Objects.equals(product, order.product) && Objects.equals(amount, order.amount) && Objects.equals(dateCreated, order.dateCreated) && Objects.equals(dateUpdated, order.dateUpdated) && status == order.status;
+        return Objects.equals(id, order.id) &&
+                Objects.equals(provider, order.provider) &&
+                Objects.equals(items, order.items) &&
+                Objects.equals(amount, order.amount) &&
+                Objects.equals(dateCreated, order.dateCreated) &&
+                Objects.equals(dateUpdated, order.dateUpdated) &&
+                status == order.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, provider, product, amount, dateCreated, dateUpdated, status);
+        return Objects.hash(id, provider, items, amount, dateCreated, dateUpdated, status);
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", providerId=" + provider +
-                ", productId=" + product +
+                ", provider=" + provider +
+                ", products=" + items +
                 ", amount=" + amount +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
                 ", status=" + status +
                 '}';
+    }
+
+    public void add(ProductId productId, Quantity quantity, BigDecimal amount) {
+        OrderProduct orderProduct = new OrderProduct(productId, quantity, amount);
+
+        this.items.add(orderProduct);
     }
 }

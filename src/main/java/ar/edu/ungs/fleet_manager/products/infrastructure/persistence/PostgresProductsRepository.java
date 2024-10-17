@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public final class PostgresProductsRepository implements ProductRepository, RowMapper<Product> {
@@ -68,9 +67,12 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     public Optional<Product> findById(ProductId id) {
         try{
             var sql = """
-                        select * from products where id = CAST(? as UUID)
+                        select * from products where id = CAST(? as UUID) 
+                      
                     """;
-            Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
+            String productId = id.value().replaceAll("^\"|\"$", "");;
+
+            Product result = this.jdbcTemplate.queryForObject(sql, this, productId);
             return Optional.ofNullable(result);
 
         }catch(EmptyResultDataAccessException e){
