@@ -29,6 +29,6 @@ public record ControlResponse (String id,
                                    control.dateCreated(),
                                    control.dateUpdated(),
                                    control.status().toString(),
-                                   UserResponse.map(operator));
+                                   operator == null ? null : UserResponse.map(operator));
     }
 }

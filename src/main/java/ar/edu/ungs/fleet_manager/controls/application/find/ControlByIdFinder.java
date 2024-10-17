@@ -10,6 +10,8 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public final class ControlByIdFinder {
     private final ControlFinder controlFinder;
@@ -25,7 +27,7 @@ public final class ControlByIdFinder {
     public ControlResponse execute(String id) {
         Control control = this.controlFinder.execute(new ControlId(id));
         Vehicle vehicle = this.vehicleFinder.execute(control.vehicleId());
-        User user = this.userFinder.execute(control.operatorId());
+        User user = Optional.ofNullable(control.operatorId()).isPresent() ? this.userFinder.execute(control.operatorId()) : null;
 
         return ControlResponse.map(control, vehicle, user);
     }

@@ -12,19 +12,18 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public final class ControlAllSearcher {
     private final ControlRepository repository;
     private final VehicleFinder vehicleFinder;
     private final UserFinder userFinder;
-    private final PermissionsFinder permissionsFinder;
 
     public ControlAllSearcher(ControlRepository repository, VehicleFinder vehicleFinder, UserFinder userFinder, PermissionsFinder permissionsFinder) {
         this.repository = repository;
         this.vehicleFinder = vehicleFinder;
         this.userFinder = userFinder;
-        this.permissionsFinder = permissionsFinder;
     }
 
     public List<ControlResponse> execute(){
@@ -33,7 +32,7 @@ public final class ControlAllSearcher {
 
     private ControlResponse apply(Control control){
         Vehicle vehicle = this.vehicleFinder.execute(control.vehicleId());
-        User user = this.userFinder.execute(control.operatorId());
+        User user = Optional.ofNullable(control.operatorId()).isPresent() ? this.userFinder.execute(control.operatorId()) : null;
 
         return ControlResponse.map(control, vehicle, user);
     }
