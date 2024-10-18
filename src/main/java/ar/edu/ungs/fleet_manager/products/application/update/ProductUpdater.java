@@ -28,7 +28,10 @@ public final class ProductUpdater {
         Optional.ofNullable(request.description()).ifPresent(product::updateDescription);
         Optional.ofNullable(request.measurement()).ifPresent(product::updateMeasurement);
         Optional.ofNullable(request.price()).ifPresent(product::updatePrice);
+        Optional.ofNullable(request.providerId()).ifPresent(product::updatePrefProvider);
+
 
         this.repository.save(product);
     }
+
 }

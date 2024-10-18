@@ -1,9 +1,11 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
 import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class Product {
@@ -15,6 +17,8 @@ public final class Product {
     private Quantity quantity;
     private ProductMeasurement measurement;
     private ProductPrice price;
+    private ProviderId prefProvider;
+    private ProductMinStock minStock;
 
     public Product(ProductId id,
                    ProductName name,
@@ -42,6 +46,8 @@ public final class Product {
                                  Integer quantity,
                                  String measurement,
                                  BigDecimal price) {
+
+
         return new Product(
                 new ProductId(UUID.randomUUID().toString()),
                 new ProductName(name),
@@ -60,8 +66,11 @@ public final class Product {
                                  String category,
                                  Integer quantity,
                                  String measurement,
-                                 BigDecimal price) {
-        return new Product(
+                                 BigDecimal price,
+                                 String prefProvider) {
+
+
+        Product product = new Product(
                 new ProductId(id),
                 new ProductName(name),
                 new ProductBrand(brand),
@@ -70,6 +79,15 @@ public final class Product {
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
                 new ProductPrice(price));
+
+
+        if(prefProvider != null){
+            product.updatePrefProvider(prefProvider);
+
+        }
+
+
+        return product;
     }
 
     public ProductId id() { return id;}
@@ -124,17 +142,27 @@ public final class Product {
         this.price = new ProductPrice(value);
     }
 
+    public ProductMinStock minStock(){return minStock;}
+
+    public void setMinStock(Integer value){this.minStock = new ProductMinStock(value);}
+
+    public Optional<ProviderId> prefProvider(){return Optional.ofNullable(this.prefProvider);}
+
+    public void updatePrefProvider(String providerId){this.prefProvider = new ProviderId(providerId);}
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, description, category, quantity, measurement, price);
+        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider);
     }
 
     @Override
@@ -148,6 +176,7 @@ public final class Product {
                 ", quantity=" + quantity +
                 ", measurement=" + measurement +
                 ", price=" + price +
+                ", prefProvider=" + prefProvider +
                 '}';
     }
 }

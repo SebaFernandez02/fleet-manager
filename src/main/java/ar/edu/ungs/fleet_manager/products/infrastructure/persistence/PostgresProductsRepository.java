@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.products.infrastructure.persistence;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -47,7 +48,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     private void update(Product product) {
         var sql = """
                 UPDATE products
-                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?, pref_provider_id = ?
                 WHERE id = CAST(? as UUID)
             """;
         this.jdbcTemplate.update(sql,
@@ -58,6 +59,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
+                product.prefProvider()
+                        .map(ProviderId::value)
+                        .orElse(""),
                 product.id().value());
 
     }
@@ -67,8 +71,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     public Optional<Product> findById(ProductId id) {
         try{
             var sql = """
-                        select * from products where id = CAST(? as UUID) 
-                      
+                        select * from products where id = CAST(? as UUID)
+                  
                     """;
             String productId = id.value().replaceAll("^\"|\"$", "");;
 
@@ -121,8 +125,10 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var quantity = rs.getInt("quantity");
         var measurement = rs.getString("measurement");
         var price = rs.getBigDecimal("price");
+        var provider_id = rs.getString("pref_provider_id");
 
-        return Product.build(id,name,brand,description,category,quantity, measurement, price);
+
+        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id);
 
     }
 }

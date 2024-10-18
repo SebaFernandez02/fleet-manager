@@ -1,9 +1,12 @@
 package ar.edu.ungs.fleet_manager.products.application;
 
 import ar.edu.ungs.fleet_manager.products.domain.Product;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
+import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 
 import java.util.List;
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public record ProductResponse(String id,
                               String name,
@@ -12,7 +15,8 @@ public record ProductResponse(String id,
                               String category,
                               Integer quantity,
                               String measurement,
-                              BigDecimal price) {
+                              BigDecimal price,
+                              String pref_provider) {
     public static ProductResponse map(Product product) {
         return new ProductResponse(product.id().value(),
                                     product.name().value(),
@@ -21,7 +25,10 @@ public record ProductResponse(String id,
                                     product.category().value(),
                                     product.quantity().value(),
                                     product.measurement().name(),
-                                    product.price().value());
+                                    product.price().value(),
+                                    product.prefProvider()
+                                            .map(ProviderId::value)
+                                            .orElse(""));
     }
 
     public static List<ProductResponse> map(List<Product> products){
