@@ -16,7 +16,8 @@ public record ProductResponse(String id,
                               Integer quantity,
                               String measurement,
                               BigDecimal price,
-                              String pref_provider) {
+                              String pref_provider,
+                              Integer minStock) {
     public static ProductResponse map(Product product) {
         return new ProductResponse(product.id().value(),
                                     product.name().value(),
@@ -28,7 +29,8 @@ public record ProductResponse(String id,
                                     product.price().value(),
                                     product.prefProvider()
                                             .map(ProviderId::value)
-                                            .orElse(""));
+                                            .orElse(""),
+                                    product.minStock().value());
     }
 
     public static List<ProductResponse> map(List<Product> products){

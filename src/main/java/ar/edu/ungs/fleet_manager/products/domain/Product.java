@@ -27,7 +27,8 @@ public final class Product {
                    ProductCategory category,
                    Quantity quantity,
                    ProductMeasurement measurement,
-                   ProductPrice price) {
+                   ProductPrice price,
+                   ProductMinStock minStock) {
 
         this.id = id;
         this.name = name;
@@ -37,6 +38,7 @@ public final class Product {
         this.quantity = quantity;
         this.measurement = measurement;
         this.price = price;
+        this.minStock = minStock;
     }
 
     public static Product create(String name,
@@ -45,7 +47,8 @@ public final class Product {
                                  String category,
                                  Integer quantity,
                                  String measurement,
-                                 BigDecimal price) {
+                                 BigDecimal price,
+                                 Integer minStock) {
 
 
         return new Product(
@@ -56,7 +59,8 @@ public final class Product {
                 new ProductCategory(category),
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
-                new ProductPrice(price));
+                new ProductPrice(price),
+                new ProductMinStock(minStock));
     }
 
     public static Product build(String id,
@@ -67,7 +71,8 @@ public final class Product {
                                  Integer quantity,
                                  String measurement,
                                  BigDecimal price,
-                                 String prefProvider) {
+                                 String prefProvider,
+                                 Integer minStock) {
 
 
         Product product = new Product(
@@ -78,7 +83,8 @@ public final class Product {
                 new ProductCategory(category),
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
-                new ProductPrice(price));
+                new ProductPrice(price),
+                new ProductMinStock(minStock));
 
 
         if(prefProvider != null){
@@ -157,12 +163,12 @@ public final class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider) && Objects.equals(minStock, product.minStock);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider);
+        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider, minStock);
     }
 
     @Override
@@ -174,6 +180,7 @@ public final class Product {
                 ", description=" + description +
                 ", category=" + category +
                 ", quantity=" + quantity +
+                ", minStock=" + minStock +
                 ", measurement=" + measurement +
                 ", price=" + price +
                 ", prefProvider=" + prefProvider +

@@ -31,8 +31,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description, measurement, price)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql,
                 product.id().value(),
@@ -42,13 +42,14 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.quantity().value(),
                 product.description().value(),
                 product.measurement().name(),
-                product.price().value());
+                product.price().value(),
+                product.minStock().value());
     }
 
     private void update(Product product) {
         var sql = """
                 UPDATE products
-                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?, pref_provider_id = ?
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?, pref_provider_id = ?, min_stock = ?
                 WHERE id = CAST(? as UUID)
             """;
         this.jdbcTemplate.update(sql,
@@ -62,6 +63,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.prefProvider()
                         .map(ProviderId::value)
                         .orElse(""),
+                product.minStock().value(),
                 product.id().value());
 
     }
@@ -126,9 +128,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var measurement = rs.getString("measurement");
         var price = rs.getBigDecimal("price");
         var provider_id = rs.getString("pref_provider_id");
+        var minStock = rs.getInt("min_stock");
 
-
-        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id);
+        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id, minStock);
 
     }
 }

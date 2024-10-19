@@ -21,7 +21,8 @@ public final class ProductCreator {
                                          request.category(),
                                          request.quantity(),
                                          request.measurement(),
-                                         request.price());
+                                         request.price(),
+                                         request.minStock());
 
         this.repository.save(product);
     }
