@@ -5,7 +5,7 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 public record ProductMinStock(Integer value) {
     public ProductMinStock {
         if(value == null || value < 0){
-            throw new InvalidParameterException("the productId minimum Stock cannot be null or negative");
+            throw new InvalidParameterException("the minimum Stock cannot be null or negative");
         }
     }
 }

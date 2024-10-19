@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.products.domain;
 
 import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public final class Product {
     private ProductPrice price;
     private ProviderId prefProvider;
     private ProductMinStock minStock;
+    private ProductAutomaticPurchase automaticPurchase;
 
     public Product(ProductId id,
                    ProductName name,
@@ -28,7 +30,8 @@ public final class Product {
                    Quantity quantity,
                    ProductMeasurement measurement,
                    ProductPrice price,
-                   ProductMinStock minStock) {
+                   ProductMinStock minStock,
+                   ProductAutomaticPurchase automaticPurchase) {
 
         this.id = id;
         this.name = name;
@@ -39,6 +42,7 @@ public final class Product {
         this.measurement = measurement;
         this.price = price;
         this.minStock = minStock;
+        this.automaticPurchase = automaticPurchase;
     }
 
     public static Product create(String name,
@@ -50,7 +54,8 @@ public final class Product {
                                  BigDecimal price,
                                  Integer minStock) {
 
-
+        final Integer minStockValue = minStock==null?0:minStock;
+        final String initialAutoPurchaseStatus = "DISABLED";
         return new Product(
                 new ProductId(UUID.randomUUID().toString()),
                 new ProductName(name),
@@ -60,7 +65,8 @@ public final class Product {
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
                 new ProductPrice(price),
-                new ProductMinStock(minStock));
+                new ProductMinStock(minStockValue),
+                ProductAutomaticPurchase.parse(initialAutoPurchaseStatus));
     }
 
     public static Product build(String id,
@@ -72,7 +78,8 @@ public final class Product {
                                  String measurement,
                                  BigDecimal price,
                                  String prefProvider,
-                                 Integer minStock) {
+                                 Integer minStock,
+                                 String automaticPurchase) {
 
 
         Product product = new Product(
@@ -84,7 +91,8 @@ public final class Product {
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
                 new ProductPrice(price),
-                new ProductMinStock(minStock));
+                new ProductMinStock(minStock),
+                ProductAutomaticPurchase.parse(automaticPurchase));
 
 
         if(prefProvider != null){
@@ -156,19 +164,32 @@ public final class Product {
 
     public void updatePrefProvider(String providerId){this.prefProvider = new ProviderId(providerId);}
 
+    public void enableAutoPurchase() {
 
+        if(this.prefProvider == null){
+            throw new NotFoundException("A preferred provider must be set before enabling automatic purchase for this product");
+        }
+        this.automaticPurchase = ProductAutomaticPurchase.ENABLED;
+    }
+    public void disableAutoPurchase(){
+        this.automaticPurchase = ProductAutomaticPurchase.DISABLED;
+    }
+
+    public ProductAutomaticPurchase automaticPurchase(){
+        return automaticPurchase;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider) && Objects.equals(minStock, product.minStock);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider) && Objects.equals(minStock, product.minStock) && Objects.equals(automaticPurchase, product.automaticPurchase);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider, minStock);
+        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider, minStock, automaticPurchase);
     }
 
     @Override
@@ -184,6 +205,7 @@ public final class Product {
                 ", measurement=" + measurement +
                 ", price=" + price +
                 ", prefProvider=" + prefProvider +
+                ", automaticPurchase" + automaticPurchase +
                 '}';
     }
 }

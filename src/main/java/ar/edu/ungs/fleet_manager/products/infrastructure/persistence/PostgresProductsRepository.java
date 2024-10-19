@@ -31,8 +31,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock, auto_purchase)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql,
                 product.id().value(),
@@ -43,13 +43,14 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
+                product.automaticPurchase().name(),
                 product.minStock().value());
     }
 
     private void update(Product product) {
         var sql = """
                 UPDATE products
-                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?, pref_provider_id = ?, min_stock = ?
+                SET name = ?, brand = ?, category = ?, quantity = ?, description = ?, measurement = ?, price = ?, pref_provider_id = ?, min_stock = ?, auto_purchase = ?
                 WHERE id = CAST(? as UUID)
             """;
         this.jdbcTemplate.update(sql,
@@ -64,6 +65,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                         .map(ProviderId::value)
                         .orElse(""),
                 product.minStock().value(),
+                product.automaticPurchase().name(),
                 product.id().value());
 
     }
@@ -129,8 +131,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var price = rs.getBigDecimal("price");
         var provider_id = rs.getString("pref_provider_id");
         var minStock = rs.getInt("min_stock");
+        var autoPurchase = rs.getString("auto_purchase");
 
-        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id, minStock);
+        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id, minStock, autoPurchase);
 
     }
 }

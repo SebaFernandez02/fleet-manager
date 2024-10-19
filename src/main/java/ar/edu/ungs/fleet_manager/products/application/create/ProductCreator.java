@@ -5,6 +5,8 @@ import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public final class ProductCreator {
 
@@ -15,6 +17,8 @@ public final class ProductCreator {
     }
 
     public void execute(ProductRequest request){
+
+
         Product product = Product.create(request.name(),
                                          request.brand(),
                                          request.description(),

@@ -6,7 +6,7 @@ import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 
 import java.util.List;
 import java.math.BigDecimal;
-import java.util.Optional;
+
 
 public record ProductResponse(String id,
                               String name,
@@ -17,7 +17,8 @@ public record ProductResponse(String id,
                               String measurement,
                               BigDecimal price,
                               String pref_provider,
-                              Integer minStock) {
+                              Integer minStock,
+                              String autoPurchase) {
     public static ProductResponse map(Product product) {
         return new ProductResponse(product.id().value(),
                                     product.name().value(),
@@ -30,7 +31,8 @@ public record ProductResponse(String id,
                                     product.prefProvider()
                                             .map(ProviderId::value)
                                             .orElse(""),
-                                    product.minStock().value());
+                                    product.minStock().value(),
+                                    product.automaticPurchase().name());
     }
 
     public static List<ProductResponse> map(List<Product> products){
