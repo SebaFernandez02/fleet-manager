@@ -4,6 +4,7 @@ import ar.edu.ungs.fleet_manager.analytics.domain.AnalyticOrigin;
 import ar.edu.ungs.fleet_manager.analytics.domain.AnalyticRepository;
 import ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence.PostgresAlertAnalyticRepository;
 import ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence.PostgresControlAnalyticRepository;
+import ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence.PostgresVehicleAnalyticRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ public class AnalyticsBeans {
     @Bean
     public Map<AnalyticOrigin, AnalyticRepository> getRepositories() {
         return Map.of(AnalyticOrigin.CONTROLS, context.getBean(PostgresControlAnalyticRepository.class),
-                AnalyticOrigin.ALERTS, context.getBean(PostgresAlertAnalyticRepository.class));
+                AnalyticOrigin.ALERTS, context.getBean(PostgresAlertAnalyticRepository.class),
+                AnalyticOrigin.VEHICLES, context.getBean(PostgresVehicleAnalyticRepository.class));
     }
 }
