@@ -1,7 +1,7 @@
 package ar.edu.ungs.fleet_manager.orders.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.orders.domain.*;
-import ar.edu.ungs.fleet_manager.products.domain.ProductId;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -110,15 +110,14 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     }
 
     @Override
-    public Optional<Order> findByProduct(ProductId product) {
+    public Optional<Order> findByProviderId(ProviderId id) {
         try {
             var sql = """
                         select *
                         from orders o
-                        where o.product_id = CAST(? as UUID) and status in ('CREATED', 'APPROVED')
+                        where o.provider_id = CAST(? as UUID) and status in ('CREATED', 'APPROVED')
                     """;
-
-            Order result = this.jdbcTemplate.queryForObject(sql, this, product.value());
+            Order result = this.jdbcTemplate.queryForObject(sql, this, id.value());
 
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException e) {

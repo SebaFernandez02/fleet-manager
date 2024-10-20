@@ -30,17 +30,18 @@ public final class Product {
                    Quantity quantity,
                    ProductMeasurement measurement,
                    ProductPrice price,
+                   ProviderId preferenceProviderId,
                    ProductMinStock minStock,
                    ProductAutomaticPurchase automaticPurchase) {
-
         this.id = id;
         this.name = name;
         this.brand = brand;
+        this.description = description;
         this.category = category;
-        this.description= description;
         this.quantity = quantity;
         this.measurement = measurement;
         this.price = price;
+        this.preferenceProviderId = preferenceProviderId;
         this.minStock = minStock;
         this.automaticPurchase = automaticPurchase;
     }
@@ -52,21 +53,22 @@ public final class Product {
                                  Integer quantity,
                                  String measurement,
                                  BigDecimal price,
+                                 String preferenceProviderId,
                                  Integer minStock) {
-
-        final Integer minStockValue = minStock==null?0:minStock;
+        final Integer minStockValue = minStock == null ? 0 : minStock;
         final String initialAutoPurchaseStatus = "DISABLED";
-        return new Product(
-                new ProductId(UUID.randomUUID().toString()),
-                new ProductName(name),
-                new ProductBrand(brand),
-                new ProductDescription(description),
-                new ProductCategory(category),
-                new Quantity(quantity),
-                ProductMeasurement.parse(measurement),
-                new ProductPrice(price),
-                new ProductMinStock(minStockValue),
-                ProductAutomaticPurchase.parse(initialAutoPurchaseStatus));
+
+        return new Product(new ProductId(UUID.randomUUID().toString()),
+                           new ProductName(name),
+                           new ProductBrand(brand),
+                           new ProductDescription(description),
+                           new ProductCategory(category),
+                           new Quantity(quantity),
+                           ProductMeasurement.parse(measurement),
+                           new ProductPrice(price),
+                           new ProviderId(preferenceProviderId),
+                           new ProductMinStock(minStockValue),
+                           ProductAutomaticPurchase.parse(initialAutoPurchaseStatus));
     }
 
     public static Product build(String id,
@@ -77,12 +79,10 @@ public final class Product {
                                  Integer quantity,
                                  String measurement,
                                  BigDecimal price,
-                                 String prefProvider,
+                                 String preferenceProviderId,
                                  Integer minStock,
                                  String automaticPurchase) {
-
-
-        Product product = new Product(
+        return new Product(
                 new ProductId(id),
                 new ProductName(name),
                 new ProductBrand(brand),
@@ -91,17 +91,9 @@ public final class Product {
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
                 new ProductPrice(price),
+                new ProviderId(preferenceProviderId),
                 new ProductMinStock(minStock),
                 ProductAutomaticPurchase.parse(automaticPurchase));
-
-
-        if(prefProvider != null){
-            product.updatePrefProvider(prefProvider);
-
-        }
-
-
-        return product;
     }
 
     public ProductId id() { return id;}
@@ -160,17 +152,28 @@ public final class Product {
 
     public void setMinStock(Integer value){this.minStock = new ProductMinStock(value);}
 
-    public Optional<ProviderId> prefProvider(){return Optional.ofNullable(this.preferenceProviderId);}
+    public Optional<ProviderId> preferenceProviderId() {
+        return Optional.ofNullable(this.preferenceProviderId);
+    }
 
-    public void updatePrefProvider(String providerId){this.preferenceProviderId = new ProviderId(providerId);}
+    public void updatePrefProviderId(String providerId){this.preferenceProviderId = new ProviderId(providerId);}
+
+    public void setAutoPurchase(Boolean value) {
+        if (value) {
+            enableAutoPurchase();
+        } else {
+            disableAutoPurchase();
+        }
+    }
 
     public void enableAutoPurchase() {
-
         if(this.preferenceProviderId == null){
             throw new NotFoundException("A preferred provider must be set before enabling automatic purchase for this product");
         }
+
         this.automaticPurchase = ProductAutomaticPurchase.ENABLED;
     }
+
     public void disableAutoPurchase(){
         this.automaticPurchase = ProductAutomaticPurchase.DISABLED;
     }

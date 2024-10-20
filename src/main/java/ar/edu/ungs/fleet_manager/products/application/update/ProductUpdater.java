@@ -6,7 +6,6 @@ import ar.edu.ungs.fleet_manager.products.domain.ProductAutomaticPurchase;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
-import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -30,8 +29,9 @@ public final class ProductUpdater {
         Optional.ofNullable(request.description()).ifPresent(product::updateDescription);
         Optional.ofNullable(request.measurement()).ifPresent(product::updateMeasurement);
         Optional.ofNullable(request.price()).ifPresent(product::updatePrice);
-        Optional.ofNullable(request.providerId()).ifPresent(product::updatePrefProvider);
+        Optional.ofNullable(request.providerId()).ifPresent(product::updatePrefProviderId);
         Optional.ofNullable(request.minStock()).ifPresent(product::setMinStock);
+        Optional.ofNullable(request.autoPurchase()).ifPresent(product::setAutoPurchase);
 
         this.repository.save(product);
     }

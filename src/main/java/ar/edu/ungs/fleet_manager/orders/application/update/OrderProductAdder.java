@@ -25,10 +25,18 @@ public final class OrderProductAdder {
 
         Product product = this.productFinder.execute(new ProductId(request.productId()));
 
-        Quantity quantity = new Quantity(request.quantity());
+        var orderContainsProduct = order.items()
+                                        .stream()
+                                        .filter(x -> x.productId().value().equals(product.id().value()))
+                                        .findAny();
 
-        order.add(product.id(), quantity, request.amount());
+        if (orderContainsProduct.isEmpty()) {
+            Quantity quantity = new Quantity(request.quantity());
 
-        this.repository.save(order);
+            order.add(product.id(), quantity, request.amount());
+
+            this.repository.save(order);
+        }
+
     }
 }

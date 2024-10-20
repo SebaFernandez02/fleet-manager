@@ -17,8 +17,6 @@ public final class ProductCreator {
     }
 
     public void execute(ProductRequest request){
-
-
         Product product = Product.create(request.name(),
                                          request.brand(),
                                          request.description(),
@@ -26,6 +24,7 @@ public final class ProductCreator {
                                          request.quantity(),
                                          request.measurement(),
                                          request.price(),
+                                         request.providerId(),
                                          request.minStock());
 
         this.repository.save(product);

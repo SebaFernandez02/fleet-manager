@@ -31,7 +31,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock, auto_purchase)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock, auto_purchase, pref_provider_id)
                     values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql,
@@ -44,7 +44,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.measurement().name(),
                 product.price().value(),
                 product.automaticPurchase().name(),
-                product.minStock().value());
+                product.minStock().value(),
+                product.preferenceProviderId().map(ProviderId::value).orElse(null));
     }
 
     private void update(Product product) {
@@ -61,9 +62,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
-                product.prefProvider()
-                        .map(ProviderId::value)
-                        .orElse(""),
+                product.preferenceProviderId().map(ProviderId::value).orElse(null),
                 product.minStock().value(),
                 product.automaticPurchase().name(),
                 product.id().value());
@@ -78,11 +77,10 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                         select * from products where id = CAST(? as UUID)
                   
                     """;
-            String productId = id.value().replaceAll("^\"|\"$", "");;
 
-            Product result = this.jdbcTemplate.queryForObject(sql, this, productId);
+            Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
+
             return Optional.ofNullable(result);
-
         }catch(EmptyResultDataAccessException e){
             return Optional.empty();
         }
@@ -95,8 +93,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
             var sql = """
                         SELECT * FROM products
                     """;
-           return this.jdbcTemplate.query(sql, this);
 
+           return this.jdbcTemplate.query(sql, this);
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
 
@@ -112,8 +110,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                             SELECT * FROM products
                             where min_stock > quantity
                         """;
-            return this.jdbcTemplate.query(sql, this);
 
+            return this.jdbcTemplate.query(sql, this);
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
 
@@ -125,10 +123,14 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
 
             var sql = """
-                            SELECT * FROM VW_products_low_stock_auto_purchase
+                            SELECT *\s
+                            FROM products p
+                            WHERE p.quantity <= p.min_stock
+                            and p.pref_provider_id is not null
+                            and p.auto_purchase = 'ENABLED'
+                            and 0 = (select count(1) from orders o where o.items = concat('%s', p.id, '%s') and o.status in ('CREATED', 'APPROVED'))
                         """;
             return this.jdbcTemplate.query(sql, this);
-
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
 

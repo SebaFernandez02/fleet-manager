@@ -2,7 +2,6 @@ package ar.edu.ungs.fleet_manager.products.application;
 
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
-import ar.edu.ungs.fleet_manager.providers.domain.services.ProviderFinder;
 
 import java.util.List;
 import java.math.BigDecimal;
@@ -28,9 +27,7 @@ public record ProductResponse(String id,
                                     product.quantity().value(),
                                     product.measurement().name(),
                                     product.price().value(),
-                                    product.prefProvider()
-                                            .map(ProviderId::value)
-                                            .orElse(""),
+                                    product.preferenceProviderId().map(ProviderId::value).orElse(null),
                                     product.minStock().value(),
                                     product.automaticPurchase().name());
     }
