@@ -18,7 +18,7 @@ public final class Product {
     private Quantity quantity;
     private ProductMeasurement measurement;
     private ProductPrice price;
-    private ProviderId prefProvider;
+    private ProviderId preferenceProviderId;
     private ProductMinStock minStock;
     private ProductAutomaticPurchase automaticPurchase;
 
@@ -160,13 +160,13 @@ public final class Product {
 
     public void setMinStock(Integer value){this.minStock = new ProductMinStock(value);}
 
-    public Optional<ProviderId> prefProvider(){return Optional.ofNullable(this.prefProvider);}
+    public Optional<ProviderId> prefProvider(){return Optional.ofNullable(this.preferenceProviderId);}
 
-    public void updatePrefProvider(String providerId){this.prefProvider = new ProviderId(providerId);}
+    public void updatePrefProvider(String providerId){this.preferenceProviderId = new ProviderId(providerId);}
 
     public void enableAutoPurchase() {
 
-        if(this.prefProvider == null){
+        if(this.preferenceProviderId == null){
             throw new NotFoundException("A preferred provider must be set before enabling automatic purchase for this product");
         }
         this.automaticPurchase = ProductAutomaticPurchase.ENABLED;
@@ -184,12 +184,12 @@ public final class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(prefProvider,product.prefProvider) && Objects.equals(minStock, product.minStock) && Objects.equals(automaticPurchase, product.automaticPurchase);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(preferenceProviderId,product.preferenceProviderId) && Objects.equals(minStock, product.minStock) && Objects.equals(automaticPurchase, product.automaticPurchase);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, prefProvider, minStock, automaticPurchase);
+        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, preferenceProviderId, minStock, automaticPurchase);
     }
 
     @Override
@@ -204,7 +204,7 @@ public final class Product {
                 ", minStock=" + minStock +
                 ", measurement=" + measurement +
                 ", price=" + price +
-                ", prefProvider=" + prefProvider +
+                ", prefProvider=" + preferenceProviderId +
                 ", automaticPurchase" + automaticPurchase +
                 '}';
     }

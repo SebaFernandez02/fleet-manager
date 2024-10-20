@@ -22,7 +22,8 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
 
     @Override
     public void save(OrderTemplate template) {
-        this.findByProduct(template.productId()).ifPresentOrElse(this::update, () -> this.create(template));
+        this.findByProduct(
+                template.productId()).ifPresentOrElse(this::update, () -> this.create(template));
     }
 
     private void update(OrderTemplate template) {
@@ -56,14 +57,14 @@ public class PostgresOrderTemplateRepository implements OrderTemplateRepository,
     public Optional<OrderTemplate> findByProduct(ProductId product) {
         try {
             var sql = """
-                select 
-                product_id, 
-                provider_id, 
-                quantity,
-                amount
-                from order_template o
-                where o.product_id = CAST(? as UUID)
-            """;
+            select
+                product_id,
+                provider_id,
+                amount,
+                quantity
+            from order_template o
+            where product_id = CAST(? AS UUID)
+        """;
 
             OrderTemplate result = this.jdbcTemplate.queryForObject(sql, this, product.value());
 

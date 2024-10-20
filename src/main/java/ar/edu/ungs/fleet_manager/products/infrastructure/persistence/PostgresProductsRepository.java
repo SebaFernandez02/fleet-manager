@@ -109,7 +109,23 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
 
             var sql = """
-                            SELECT * FROM products where quantity = 0
+                            SELECT * FROM products
+                            where min_stock > quantity
+                        """;
+            return this.jdbcTemplate.query(sql, this);
+
+        }catch (EmptyResultDataAccessException e){
+            return Collections.emptyList();
+
+        }
+    }
+
+    @Override
+    public List<Product> searchAllNoStockAutoPurchase() {
+        try{
+
+            var sql = """
+                            SELECT * FROM VW_products_low_stock_auto_purchase
                         """;
             return this.jdbcTemplate.query(sql, this);
 

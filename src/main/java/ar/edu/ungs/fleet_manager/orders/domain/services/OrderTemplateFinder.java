@@ -14,7 +14,8 @@ public class OrderTemplateFinder {
     }
 
     public OrderTemplate execute(ProductId id) {
-        return this.repository.findByProduct(id)
-                              .orElseThrow(() -> new NotFoundException(String.format("order %s not found", id)));
+        return null;
+        //this.repository.findByProduct(id)
+        //                      .orElseThrow(() -> new NotFoundException(String.format("order %s not found", id)));
     }
 }

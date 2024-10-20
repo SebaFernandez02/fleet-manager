@@ -16,7 +16,7 @@ public record ProductResponse(String id,
                               Integer quantity,
                               String measurement,
                               BigDecimal price,
-                              String pref_provider,
+                              String preferenceProviderId,
                               Integer minStock,
                               String autoPurchase) {
     public static ProductResponse map(Product product) {
