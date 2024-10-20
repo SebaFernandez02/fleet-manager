@@ -5,6 +5,8 @@ import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public final class ProductCreator {
 
@@ -21,7 +23,9 @@ public final class ProductCreator {
                                          request.category(),
                                          request.quantity(),
                                          request.measurement(),
-                                         request.price());
+                                         request.price(),
+                                         request.providerId(),
+                                         request.minStock());
 
         this.repository.save(product);
     }

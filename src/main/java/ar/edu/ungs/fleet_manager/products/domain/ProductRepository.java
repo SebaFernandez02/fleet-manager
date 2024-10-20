@@ -13,4 +13,5 @@ public interface ProductRepository {
 
     List<Product> searchAllNoStock();
 
+    List<Product> searchAllNoStockAutoPurchase();
 }

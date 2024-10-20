@@ -1,9 +1,12 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
 import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
+import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class Product {
@@ -15,6 +18,9 @@ public final class Product {
     private Quantity quantity;
     private ProductMeasurement measurement;
     private ProductPrice price;
+    private ProviderId preferenceProviderId;
+    private ProductMinStock minStock;
+    private ProductAutomaticPurchase automaticPurchase;
 
     public Product(ProductId id,
                    ProductName name,
@@ -23,16 +29,21 @@ public final class Product {
                    ProductCategory category,
                    Quantity quantity,
                    ProductMeasurement measurement,
-                   ProductPrice price) {
-
+                   ProductPrice price,
+                   ProviderId preferenceProviderId,
+                   ProductMinStock minStock,
+                   ProductAutomaticPurchase automaticPurchase) {
         this.id = id;
         this.name = name;
         this.brand = brand;
+        this.description = description;
         this.category = category;
-        this.description= description;
         this.quantity = quantity;
         this.measurement = measurement;
         this.price = price;
+        this.preferenceProviderId = preferenceProviderId;
+        this.minStock = minStock;
+        this.automaticPurchase = automaticPurchase;
     }
 
     public static Product create(String name,
@@ -41,16 +52,23 @@ public final class Product {
                                  String category,
                                  Integer quantity,
                                  String measurement,
-                                 BigDecimal price) {
-        return new Product(
-                new ProductId(UUID.randomUUID().toString()),
-                new ProductName(name),
-                new ProductBrand(brand),
-                new ProductDescription(description),
-                new ProductCategory(category),
-                new Quantity(quantity),
-                ProductMeasurement.parse(measurement),
-                new ProductPrice(price));
+                                 BigDecimal price,
+                                 String preferenceProviderId,
+                                 Integer minStock) {
+        final Integer minStockValue = minStock == null ? 0 : minStock;
+        final String initialAutoPurchaseStatus = "DISABLED";
+
+        return new Product(new ProductId(UUID.randomUUID().toString()),
+                           new ProductName(name),
+                           new ProductBrand(brand),
+                           new ProductDescription(description),
+                           new ProductCategory(category),
+                           new Quantity(quantity),
+                           ProductMeasurement.parse(measurement),
+                           new ProductPrice(price),
+                           new ProviderId(preferenceProviderId),
+                           new ProductMinStock(minStockValue),
+                           ProductAutomaticPurchase.parse(initialAutoPurchaseStatus));
     }
 
     public static Product build(String id,
@@ -60,7 +78,10 @@ public final class Product {
                                  String category,
                                  Integer quantity,
                                  String measurement,
-                                 BigDecimal price) {
+                                 BigDecimal price,
+                                 String preferenceProviderId,
+                                 Integer minStock,
+                                 String automaticPurchase) {
         return new Product(
                 new ProductId(id),
                 new ProductName(name),
@@ -69,7 +90,10 @@ public final class Product {
                 new ProductCategory(category),
                 new Quantity(quantity),
                 ProductMeasurement.parse(measurement),
-                new ProductPrice(price));
+                new ProductPrice(price),
+                new ProviderId(preferenceProviderId),
+                new ProductMinStock(minStock),
+                ProductAutomaticPurchase.parse(automaticPurchase));
     }
 
     public ProductId id() { return id;}
@@ -124,17 +148,51 @@ public final class Product {
         this.price = new ProductPrice(value);
     }
 
+    public ProductMinStock minStock(){return minStock;}
+
+    public void setMinStock(Integer value){this.minStock = new ProductMinStock(value);}
+
+    public Optional<ProviderId> preferenceProviderId() {
+        return Optional.ofNullable(this.preferenceProviderId);
+    }
+
+    public void updatePrefProviderId(String providerId){this.preferenceProviderId = new ProviderId(providerId);}
+
+    public void setAutoPurchase(Boolean value) {
+        if (value) {
+            enableAutoPurchase();
+        } else {
+            disableAutoPurchase();
+        }
+    }
+
+    public void enableAutoPurchase() {
+        if(this.preferenceProviderId == null){
+            throw new NotFoundException("A preferred provider must be set before enabling automatic purchase for this product");
+        }
+
+        this.automaticPurchase = ProductAutomaticPurchase.ENABLED;
+    }
+
+    public void disableAutoPurchase(){
+        this.automaticPurchase = ProductAutomaticPurchase.DISABLED;
+    }
+
+    public ProductAutomaticPurchase automaticPurchase(){
+        return automaticPurchase;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(brand, product.brand) && Objects.equals(description, product.description) && Objects.equals(category, product.category) && Objects.equals(quantity, product.quantity) && measurement == product.measurement && Objects.equals(price, product.price) && Objects.equals(preferenceProviderId,product.preferenceProviderId) && Objects.equals(minStock, product.minStock) && Objects.equals(automaticPurchase, product.automaticPurchase);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, brand, description, category, quantity, measurement, price);
+        return Objects.hash(id, name, brand, description, category, quantity, measurement, price, preferenceProviderId, minStock, automaticPurchase);
     }
 
     @Override
@@ -146,8 +204,11 @@ public final class Product {
                 ", description=" + description +
                 ", category=" + category +
                 ", quantity=" + quantity +
+                ", minStock=" + minStock +
                 ", measurement=" + measurement +
                 ", price=" + price +
+                ", prefProvider=" + preferenceProviderId +
+                ", automaticPurchase" + automaticPurchase +
                 '}';
     }
 }
