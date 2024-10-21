@@ -123,12 +123,7 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
 
             var sql = """
-                            SELECT *\s
-                            FROM products p
-                            WHERE p.quantity <= p.min_stock
-                            and p.pref_provider_id is not null
-                            and p.auto_purchase = 'ENABLED'
-                            and 0 = (select count(1) from orders o where o.items = concat('%s', p.id, '%s') and o.status in ('CREATED', 'APPROVED'))
+                            SELECT * from VW_products_low_stock_auto_purchase
                         """;
             return this.jdbcTemplate.query(sql, this);
         }catch (EmptyResultDataAccessException e){
