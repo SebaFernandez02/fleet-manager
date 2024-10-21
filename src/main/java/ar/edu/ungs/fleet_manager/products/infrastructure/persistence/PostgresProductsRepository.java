@@ -31,8 +31,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description, measurement, price, min_stock, auto_purchase, pref_provider_id)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price, pref_provider_id, min_stock, auto_purchase)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         this.jdbcTemplate.update(sql,
                 product.id().value(),
@@ -43,9 +43,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
-                product.automaticPurchase().name(),
+                product.preferenceProviderId().map(ProviderId::value).orElse(null),
                 product.minStock().value(),
-                product.preferenceProviderId().map(ProviderId::value).orElse(null));
+                product.automaticPurchase().name());
     }
 
     private void update(Product product) {
