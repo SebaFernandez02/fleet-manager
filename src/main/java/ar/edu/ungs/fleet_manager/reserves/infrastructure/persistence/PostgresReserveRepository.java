@@ -38,7 +38,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         try {
             var sql = """
                 update reserves 
-                set status = ?, vehicle_id = ?, user_id = CAST(? as UUID), trip = ?, date_created = ?, date_updated = ?
+                set status = ?, vehicle_id = ?, user_id = CAST(? as UUID), trip = ?, date_created = ?, date_updated = ?, date_reserve = ?, date_finish_reserve = ?
                 where id = CAST(? as UUID)
               """;
 
@@ -49,7 +49,9 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      this.objectMapper.writeValueAsString(reserve.trip()),
                                      reserve.dateCreated(),
                                      reserve.dateUpdated(),
-                                     reserve.id().value());
+                                     reserve.id().value(),
+                                     reserve.dateReserve(),
+                                     reserve.dateFinishReserve());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
         }
@@ -59,8 +61,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     private void create(Reserve reserve) {
         try {
             var sql = """
-                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated) 
-                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?)
+                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve) 
+                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?, ?, ?)
                     """;
             this.jdbcTemplate.update(sql,
                                      reserve.id().value(),
@@ -69,7 +71,9 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      reserve.userId().value(),
                                      this.objectMapper.writeValueAsString(reserve.trip()),
                                      reserve.dateCreated(),
-                                     reserve.dateUpdated());
+                                     reserve.dateUpdated(),
+                                     reserve.dateReserve(),
+                                     reserve.dateFinishReserve());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
         }
@@ -79,7 +83,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     public Optional<Reserve> findById(ReserveId id) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated
+                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve
                 from reserves r
                 where r.id = CAST(? as UUID)
             """;
@@ -96,7 +100,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     public List<Reserve> findByUserId(UserId id) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated
+                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve
                 from reserves r
                 where r.user_id = CAST(? as UUID)
             """;
@@ -111,7 +115,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     public List<Reserve> findByVehicleId(VehicleId id) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated
+                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve
                 from reserves r
                 where r.vehicle_id = ?
             """;
@@ -126,7 +130,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     public List<Reserve> searchAll() {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated
+                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve
                 from reserves r
             """;
 
@@ -145,8 +149,10 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
         var trip = this.mapTrip(rs.getString("trip"));
+        var dateReserve = rs.getTimestamp("date_reserve").toLocalDateTime();
+        var dateFinishReserve = rs.getTimestamp("date_finish_reserve").toLocalDateTime();
 
-        return Reserve.build(id, status, vehicleId, userId, trip, dateCreated, dateUpdated);
+        return Reserve.build(id, status, vehicleId, userId, trip, dateCreated, dateUpdated, dateReserve, dateFinishReserve);
     }
 
     private Trip mapTrip(String trip) {

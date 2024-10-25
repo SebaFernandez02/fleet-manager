@@ -16,6 +16,8 @@ public final class Reserve {
     private final Trip trip;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
+    private final LocalDateTime dateReserve;
+    private final LocalDateTime dateFinishReserve;
 
     public Reserve(ReserveId id,
                    ReserveStatus status,
@@ -23,7 +25,9 @@ public final class Reserve {
                    UserId userId,
                    Trip trip,
                    LocalDateTime dateCreated,
-                   LocalDateTime dateUpdated) {
+                   LocalDateTime dateUpdated,
+                   LocalDateTime dateReserve,
+                   LocalDateTime dateFinishReserve) {
         this.id = id;
         this.status = status;
         this.vehicleId = vehicleId;
@@ -31,16 +35,20 @@ public final class Reserve {
         this.trip = trip;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.dateReserve = dateReserve;
+        this.dateFinishReserve = dateFinishReserve;
     }
 
     public static Reserve create(Vehicle vehicle,
                                  User user,
-                                 Trip trip) {
+                                 Trip trip,
+                                 LocalDateTime dateReserve,
+                                 LocalDateTime dateFinishReserve) {
         ReserveStatus status = ReserveStatus.CREATED;
         VehicleId vehicleId = vehicle.id();
         LocalDateTime dateTime = LocalDateTime.now();
 
-        return new Reserve(ReserveId.create(), status, vehicleId, user.id(), trip, dateTime, dateTime);
+        return new Reserve(ReserveId.create(), status, vehicleId, user.id(), trip, dateTime, dateTime, dateReserve, dateFinishReserve);
     }
 
     public static Reserve build(String id,
@@ -49,11 +57,13 @@ public final class Reserve {
                                 String userId,
                                 Trip trip,
                                 LocalDateTime dateCreated,
-                                LocalDateTime dateUpdated) {
+                                LocalDateTime dateUpdated,
+                                LocalDateTime dateReserve,
+                                LocalDateTime dateFinishReserve) {
         ReserveId reserveId = new ReserveId(id);
         ReserveStatus reserveStatus = ReserveStatus.valueOf(status);
 
-        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, dateCreated, dateUpdated);
+        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, dateCreated, dateUpdated, dateReserve, dateFinishReserve);
     }
 
     public ReserveId id() {
@@ -82,6 +92,14 @@ public final class Reserve {
 
     public LocalDateTime dateUpdated() {
         return dateUpdated;
+    }
+
+    public LocalDateTime dateReserve() {
+        return dateReserve;
+    }
+
+    public LocalDateTime dateFinishReserve() {
+        return dateFinishReserve;
     }
 
     public void update(ReserveStatus status) {

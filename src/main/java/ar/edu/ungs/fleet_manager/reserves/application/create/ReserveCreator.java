@@ -56,7 +56,7 @@ public class ReserveCreator {
 
         var trip = this.tripCalculator.execute(vehicle.coordinates(), destination);
 
-        var reserve = Reserve.create(vehicle, user, trip);
+        var reserve = Reserve.create(vehicle, user, trip, request.dateReserve(), request.dateFinishReserve());
 
         this.repository.save(reserve);
 
