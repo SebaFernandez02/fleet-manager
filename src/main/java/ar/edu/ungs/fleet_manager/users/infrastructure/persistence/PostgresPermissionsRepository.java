@@ -1,7 +1,7 @@
 package ar.edu.ungs.fleet_manager.users.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.users.domain.*;
-import ar.edu.ungs.fleet_manager.users.domain.Module;
+import ar.edu.ungs.fleet_manager.shared.domain.Module;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
