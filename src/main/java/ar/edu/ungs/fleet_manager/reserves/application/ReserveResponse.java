@@ -11,7 +11,9 @@ public record ReserveResponse(String id,
                               String status,
                               Trip trip,
                               LocalDateTime dateCreated,
-                              LocalDateTime dateUpdated) {
+                              LocalDateTime dateUpdated,
+                              LocalDateTime dateReserve,
+                              LocalDateTime dateFinishReserve) {
     public static ReserveResponse map(Reserve aggregate) {
         return new ReserveResponse(aggregate.id().value(),
                 aggregate.vehicleId().value(),
@@ -19,6 +21,8 @@ public record ReserveResponse(String id,
                 aggregate.status().name(),
                 aggregate.trip(),
                 aggregate.dateCreated(),
-                aggregate.dateUpdated());
+                aggregate.dateUpdated(),
+                aggregate.dateReserve(),
+                aggregate.dateFinishReserve());
     }
 }
