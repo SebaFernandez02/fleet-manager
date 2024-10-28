@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.enterprises.infrastructure.persistence;
 import ar.edu.ungs.fleet_manager.enterprises.domain.Enterprise;
 import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseRepository;
+import ar.edu.ungs.fleet_manager.shared.domain.Module;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,19 +30,19 @@ public class PostgresEnterpriseRepository implements EnterpriseRepository, RowMa
 
     private void create(Enterprise enterprise) {
         var sql = """
-                    insert into enterprises(id, name)
-                    values(CAST(? as UUID), ?, )
+                    insert into enterprises(id, name, modules)
+                    values(CAST(? as UUID), ?, ?)
                 """;
-        this.jdbcTemplate.update(sql, enterprise.id().value(), enterprise.name().value());
+        this.jdbcTemplate.update(sql, enterprise.id().value(), enterprise.name().value(), String.join(",", enterprise.modules().stream().map(Module::name).toList()));
     }
 
     private void update(Enterprise enterprise) {
         var sql = """
                 UPDATE enterprises
-                SET name = ?
+                SET modules = ? 
                 WHERE id = CAST(? as UUID)
             """;
-        this.jdbcTemplate.update(sql, enterprise.name().value(), enterprise.id().value());
+        this.jdbcTemplate.update(sql, String.join(",", enterprise.modules().stream().map(Module::name).toList()), enterprise.id().value());
     }
 
     @Override
@@ -76,7 +77,8 @@ public class PostgresEnterpriseRepository implements EnterpriseRepository, RowMa
     public Enterprise mapRow(ResultSet rs, int rowNum) throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");
+        var modules = rs.getString("modules");
 
-        return Enterprise.build(id, name);
+        return Enterprise.build(id, name, modules);
     }
 }

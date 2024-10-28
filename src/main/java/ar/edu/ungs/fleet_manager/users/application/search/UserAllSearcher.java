@@ -1,5 +1,7 @@
 package ar.edu.ungs.fleet_manager.users.application.search;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.Enterprise;
+import ar.edu.ungs.fleet_manager.enterprises.domain.services.EnterpriseFinder;
 import ar.edu.ungs.fleet_manager.users.application.UserResponse;
 import ar.edu.ungs.fleet_manager.users.domain.Permissions;
 import ar.edu.ungs.fleet_manager.users.domain.User;
@@ -13,11 +15,14 @@ import java.util.List;
 public final class UserAllSearcher {
     private final UserRepository repository;
     private final PermissionsFinder permissionsFinder;
+    private final EnterpriseFinder enterpriseFinder;
 
     public UserAllSearcher(UserRepository repository,
-                           PermissionsFinder permissionsFinder) {
+                           PermissionsFinder permissionsFinder,
+                           EnterpriseFinder enterpriseFinder) {
         this.repository = repository;
         this.permissionsFinder = permissionsFinder;
+        this.enterpriseFinder = enterpriseFinder;
     }
 
     public List<UserResponse> execute() {
@@ -29,7 +34,8 @@ public final class UserAllSearcher {
 
     private UserResponse apply(User user) {
         Permissions permissions = permissionsFinder.execute(user.roles());
+        Enterprise enterprise = user.enterpriseId().map(x -> enterpriseFinder.execute(x.value())).orElse(null);
 
-        return UserResponse.map(user, permissions);
+        return UserResponse.map(user, permissions, enterprise);
     }
 }

@@ -22,7 +22,7 @@ public final class UserRegistrar {
     public void execute(UserRequest request) {
         this.ensureUsernameNotUsed(request.username());
 
-        User user = User.create(request.username(), request.password(), request.fullName());
+        User user = User.create(request.username(), request.password(), request.fullName(), request.enterpriseId());
 
         this.repository.save(user);
     }

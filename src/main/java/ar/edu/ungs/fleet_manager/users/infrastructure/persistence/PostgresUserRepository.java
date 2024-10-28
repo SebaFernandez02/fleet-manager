@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.users.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.users.domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,8 +28,8 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
 
     private void create(User user) {
         var sql = """
-                    insert into users (id, username, password, full_name, date_created, date_updated)
-                    values (CAST(? as UUID), ?, ?, ?, ?, ?)
+                    insert into users (id, username, password, full_name, enterprise_id, date_created, date_updated)
+                    values (CAST(? as UUID), ?, ?, ?, CAST(? as UUID), ?, ?)
                 """;
 
         this.jdbcTemplate.update(sql,
@@ -36,6 +37,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                                  user.username().value(),
                                  user.password().value(),
                                  user.fullName().value(),
+                                 user.enterpriseId().map(EnterpriseId::value).orElse(null),
                                  user.dateCreated(),
                                  user.dateUpdated());
 
@@ -44,7 +46,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
 
     private void update(User user) {
         var sql = """
-                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, date_created = ?, date_updated = ?
+                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, enterprise_id = ?, date_created = ?, date_updated = ?
                     where id = CAST(? as UUID)
                 """;
 
@@ -53,6 +55,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                                  user.username().value(),
                                  user.password().value(),
                                  user.fullName().value(),
+                                 user.enterpriseId().map(EnterpriseId::value).orElse(null),
                                  user.dateCreated(),
                                  user.dateUpdated(),
                                  user.id().value());
@@ -95,6 +98,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.password, 
                     u.full_name,
                     r.role, 
+                    u.enterprise_id,
                     u.date_created, 
                     u.date_updated
                 from users u
@@ -120,6 +124,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.password, 
                     u.full_name,
                     r.role,
+                    u.enterprise_id,
                     u.date_created, 
                     u.date_updated
                 from users u
@@ -145,6 +150,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.password, 
                     u.full_name,
                     r.role,
+                    u.enterprise_id,
                     u.date_created, 
                     u.date_updated
                 from users u
@@ -165,6 +171,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                                 rs.getString("password"),
                                 rs.getString("full_name"),
                                 new ArrayList<>(),
+                                rs.getString("enterprise_id"),
                                 rs.getTimestamp("date_created").toLocalDateTime(),
                                 rs.getTimestamp("date_updated").toLocalDateTime()
                         );
@@ -182,6 +189,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                         x.getUsername(),
                         x.getPassword(),
                         x.getFullName(),
+                        x.getEnterpriseId(),
                         x.getDateCreated(),
                         x.getDateUpdated())).collect(Collectors.toList());
             });
@@ -196,6 +204,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
         String username = rs.getString("username");
         String password = rs.getString("password");
         String fullName = rs.getString("full_name");
+        String enterpriseId = rs.getString("enterprise_id");
         LocalDateTime dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         LocalDateTime dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
 
@@ -208,6 +217,6 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                 roles.add(rs.getString("role"));
         } while (rs.next());
 
-        return User.build(id, roles, username, password, fullName, dateCreated, dateUpdated);
+        return User.build(id, roles, username, password, fullName, enterpriseId, dateCreated, dateUpdated);
     }
 }
