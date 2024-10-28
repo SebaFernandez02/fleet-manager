@@ -38,7 +38,14 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         try {
             var sql = """
                 update reserves 
-                set status = ?, vehicle_id = ?, user_id = CAST(? as UUID), trip = ?, date_created = ?, date_updated = ?, date_reserve = ?, date_finish_reserve = ?
+                set status = ?,
+                vehicle_id = ?,
+                user_id = CAST(? as UUID),
+                trip = ?,
+                date_created = ?,
+                date_updated = ?,
+                date_reserve = ?,
+                date_finish_reserve = ?
                 where id = CAST(? as UUID)
               """;
 
@@ -49,9 +56,9 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      this.objectMapper.writeValueAsString(reserve.trip()),
                                      reserve.dateCreated(),
                                      reserve.dateUpdated(),
-                                     reserve.id().value(),
                                      reserve.dateReserve(),
-                                     reserve.dateFinishReserve());
+                                     reserve.dateFinishReserve(),
+                                     reserve.id().value());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
         }
