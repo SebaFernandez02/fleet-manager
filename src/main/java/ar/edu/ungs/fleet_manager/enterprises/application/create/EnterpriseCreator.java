@@ -14,7 +14,7 @@ public final class EnterpriseCreator {
     }
 
     public void execute(EnterpriseRequest request) {
-        var enterprise = Enterprise.create(request.name(), request.type(), request.isActive());
+        var enterprise = Enterprise.create(request.name());
 
         this.repository.save(enterprise);
     }

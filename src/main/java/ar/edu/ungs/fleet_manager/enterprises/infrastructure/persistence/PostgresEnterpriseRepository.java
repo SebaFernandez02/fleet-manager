@@ -29,19 +29,19 @@ public class PostgresEnterpriseRepository implements EnterpriseRepository, RowMa
 
     private void create(Enterprise enterprise) {
         var sql = """
-                    insert into enterprises(id, name, is_active, type, date_created, date_updated)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?)
+                    insert into enterprises(id, name)
+                    values(CAST(? as UUID), ?, )
                 """;
-        this.jdbcTemplate.update(sql, enterprise.id().value(), enterprise.name().value(), enterprise.isActive(), enterprise.type().name(), enterprise.dateCreated(), enterprise.dateUpdated());
+        this.jdbcTemplate.update(sql, enterprise.id().value(), enterprise.name().value());
     }
 
     private void update(Enterprise enterprise) {
         var sql = """
                 UPDATE enterprises
-                SET name = ?, is_active = ?, type = ?, date_updated = ?
+                SET name = ?
                 WHERE id = CAST(? as UUID)
             """;
-        this.jdbcTemplate.update(sql, enterprise.name().value(), enterprise.isActive(), enterprise.type().name(), enterprise.dateUpdated(), enterprise.id().value());
+        this.jdbcTemplate.update(sql, enterprise.name().value(), enterprise.id().value());
     }
 
     @Override
@@ -76,11 +76,7 @@ public class PostgresEnterpriseRepository implements EnterpriseRepository, RowMa
     public Enterprise mapRow(ResultSet rs, int rowNum) throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");
-        var isActive = rs.getBoolean("is_active");
-        var type = rs.getString("type");
-        var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
-        var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
 
-        return Enterprise.build(id, name, isActive, type, dateCreated, dateUpdated);
+        return Enterprise.build(id, name);
     }
 }

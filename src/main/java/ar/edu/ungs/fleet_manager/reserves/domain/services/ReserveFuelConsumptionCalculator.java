@@ -16,7 +16,6 @@ public final class ReserveFuelConsumptionCalculator {
         this.vehicleFinder = vehicleFinder;
     }
 
-
     public double execute(ReserveId id){
         Reserve reserve = this.reserveFinder.execute(id);
         Vehicle vehicle = this.vehicleFinder.execute(reserve.vehicleId());
