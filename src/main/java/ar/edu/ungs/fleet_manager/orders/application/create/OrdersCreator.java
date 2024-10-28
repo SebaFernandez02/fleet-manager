@@ -38,11 +38,8 @@ public class OrdersCreator {
     }
 
     private void createOrder(Product x) {
-        if (x.preferenceProviderId().isEmpty()) {
-            return;
-        }
 
-        ProviderId providerId = x.preferenceProviderId().get();
+        ProviderId providerId = x.preferenceProviderId();
 
         try {
             Order order = this.orderFinder.execute(providerId);

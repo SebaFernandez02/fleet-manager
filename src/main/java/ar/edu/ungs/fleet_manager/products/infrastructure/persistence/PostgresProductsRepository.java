@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.products.infrastructure.persistence;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
+import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,6 +35,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                     insert into products(id, name, brand, category, quantity, description, measurement, price, pref_provider_id, min_stock, auto_purchase)
                     values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
+
+
         this.jdbcTemplate.update(sql,
                 product.id().value(),
                 product.name().value(),
@@ -43,9 +46,12 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
-                product.preferenceProviderId().map(ProviderId::value).orElse(null),
+                product.preferenceProviderId().value(),
                 product.minStock().value(),
                 product.automaticPurchase().name());
+
+        addProvider(product.id(),product.preferenceProviderId());
+
     }
 
     private void update(Product product) {
@@ -62,10 +68,32 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.description().value(),
                 product.measurement().name(),
                 product.price().value(),
-                product.preferenceProviderId().map(ProviderId::value).orElse(null),
+                product.preferenceProviderId().value(),
                 product.minStock().value(),
                 product.automaticPurchase().name(),
                 product.id().value());
+    }
+    @Override
+     public void addProvider(ProductId productId, ProviderId providerId){
+        var sql = """
+                INSERT INTO products_suppliers(product_id, provider_id)
+                VALUES (CAST(? as UUID), CAST(? as UUID))
+                """;
+        this.jdbcTemplate.update(sql,
+                            productId.value(),
+                            providerId.value());
+
+    }
+
+    @Override
+    public void deleteProvider(ProductId productId, ProviderId providerId){
+        var sql = """
+                delete from products_suppliers
+                where product_id = CAST(? as UUID) and provider_id = CAST(? as UUID)
+                """;
+        this.jdbcTemplate.update(sql,
+                productId.value(),
+                providerId.value());
 
     }
 
@@ -75,11 +103,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         try{
             var sql = """
                         select * from products where id = CAST(? as UUID)
-                  
                     """;
-
             Product result = this.jdbcTemplate.queryForObject(sql, this, id.value());
-
             return Optional.ofNullable(result);
         }catch(EmptyResultDataAccessException e){
             return Optional.empty();
@@ -89,28 +114,22 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     @Override
     public List<Product> searchAll() {
         try{
-
             var sql = """
                         SELECT * FROM products
                     """;
-
            return this.jdbcTemplate.query(sql, this);
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
-
         }
-
     }
 
     @Override
     public List<Product> searchAllNoStock() {
         try{
-
             var sql = """
                             SELECT * FROM products
                             where min_stock > quantity
                         """;
-
             return this.jdbcTemplate.query(sql, this);
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
@@ -121,7 +140,6 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     @Override
     public List<Product> searchAllNoStockAutoPurchase() {
         try{
-
             var sql = """
                             SELECT * from VW_products_low_stock_auto_purchase
                         """;
