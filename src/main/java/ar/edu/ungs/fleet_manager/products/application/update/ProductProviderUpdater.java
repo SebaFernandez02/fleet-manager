@@ -33,5 +33,12 @@ public class ProductProviderUpdater {
         this.repository.addProvider(product.id(),provider.id());
     }
 
+    public void delete(String id, ProductProviderRequest request){
+        Product product = this.productFinder.execute(new ProductId(id));
+        Provider provider = this.providerFinder.execute(new ProviderId(request.providerId()));
+
+
+        this.repository.deleteProvider(product.id(),provider.id());
+    }
 
 }
