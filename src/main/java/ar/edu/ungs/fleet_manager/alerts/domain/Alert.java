@@ -40,7 +40,7 @@ public final class Alert {
         return build(UUID.randomUUID().toString(),
                 "HIGH",
                 "Vehiculo averiado",
-                String.format("El conducto del vehiuclo %s ha solicitado asistencia. Por favor, revisar con urgencia.", vehicleId),
+                String.format("El conductor del vehiculo %s ha solicitado asistencia. Por favor, revisar con urgencia.", vehicleId),
                 Boolean.FALSE,
                 LocalDateTime.now(),
                 LocalDateTime.now());
@@ -50,7 +50,7 @@ public final class Alert {
         return build(UUID.randomUUID().toString(),
                 "HIGH",
                 "Vehiculo fuera de rango",
-                String.format("El vehiuclo %s está fuera de rango del viaje calculado. Por favor, revisar con urgencia.", vehicleId),
+                String.format("El vehiculo %s está fuera de rango del viaje calculado. Por favor, revisar con urgencia.", vehicleId),
                 Boolean.FALSE,
                 LocalDateTime.now(),
                 LocalDateTime.now());

@@ -1,15 +1,15 @@
 package ar.edu.ungs.fleet_manager.users.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
+
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class User {
     private final UserId id;
     private final Set<Role> roles;
+    private final Optional<EnterpriseId> enterpriseId;
     private final Username username;
     private Password password;
     private final FullName fullName;
@@ -17,7 +17,7 @@ public final class User {
     private LocalDateTime dateUpdated;
 
     public User(UserId id,
-                Set<Role> roles,
+                Set<Role> roles, Optional<EnterpriseId> enterpriseId,
                 Username username,
                 Password password,
                 FullName fullName,
@@ -25,6 +25,7 @@ public final class User {
                 LocalDateTime dateUpdated) {
         this.id = id;
         this.roles = roles;
+        this.enterpriseId = enterpriseId;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -34,12 +35,14 @@ public final class User {
 
     public static User create(String username,
                               String password,
-                              String fullName) {
+                              String fullName,
+                              String enterpriseId) {
         return build(UUID.randomUUID().toString(),
                      Collections.emptyList(),
                      username,
                      password,
                      fullName,
+                     enterpriseId,
                      LocalDateTime.now(),
                      LocalDateTime.now());
     }
@@ -49,15 +52,16 @@ public final class User {
                              String username,
                              String password,
                              String fullName,
+                             String enterpriseId,
                              LocalDateTime dateCreated,
                              LocalDateTime dateUpdated) {
         return new User(new UserId(id),
                         roles.stream().map(Role::parse).collect(Collectors.toSet()),
+                        Optional.ofNullable(enterpriseId).flatMap(value -> Optional.of(new EnterpriseId(value))),
                         new Username(username),
                         new Password(password),
                         new FullName(fullName),
-                        dateCreated,
-                        dateUpdated);
+                        dateCreated, dateUpdated);
     }
 
     public UserId id() {
@@ -72,6 +76,10 @@ public final class User {
         this.roles.add(role);
 
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    public Optional<EnterpriseId> enterpriseId() {
+        return enterpriseId;
     }
 
     public Username username() {
@@ -110,5 +118,13 @@ public final class User {
 
     public boolean isOperator() {
         return roles().contains(Role.OPERATOR);
+    }
+
+    public boolean isDeveloper() {
+        return roles().contains(Role.DEVELOPER);
+    }
+
+    public boolean isAdmin() {
+        return roles().contains(Role.ADMIN);
     }
 }

@@ -1,4 +1,4 @@
-package ar.edu.ungs.fleet_manager.users.domain;
+package ar.edu.ungs.fleet_manager.shared.domain;
 
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 
@@ -8,6 +8,7 @@ public enum Module {
     ALERTS,
     ANALYTICS,
     CONTROLS,
+    ENTERPRISES,
     ORDERS,
     PRODUCTS,
     PROVIDERS,

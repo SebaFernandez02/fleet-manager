@@ -20,6 +20,7 @@ public final class ReserveFuelConsumptionCalculator {
 
     public double execute(Trip trip, Vehicle vehicle){
         Double distance = Double.parseDouble(trip.routes().getFirst().distance().replace(" km", ""));
+
         return (distance * vehicle.fuelConsumption().value()) / 100;
     }
 }

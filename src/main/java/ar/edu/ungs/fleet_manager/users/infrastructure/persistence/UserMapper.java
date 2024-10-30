@@ -10,6 +10,7 @@ public class UserMapper {
     private String password;
     private String fullName;
     private List<String> roles;
+    private String enterpriseId;
     private LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
 
@@ -18,6 +19,7 @@ public class UserMapper {
                       String password,
                       String fullName,
                       List<String> roles,
+                      String enterpriseId,
                       LocalDateTime dateCreated,
                       LocalDateTime dateUpdated) {
         this.id = id;
@@ -25,6 +27,7 @@ public class UserMapper {
         this.password = password;
         this.fullName = fullName;
         this.roles = roles;
+        this.enterpriseId = enterpriseId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
     }
@@ -39,6 +42,14 @@ public class UserMapper {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEnterpriseId() {
+        return enterpriseId;
+    }
+
+    public void setEnterpriseId(String enterpriseId) {
+        this.enterpriseId = enterpriseId;
     }
 
     public void setUsername(String username) {

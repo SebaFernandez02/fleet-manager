@@ -3,7 +3,7 @@ package ar.edu.ungs.fleet_manager.users.infrastructure.filters;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.UnauthorizedException;
 import ar.edu.ungs.fleet_manager.users.domain.*;
-import ar.edu.ungs.fleet_manager.users.domain.Module;
+import ar.edu.ungs.fleet_manager.shared.domain.Module;
 import ar.edu.ungs.fleet_manager.users.domain.services.PermissionsFinder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
