@@ -13,7 +13,8 @@ public record ReserveResponse(String id,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated,
                               LocalDateTime dateReserve,
-                              LocalDateTime dateFinishReserve) {
+                              LocalDateTime dateFinishReserve,
+                              Double fuelConsumption) {
     public static ReserveResponse map(Reserve aggregate) {
         return new ReserveResponse(aggregate.id().value(),
                 aggregate.vehicleId().value(),
@@ -23,6 +24,7 @@ public record ReserveResponse(String id,
                 aggregate.dateCreated(),
                 aggregate.dateUpdated(),
                 aggregate.dateReserve(),
-                aggregate.dateFinishReserve());
+                aggregate.dateFinishReserve(),
+                aggregate.fuelConsumption());
     }
 }
