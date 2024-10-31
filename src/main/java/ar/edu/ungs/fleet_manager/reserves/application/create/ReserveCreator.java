@@ -7,6 +7,7 @@ import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
+import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFuelConsumptionCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
@@ -27,19 +28,21 @@ public class ReserveCreator {
     private final ReserveFinder reserveFinder;
     private final TripCalculator tripCalculator;
     private final ControlCreator controlCreator;
+    private final ReserveFuelConsumptionCalculator fuelConsumptionCalculator;
 
     public ReserveCreator(ReserveRepository repository,
                           VehicleFinder finder,
                           UserFinder userFinder,
                           ReserveFinder reserveFinder,
                           TripCalculator tripCalculator,
-                          ControlCreator controlCreator) {
+                          ControlCreator controlCreator, ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
         this.reserveFinder = reserveFinder;
         this.tripCalculator = tripCalculator;
         this.controlCreator = controlCreator;
+        this.fuelConsumptionCalculator = fuelConsumptionCalculator;
     }
 
     public void execute(ReserveRequest request) {
@@ -56,7 +59,9 @@ public class ReserveCreator {
 
         var trip = this.tripCalculator.execute(vehicle.coordinates(), destination);
 
-        var reserve = Reserve.create(vehicle, user, trip, request.dateReserve(), request.dateFinishReserve());
+        var fuelConsumption = this.fuelConsumptionCalculator.execute(trip, vehicle);
+
+        var reserve = Reserve.create(vehicle, user, trip, request.dateReserve(), request.dateFinishReserve(), fuelConsumption);
 
         this.repository.save(reserve);
 
