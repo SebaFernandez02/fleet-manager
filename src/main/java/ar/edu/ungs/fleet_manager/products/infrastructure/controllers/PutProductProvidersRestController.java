@@ -17,9 +17,9 @@ public class PutProductProvidersRestController {
         this.updater = updater;
     }
 
-    @PutMapping("/api/products/{id}/providers")
-    public ResponseEntity<?> handle(@PathVariable String id, @RequestBody ProductProviderRequest request){
-        this.updater.execute(id, request);
+    @PutMapping("/api/products/{productId}/providers/{providerId}")
+    public ResponseEntity<?> handle(@PathVariable String productId, @PathVariable String providerId){
+        this.updater.execute(productId, providerId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

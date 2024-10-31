@@ -58,7 +58,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
 
         var sql = """
                   update orders set
-                   items = ?, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID)
+                   items = ?, date_created = ?, date_updated = ?, status = ?, provider_id = CAST(? AS UUID), amount = ?
                   where id = CAST(? AS UUID)
                 """;
         try {
@@ -71,6 +71,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
                     order.dateUpdated(),
                     order.status().name(),
                     order.providerId().value(),
+                    order.amount().value(),
                     order.id().value());
         } catch (DataAccessException | JsonProcessingException e) {
             throw new PostgresException(e.getMessage());

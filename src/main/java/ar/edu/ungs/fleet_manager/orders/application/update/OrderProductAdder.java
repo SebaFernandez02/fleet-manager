@@ -5,7 +5,11 @@ import ar.edu.ungs.fleet_manager.orders.domain.*;
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
+import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import ar.edu.ungs.fleet_manager.products.domain.services.ProductFinder;
+import ar.edu.ungs.fleet_manager.providers.application.ProviderResponse;
+import ar.edu.ungs.fleet_manager.providers.application.search.ProviderByProductSearcher;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,17 +17,23 @@ public final class OrderProductAdder {
     private final OrderRepository repository;
     private final ProductFinder productFinder;
     private final OrderFinder orderFinder;
+    private final ProviderByProductSearcher searcher;
 
-    public OrderProductAdder(OrderRepository repository, ProductFinder productFinder, OrderFinder orderFinder) {
+    public OrderProductAdder(OrderRepository repository, ProductFinder productFinder, OrderFinder orderFinder, ProviderByProductSearcher searcher) {
         this.repository = repository;
         this.productFinder = productFinder;
         this.orderFinder = orderFinder;
+        this.searcher = searcher;
     }
 
     public void execute(String id, AddOrderProductRequest request) {
         Order order = this.orderFinder.execute(new OrderId(id));
 
         Product product = this.productFinder.execute(new ProductId(request.productId()));
+
+        this.searcher.execute(product.id()).stream().map(ProviderResponse::id).filter(providerId -> providerId.equals(order.providerId().value())).findAny().orElseThrow(() -> new InvalidParameterException(String.format(
+                "The product with ID '%s' is not supplied by the provider associated with the order.",
+                request.productId())));
 
         var orderContainsProduct = order.items()
                                         .stream()

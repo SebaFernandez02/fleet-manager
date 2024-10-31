@@ -25,17 +25,17 @@ public class ProductProviderUpdater {
     }
 
 
-    public void execute(String id, ProductProviderRequest request){
-        Product product = this.productFinder.execute(new ProductId(id));
-        Provider provider = this.providerFinder.execute(new ProviderId(request.providerId()));
+    public void execute(String productId, String providerId){
+        Product product = this.productFinder.execute(new ProductId(productId));
+        Provider provider = this.providerFinder.execute(new ProviderId(providerId));
 
 
         this.repository.addProvider(product.id(),provider.id());
     }
 
-    public void delete(String id, ProductProviderRequest request){
-        Product product = this.productFinder.execute(new ProductId(id));
-        Provider provider = this.providerFinder.execute(new ProviderId(request.providerId()));
+    public void delete(String productId, String providerId){
+        Product product = this.productFinder.execute(new ProductId(productId));
+        Provider provider = this.providerFinder.execute(new ProviderId(providerId));
 
 
         this.repository.deleteProvider(product.id(),provider.id());
