@@ -4,7 +4,7 @@ import ar.edu.ungs.fleet_manager.enterprises.application.add.EnterpriseModuleAdd
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,7 +15,7 @@ public class PutEnterpriseController {
         this.adder = adder;
     }
 
-    @PostMapping("/api/enterprises/{id}/modules/{module}")
+    @PutMapping("/api/enterprises/{id}/modules/{module}")
     public ResponseEntity<?> handle(@PathVariable String id, @PathVariable String module) {
         this.adder.execute(id, module);
 

@@ -22,4 +22,12 @@ public record Enterprise(EnterpriseId id, EnterpriseName name, List<Module> modu
     public void add(Module module) {
         this.modules.add(module);
     }
+
+    public void remove(Module module) {
+        this.modules.remove(module);
+    }
+
+    public void removeAll() {
+        this.modules.clear();
+    }
 }
