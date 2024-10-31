@@ -152,8 +152,8 @@ public final class Product {
 
     public void setMinStock(Integer value){this.minStock = new ProductMinStock(value);}
 
-    public Optional<ProviderId> preferenceProviderId() {
-        return Optional.ofNullable(this.preferenceProviderId);
+    public ProviderId preferenceProviderId() {
+        return this.preferenceProviderId;
     }
 
     public void updatePrefProviderId(String providerId){this.preferenceProviderId = new ProviderId(providerId);}

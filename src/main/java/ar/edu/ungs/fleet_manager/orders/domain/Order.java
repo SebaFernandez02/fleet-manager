@@ -13,7 +13,7 @@ public final class Order {
     private OrderStatus status;
     private final ProviderId provider;
     private final List<OrderProduct> items;
-    private final OrderAmount amount;
+    private  OrderAmount amount;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
@@ -85,6 +85,12 @@ public final class Order {
         return this.status.equals(OrderStatus.COMPLETED);
     }
 
+    public void updateAmount(BigDecimal value){
+        BigDecimal actualValue =  amount().value();
+        this.amount = new OrderAmount(actualValue.equals(BigDecimal.ONE)?value:actualValue.add(value));
+
+    }
+
     public void setStatus(OrderStatus statusToUpdate){
         if(statusToUpdate.equals(this.status)){
             throw new InvalidParameterException("The Order status is already " + "'" +this.status.name() + "'");
@@ -126,7 +132,7 @@ public final class Order {
 
     public void add(ProductId productId, Quantity quantity, BigDecimal amount) {
         OrderProduct orderProduct = new OrderProduct(productId, quantity, amount);
-
+        updateAmount(amount);
         this.items.add(orderProduct);
     }
 }

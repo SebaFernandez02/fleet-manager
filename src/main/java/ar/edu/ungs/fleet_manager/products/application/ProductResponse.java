@@ -27,7 +27,7 @@ public record ProductResponse(String id,
                                     product.quantity().value(),
                                     product.measurement().name(),
                                     product.price().value(),
-                                    product.preferenceProviderId().map(ProviderId::value).orElse(null),
+                                    product.preferenceProviderId().value(),
                                     product.minStock().value(),
                                     product.automaticPurchase().name());
     }

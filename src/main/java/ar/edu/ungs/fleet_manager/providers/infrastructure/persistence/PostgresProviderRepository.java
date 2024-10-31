@@ -1,9 +1,13 @@
 package ar.edu.ungs.fleet_manager.providers.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderRepository;
+import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -82,6 +86,23 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Provider> searchProvidersByProduct(ProductId id){
+        try{
+            var sql = """
+                        select p.id, p.name, p.email, p.cuit, p.phone_number,p.address from products_suppliers ps
+                        join providers p on ps.provider_id= p.id
+                        where product_id = CAST(? as UUID)
+                    
+                    """;
+            return this.jdbcTemplate.query(sql, this, id.value());
+        }catch (EmptyResultDataAccessException e){
+            return Collections.emptyList();
+        } catch (DataAccessException e) {
+        throw new PostgresException(e.getMessage());
+    }
     }
 
     @Override
