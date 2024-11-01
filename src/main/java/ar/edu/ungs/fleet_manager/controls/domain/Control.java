@@ -1,9 +1,15 @@
 package ar.edu.ungs.fleet_manager.controls.domain;
 
+import ar.edu.ungs.fleet_manager.orders.domain.OrderProduct;
+import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
+import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -18,6 +24,7 @@ public final class Control {
     private final ControlPriority priority;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
+    private final List<ControlProduct> productList;
 
     public Control(ControlId id,
                    ControlType type,
@@ -28,7 +35,8 @@ public final class Control {
                    VehicleId vehicleId,
                    ControlPriority priority,
                    LocalDateTime dateCreated,
-                   LocalDateTime dateUpdated) {
+                   LocalDateTime dateUpdated,
+                   List<ControlProduct> productList) {
         this.id = id;
         this.type = type;
         this.subject = subject;
@@ -39,6 +47,7 @@ public final class Control {
         this.operatorId = operatorId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
+        this.productList = new ArrayList<>(productList);
     }
 
     public static Control create(String type,
@@ -55,7 +64,7 @@ public final class Control {
                      description,
                      vehicleId,
                      priority,
-                     LocalDateTime.now(), LocalDateTime.now());
+                     LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>());
     }
 
     public static Control build(String id,
@@ -67,7 +76,7 @@ public final class Control {
                                 String vehicleId,
                                 String priority,
                                 LocalDateTime dateCreated,
-                                LocalDateTime dateUpdated){
+                                LocalDateTime dateUpdated, List<ControlProduct> productList){
         return new Control(new ControlId(id),
                            ControlType.parse(type),
                            ControlStatus.parse(status),
@@ -76,7 +85,7 @@ public final class Control {
                            new ControlDescription(description),
                            new VehicleId(vehicleId),
                            ControlPriority.parse(priority),
-                           dateCreated, dateUpdated);
+                           dateCreated, dateUpdated, productList);
     }
 
     public ControlId id() {
@@ -119,6 +128,8 @@ public final class Control {
         return operatorId;
     }
 
+    public List<ControlProduct> products() {return productList;}
+
     public void setStatus(ControlStatus status) {
         this.status = status;
         this.dateUpdated = LocalDateTime.now();
@@ -134,12 +145,12 @@ public final class Control {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Control control = (Control) o;
-        return Objects.equals(id, control.id) && type == control.type && Objects.equals(subject, control.subject) && Objects.equals(description, control.description) && Objects.equals(vehicleId, control.vehicleId) && priority == control.priority && Objects.equals(dateCreated, control.dateCreated) && status == control.status && Objects.equals(operatorId, control.operatorId);
+        return Objects.equals(id, control.id) && type == control.type && Objects.equals(subject, control.subject) && Objects.equals(description, control.description) && Objects.equals(vehicleId, control.vehicleId) && priority == control.priority && Objects.equals(dateCreated, control.dateCreated) && status == control.status && Objects.equals(operatorId, control.operatorId) && Objects.equals(productList, control.productList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, type, status, operatorId, subject, description, vehicleId, priority, dateCreated, dateUpdated);
+        return Objects.hash(id, type, status, operatorId, subject, description, vehicleId, priority, dateCreated, dateUpdated, productList);
     }
 
     @Override
@@ -155,6 +166,16 @@ public final class Control {
                 ", priority=" + priority +
                 ", dateCreated=" + dateCreated +
                 ", dateUpdated=" + dateUpdated +
+                ", productList=" + productList +
                 '}';
     }
+
+    public void addProducts(ProductId productId, Quantity quantity) {
+        ControlProduct controlProduct = new ControlProduct(productId, quantity);
+
+        this.productList.add(controlProduct);
+    }
+
+
+
 }
