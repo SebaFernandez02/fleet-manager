@@ -176,6 +176,10 @@ public final class Control {
         this.productList.add(controlProduct);
     }
 
+    public void deleteProducts(){
+
+        this.productList.clear();
+    }
 
 
 }
