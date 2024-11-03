@@ -151,6 +151,22 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     }
 
     @Override
+    public List<Product> searchByProvider(ProviderId providerId) {
+        try{
+            var sql = """
+                            SELECT p.* 
+                            FROM products_suppliers ps
+                            inner join products p on p.id = ps.product_id
+                            where ps.provider_id = CAST(? AS UUID) 
+                        """;
+            return this.jdbcTemplate.query(sql, this, providerId.value());
+        }catch (EmptyResultDataAccessException e){
+            return Collections.emptyList();
+
+        }
+    }
+
+    @Override
     public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
         var id = rs.getString("id");
         var name = rs.getString("name");

@@ -1,7 +1,6 @@
 package ar.edu.ungs.fleet_manager.products.infrastructure.controllers;
 
-import ar.edu.ungs.fleet_manager.products.application.ProductProvidersResponse;
-import ar.edu.ungs.fleet_manager.products.application.find.ProductByIdFinder;
+import ar.edu.ungs.fleet_manager.products.application.search.ProductsByProviderSearcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,18 +8,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class GetProductProvidersRestController {
-    private final ProductByIdFinder finder;
+    private final ProductsByProviderSearcher searcher;
 
-    public GetProductProvidersRestController(ProductByIdFinder finder) {
-        this.finder = finder;
+    public GetProductProvidersRestController(ProductsByProviderSearcher searcher) {
+        this.searcher = searcher;
     }
 
-    @GetMapping("/api/products/{id}/providers")
-    public ResponseEntity<ProductProvidersResponse> handle(@PathVariable String id){
-        var result = this.finder.executeProviders(id);
+    @GetMapping("/api/providers/{id}/products")
+    public ResponseEntity<?> handle(@PathVariable String id){
+        var result = this.searcher.execute(id);
 
         return ResponseEntity.ok(result);
     }
-
-
 }

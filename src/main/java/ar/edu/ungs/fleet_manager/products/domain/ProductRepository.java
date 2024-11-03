@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.products.domain;
 
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,5 @@ public interface ProductRepository {
 
     List<Product> searchAllNoStockAutoPurchase();
 
+    List<Product> searchByProvider(ProviderId providerId);
 }
