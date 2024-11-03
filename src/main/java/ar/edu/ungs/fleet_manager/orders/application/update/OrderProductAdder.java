@@ -12,6 +12,8 @@ import ar.edu.ungs.fleet_manager.providers.application.search.ProviderByProductS
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public final class OrderProductAdder {
     private final OrderRepository repository;
@@ -43,10 +45,11 @@ public final class OrderProductAdder {
         if (orderContainsProduct.isEmpty()) {
             Quantity quantity = new Quantity(request.quantity());
 
-            order.add(product.id(), quantity, request.amount());
+            BigDecimal amount = product.price().value().multiply(BigDecimal.valueOf(quantity.value()));
+
+            order.add(product.id(), quantity, amount);
 
             this.repository.save(order);
         }
-
     }
 }
