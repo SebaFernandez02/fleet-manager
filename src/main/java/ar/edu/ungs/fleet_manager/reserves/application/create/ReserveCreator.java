@@ -1,7 +1,7 @@
 package ar.edu.ungs.fleet_manager.reserves.application.create;
 
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
-import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
+import ar.edu.ungs.fleet_manager.controls.application.create.DefaultControlCreator;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
@@ -27,7 +27,7 @@ public class ReserveCreator {
     private final UserFinder userFinder;
     private final ReserveFinder reserveFinder;
     private final TripCalculator tripCalculator;
-    private final ControlCreator controlCreator;
+    private final DefaultControlCreator controlCreator;
     private final ReserveFuelConsumptionCalculator fuelConsumptionCalculator;
 
     public ReserveCreator(ReserveRepository repository,
@@ -35,7 +35,7 @@ public class ReserveCreator {
                           UserFinder userFinder,
                           ReserveFinder reserveFinder,
                           TripCalculator tripCalculator,
-                          ControlCreator controlCreator, ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
+                          DefaultControlCreator controlCreator, ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
@@ -79,10 +79,10 @@ public class ReserveCreator {
     }
 
     private void createControl(Vehicle vehicle) {
-        ControlRequest request = new ControlRequest("PREVENTIVE",
+        ControlRequest request = ControlRequest.from("PREVENTIVE",
                                                     "Control preventivo de vehiculo previo a su viaje",
                                                     "Por favor, realizar verificación técnica de forma general",
-                                                    vehicle.id().value(), "LOW", null);
+                                                    vehicle.id().value(), "LOW");
 
         this.controlCreator.execute(request);
     }

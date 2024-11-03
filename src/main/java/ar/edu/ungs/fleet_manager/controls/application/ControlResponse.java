@@ -31,4 +31,17 @@ public record ControlResponse (String id,
                                    control.status().toString(),
                                    operator == null ? null : UserResponse.map(operator));
     }
+
+    public static ControlResponse map(Control control){
+        return new ControlResponse(control.id().value(),
+                control.type().toString(),
+                control.subject().value(),
+                control.description().value(),
+                null,
+                control.priority().toString(),
+                control.dateCreated(),
+                control.dateUpdated(),
+                control.status().toString(),
+                null);
+    }
 }

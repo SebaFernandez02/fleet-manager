@@ -22,7 +22,8 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.5'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation ('org.springframework.boot:spring-boot-starter-web')
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 	implementation 'org.locationtech.jts:jts-core:1.19.0'
