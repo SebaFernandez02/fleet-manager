@@ -50,6 +50,20 @@ public final class OrderProductAdder {
             order.add(product.id(), quantity, amount);
 
             this.repository.save(order);
+        }else{
+            OrderProduct oldProduct = orderContainsProduct.get();
+
+            Quantity quantity = new Quantity(oldProduct.quantity().value() + request.quantity());
+
+            BigDecimal amount = product.price().value().multiply(BigDecimal.valueOf(quantity.value()));
+
+            OrderProduct newProduct = new OrderProduct(oldProduct.productId(), quantity , amount);
+
+            BigDecimal addOrderAmount = product.price().value().multiply(BigDecimal.valueOf(request.quantity()));
+
+            order.addExistingproduct(newProduct, addOrderAmount);
+
+            this.repository.save(order);
         }
     }
 }

@@ -135,4 +135,15 @@ public final class Order {
         updateAmount(amount);
         this.items.add(orderProduct);
     }
+
+    public void addExistingproduct(OrderProduct product, BigDecimal amount){
+        for(OrderProduct p : items){
+            if(p.productId().equals(product.productId())){
+                this.items.remove(p);
+                this.items.add(product);
+                updateAmount(amount);
+
+            }
+        }
+    }
 }
