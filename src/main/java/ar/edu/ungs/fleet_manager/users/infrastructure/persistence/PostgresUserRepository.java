@@ -45,20 +45,37 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
     }
 
     private void update(User user) {
-        var sql = """
+        if (user.enterpriseId().isPresent()) {
+            var sql = """
                     update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, enterprise_id = ?, date_created = ?, date_updated = ?
                     where id = CAST(? as UUID)
                 """;
 
-        this.jdbcTemplate.update(sql,
-                                 user.id().value(),
-                                 user.username().value(),
-                                 user.password().value(),
-                                 user.fullName().value(),
-                                 user.enterpriseId().map(EnterpriseId::value).orElse(null),
-                                 user.dateCreated(),
-                                 user.dateUpdated(),
-                                 user.id().value());
+            this.jdbcTemplate.update(sql,
+                    user.id().value(),
+                    user.username().value(),
+                    user.password().value(),
+                    user.fullName().value(),
+                    user.enterpriseId().get(),
+                    user.dateCreated(),
+                    user.dateUpdated(),
+                    user.id().value());
+        } else {
+            var sql = """
+                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, date_created = ?, date_updated = ?
+                    where id = CAST(? as UUID)
+                """;
+
+            this.jdbcTemplate.update(sql,
+                    user.id().value(),
+                    user.username().value(),
+                    user.password().value(),
+                    user.fullName().value(),
+                    user.dateCreated(),
+                    user.dateUpdated(),
+                    user.id().value());
+        }
+
 
         this.saveRoles(user);
     }
