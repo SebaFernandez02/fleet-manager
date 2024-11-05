@@ -29,7 +29,7 @@ public final class OrderByIdFinder {
     public OrderResponse execute(String orderId){
         Order order = this.orderFinder.execute(new OrderId(orderId));
         ProviderResponse provider = this.providerFinder.execute(order.providerId().value());
-        List<OrderProductResponse> products = order.items().stream().map(x -> new OrderProductResponse(this.productFinder.execute(x.productId().value()), x.quantity().value())).toList();
+        List<OrderProductResponse> products = order.items().stream().map(x -> new OrderProductResponse(this.productFinder.execute(x.productId().value()), x.quantity().value(), x.amount())).toList();
         return OrderResponse.map(order, provider, products);
     }
 }

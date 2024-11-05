@@ -8,6 +8,7 @@ import ar.edu.ungs.fleet_manager.vehicles.application.VehicleResponse;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ControlResponse (String id,
                                String type,
@@ -18,8 +19,9 @@ public record ControlResponse (String id,
                                LocalDateTime dateCreated,
                                LocalDateTime dateUpdated,
                                String status,
-                               UserResponse operator) {
-    public static ControlResponse map(Control control, Vehicle vehicle, User operator){
+                               UserResponse operator,
+                               List<ControlProductResponse> products) {
+    public static ControlResponse map(Control control, Vehicle vehicle, User operator,List<ControlProductResponse> productList){
         return new ControlResponse(control.id().value(),
                                    control.type().toString(),
                                    control.subject().value(),
@@ -29,6 +31,7 @@ public record ControlResponse (String id,
                                    control.dateCreated(),
                                    control.dateUpdated(),
                                    control.status().toString(),
-                                   operator == null ? null : UserResponse.map(operator));
+                                   operator == null ? null : UserResponse.map(operator),
+                                   productList);
     }
 }
