@@ -61,7 +61,7 @@ public class ReserveCreator {
 
         var fuelConsumption = this.fuelConsumptionCalculator.execute(trip, vehicle);
 
-        var reserve = Reserve.create(vehicle, user, trip, request.dateReserve(), request.dateFinishReserve(), fuelConsumption);
+        var reserve = Reserve.create(vehicle, user, trip, request.dateReserve(), request.dateFinishReserve(), fuelConsumption, request.enterpriseId());
 
         this.repository.save(reserve);
 
@@ -70,7 +70,7 @@ public class ReserveCreator {
 
     private void ensureVehicleNotContainsReserve(Vehicle vehicle) {
         try {
-            reserveFinder.execute(vehicle.id(), ReserveStatus.CREATED, ReserveStatus.ACTIVATED);
+            reserveFinder.execute(vehicle.id(), vehicle.enterpriseId(), ReserveStatus.CREATED, ReserveStatus.ACTIVATED);
 
             throw new InvalidParameterException("vehicle contains an reserve");
         } catch (NotFoundException ignored) {
@@ -82,7 +82,7 @@ public class ReserveCreator {
         ControlRequest request = new ControlRequest("PREVENTIVE",
                                                     "Control preventivo de vehiculo previo a su viaje",
                                                     "Por favor, realizar verificación técnica de forma general",
-                                                    vehicle.id().value(), "LOW", null);
+                                                    vehicle.id().value(), "LOW", null, vehicle.enterpriseId().value());
 
         this.controlCreator.execute(request);
     }

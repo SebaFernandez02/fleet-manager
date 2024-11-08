@@ -37,7 +37,8 @@ public final class VehicleCreator {
                                          request.load(),
                                          request.hasTrailer(),
                                          request.coordinates().latitude(),
-                                         request.coordinates().longitude());
+                                         request.coordinates().longitude(),
+                                         request.enterpriseId());
 
         this.repository.save(vehicle);
     }

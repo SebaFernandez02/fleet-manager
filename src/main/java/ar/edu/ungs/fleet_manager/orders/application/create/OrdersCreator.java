@@ -48,7 +48,7 @@ public class OrdersCreator {
 
             productAdder.execute(order.id().value(), request);
         } catch (NotFoundException ignored) {
-            OrderRequest request = new OrderRequest(providerId.value());
+            OrderRequest request = new OrderRequest(providerId.value(), x.enterpriseId().value());
 
             this.orderCreator.execute(request);
 

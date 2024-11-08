@@ -35,7 +35,8 @@ public final class ControlCreator {
                                          request.description(),
                                          request.vehicleId(),
                                          request.priority(),
-                                         request.operatorId());
+                                         request.operatorId(),
+                                         request.enterpriseId());
 
         this.repository.save(control);
         this.vehicleMaintainer.execute(control.vehicleId());

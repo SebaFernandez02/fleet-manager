@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.reserves.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.reserves.domain.*;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions.InfrastructureException;
 import ar.edu.ungs.fleet_manager.trips.domain.Trip;
@@ -70,8 +71,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     private void create(Reserve reserve) {
         try {
             var sql = """
-                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption) 
-                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?, ?, ?, ?)
+                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption, enterprise_id) 
+                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?, ?, ?, ?, CAST(? as UUID))
                     """;
             this.jdbcTemplate.update(sql,
                                      reserve.id().value(),
@@ -83,7 +84,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      reserve.dateUpdated(),
                                      reserve.dateReserve(),
                                      reserve.dateFinishReserve(),
-                                     reserve.fuelConsumption());
+                                     reserve.fuelConsumption(),
+                                     reserve.enterpriseId().value());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
         }
@@ -107,44 +109,47 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     }
 
     @Override
-    public List<Reserve> findByUserId(UserId id) {
+    public List<Reserve> findByUserId(UserId id, EnterpriseId enterpriseId) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption
+                select *
                 from reserves r
                 where r.user_id = CAST(? as UUID)
+                and enterprise_id = CAST(? as UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this, id.value());
+            return this.jdbcTemplate.query(sql, this, id.value(), enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public List<Reserve> findByVehicleId(VehicleId id) {
+    public List<Reserve> findByVehicleId(VehicleId id, EnterpriseId enterpriseId) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption
+                select *
                 from reserves r
                 where r.vehicle_id = ?
+                and enterprise_id = CAST(? as UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this, id.value());
+            return this.jdbcTemplate.query(sql, this, id.value(), enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public List<Reserve> searchAll() {
+    public List<Reserve> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption
+                select *
                 from reserves r
+                where enterprise_id = CAST(? AS UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -155,6 +160,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         var id = rs.getString("id");
         var status = rs.getString("status");
         var vehicleId = rs.getString("vehicle_id");
+        var enterpriseId = rs.getString("enterprise_id");
         var userId = rs.getString("user_id");
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
@@ -163,7 +169,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         var dateFinishReserve = rs.getTimestamp("date_finish_reserve").toLocalDateTime();
         var fuelConsumption = rs.getDouble("fuel_consumption");
 
-        return Reserve.build(id, status, vehicleId, userId, trip, dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption);
+        return Reserve.build(id, status, vehicleId, userId, trip, enterpriseId, dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption);
     }
 
     private Trip mapTrip(String trip) {

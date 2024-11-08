@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.analytics.application.search;
 
 import ar.edu.ungs.fleet_manager.analytics.application.AnalyticResponse;
 import ar.edu.ungs.fleet_manager.analytics.domain.AnalyticRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public final class AnalyticsSearcher {
         this.repository = repository;
     }
 
-    public List<AnalyticResponse> execute() {
-        return this.repository.search()
+    public List<AnalyticResponse> execute(EnterpriseId enterpriseId) {
+        return this.repository.search(enterpriseId)
                               .stream().map(AnalyticResponse::map)
                               .toList();
     }

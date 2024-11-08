@@ -5,6 +5,7 @@ public record ControlRequest(String type,
                              String description,
                              String vehicleId,
                              String priority,
-                             String operatorId) {
+                             String operatorId,
+                             String enterpriseId) {
 
 }

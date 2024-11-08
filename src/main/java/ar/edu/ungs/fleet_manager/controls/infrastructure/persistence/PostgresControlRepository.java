@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.controls.infrastructure.persistence;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlId;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,8 +56,8 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
     private void create(Control control) {
         try{
             var sql= """
-                    insert into controls (id, type, subject, description, vehicle_id, priority, status, operator_id, date_created, date_updated, products) values 
-                                         (CAST(? as UUID), ?, ?, ?, ?, ?, ?, CAST(? as UUID), ?, ?, ?)
+                    insert into controls (id, type, subject, description, vehicle_id, priority, status, operator_id, date_created, date_updated, products, enterprise_id) values 
+                                         (CAST(? as UUID), ?, ?, ?, ?, ?, ?, CAST(? as UUID), ?, ?, ?, CAST(? as UUID))
                     """;
 
             String productsJson = mapper.writeValueAsString(control.products().stream().map(ControlProductDto::map).toList());
@@ -71,7 +72,8 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
                                      control.operatorId() == null ? null : control.operatorId().value(),
                                      control.dateCreated(),
                                      control.dateUpdated(),
-                                     productsJson);
+                                     productsJson,
+                                     control.enterpriseId().value());
         } catch (NestedRuntimeException | JsonProcessingException e) {
             throw new PostgresException(e.getMessage());
         }
@@ -91,11 +93,15 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
     }
 
     @Override
-    public List<Control> searchAll() {
+    public List<Control> searchAll(EnterpriseId enterpriseId) {
         try {
-            var sql = "select * from controls order by date_updated desc";
+            var sql = """
+                    select * from controls 
+                    where enterprise_id = CAST(? AS UUID) 
+                    order by date_updated desc
+                    """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
 
         }catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
@@ -117,9 +123,9 @@ public class PostgresControlRepository implements ControlRepository, RowMapper<C
             var operatorId = rs.getString("operator_id");
             var productsJson = rs.getString("products");
             var products = mapper.readValue(productsJson, new TypeReference<List<ControlProductDto>>(){}).stream().map(ControlProductDto::map).toList();
+            var enterpriseId = rs.getString("enterprise_id");
 
-
-            return Control.build(id, type, status, operatorId, subject, description, vehicleId, priority, dateCreated, dateUpdated,products);
+            return Control.build(id, type, status, operatorId, subject, description, vehicleId, priority, enterpriseId, dateCreated, dateUpdated,products);
         }catch (SQLException | JsonProcessingException e){
             throw new PostgresException(e.getMessage());
         }

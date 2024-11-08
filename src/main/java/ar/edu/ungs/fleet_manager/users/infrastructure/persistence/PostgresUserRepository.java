@@ -45,37 +45,19 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
     }
 
     private void update(User user) {
-        if (user.enterpriseId().isPresent()) {
-            var sql = """
-                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, enterprise_id = ?, date_created = ?, date_updated = ?
-                    where id = CAST(? as UUID)
-                """;
-
-            this.jdbcTemplate.update(sql,
-                    user.id().value(),
-                    user.username().value(),
-                    user.password().value(),
-                    user.fullName().value(),
-                    user.enterpriseId().get(),
-                    user.dateCreated(),
-                    user.dateUpdated(),
-                    user.id().value());
-        } else {
-            var sql = """
+        var sql = """
                     update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, date_created = ?, date_updated = ?
                     where id = CAST(? as UUID)
                 """;
 
-            this.jdbcTemplate.update(sql,
-                    user.id().value(),
-                    user.username().value(),
-                    user.password().value(),
-                    user.fullName().value(),
-                    user.dateCreated(),
-                    user.dateUpdated(),
-                    user.id().value());
-        }
-
+        this.jdbcTemplate.update(sql,
+                user.id().value(),
+                user.username().value(),
+                user.password().value(),
+                user.fullName().value(),
+                user.dateCreated(),
+                user.dateUpdated(),
+                user.id().value());
 
         this.saveRoles(user);
     }
@@ -158,7 +140,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
     }
 
     @Override
-    public List<User> searchAll() {
+    public List<User> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
                 select
@@ -172,6 +154,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.date_updated
                 from users u
                     left join user_roles r on r.user_id = u.id
+                where u.enterprise_id = CAST(? AS UUID)
             """;
 
             return this.jdbcTemplate.query(sql, rs -> {
@@ -209,7 +192,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                         x.getEnterpriseId(),
                         x.getDateCreated(),
                         x.getDateUpdated())).collect(Collectors.toList());
-            });
+            }, enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }

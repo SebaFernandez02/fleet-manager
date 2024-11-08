@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.products.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
@@ -32,8 +33,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
 
     private void create(Product product) {
         var sql = """
-                    insert into products(id, name, brand, category, quantity, description, measurement, price, pref_provider_id, min_stock, auto_purchase)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    insert into products(id, name, brand, category, quantity, description, measurement, price, pref_provider_id, min_stock, auto_purchase, enterprise_id)
+                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST(? as UUID))
                 """;
 
 
@@ -48,7 +49,8 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
                 product.price().value(),
                 product.preferenceProviderId().value(),
                 product.minStock().value(),
-                product.automaticPurchase().name());
+                product.automaticPurchase().name(),
+                product.enterpriseId().value());
 
         addProvider(product.id(),product.preferenceProviderId());
 
@@ -112,12 +114,12 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
     }
 
     @Override
-    public List<Product> searchAll() {
+    public List<Product> searchAll(EnterpriseId enterpriseId) {
         try{
             var sql = """
-                        SELECT * FROM products
+                        SELECT * FROM products where enterprise_id = CAST(? AS UUID)
                     """;
-           return this.jdbcTemplate.query(sql, this);
+           return this.jdbcTemplate.query(sql, this, enterpriseId.value());
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
         }
@@ -179,8 +181,9 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         var provider_id = rs.getString("pref_provider_id");
         var minStock = rs.getInt("min_stock");
         var autoPurchase = rs.getString("auto_purchase");
+        var enterpriseId = rs.getString("enterprise_id");
 
-        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id, minStock, autoPurchase);
+        return Product.build(id,name,brand,description,category,quantity, measurement, price, provider_id, minStock, autoPurchase,enterpriseId);
 
     }
 }

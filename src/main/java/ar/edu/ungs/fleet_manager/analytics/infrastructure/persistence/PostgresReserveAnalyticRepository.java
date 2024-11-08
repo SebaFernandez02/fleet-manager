@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.analytics.domain.*;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,16 +17,18 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
     }
 
     @Override
-    public List<Analytic> search() {
-        return List.of(quantity(), countByStatus(), countByVehicle(), countByUser());
+    public List<Analytic> search(EnterpriseId enterpriseId) {
+        return List.of(quantity(enterpriseId), countByStatus(enterpriseId), countByVehicle(enterpriseId), countByUser(enterpriseId));
     }
 
-    public Analytic quantity() {
+    public Analytic quantity(EnterpriseId enterpriseId) {
         var sql = """
-                    select count(1) from reserves;
+                    select count(1) 
+                    from reserves
+                    where enterprise_id = CAST(? AS UUID);
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.VALUE,
@@ -33,14 +36,15 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                 value);
     }
 
-    public Analytic countByStatus() {
+    public Analytic countByStatus(EnterpriseId enterpriseId) {
         var sql = """
                     select status, count(1)
                     from reserves
+                    where enterprise_id = CAST(? AS UUID)
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,
@@ -48,17 +52,18 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                 value);
     }
 
-    public Analytic countByVehicle() {
+    public Analytic countByVehicle(EnterpriseId enterpriseId) {
         var sql = """
                     select
                     	CONCAT(v.brand, ' ', v.model),
                       count(1)
                     from reserves r
                       inner join vehicles v on v.id = r.vehicle_id
+                    where r.enterprise_id = CAST(? AS UUID)
                     group by 1;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,
@@ -66,7 +71,7 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                 value);
     }
 
-    public Analytic countByUser() {
+    public Analytic countByUser(EnterpriseId enterpriseId) {
         var sql = """
                     select
                      r.user_id,
@@ -74,10 +79,11 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                      count(1)
                     from reserves r
                       inner join users u on u.id = r.user_id
+                    where r.enterprise_id = CAST(? AS UUID)
                     group by 1, 2;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,

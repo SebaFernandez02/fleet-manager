@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.orders.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface OrderRepository {
 
     Optional<Order> findById(OrderId id);
 
-    List<Order> searchAll();
+    List<Order> searchAll(EnterpriseId enterpriseId);
 
     Optional<Order> findByProviderId(ProviderId id);
 }

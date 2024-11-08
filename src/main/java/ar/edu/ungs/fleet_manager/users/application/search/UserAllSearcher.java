@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.users.application.search;
 
 import ar.edu.ungs.fleet_manager.enterprises.domain.Enterprise;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.enterprises.domain.services.EnterpriseFinder;
 import ar.edu.ungs.fleet_manager.users.application.UserResponse;
 import ar.edu.ungs.fleet_manager.users.domain.Permissions;
@@ -25,8 +26,8 @@ public final class UserAllSearcher {
         this.enterpriseFinder = enterpriseFinder;
     }
 
-    public List<UserResponse> execute() {
-        return this.repository.searchAll()
+    public List<UserResponse> execute(EnterpriseId enterpriseId) {
+        return this.repository.searchAll(enterpriseId)
                               .stream()
                               .map(this::apply)
                               .toList();

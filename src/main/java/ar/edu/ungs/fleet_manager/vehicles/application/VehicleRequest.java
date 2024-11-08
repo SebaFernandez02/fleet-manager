@@ -16,5 +16,6 @@ public record VehicleRequest(String id,
                              Integer cantSeats,
                              Integer load,
                              boolean hasTrailer,
+                             String enterpriseId,
                              CoordinatesRequest coordinates) {
 }

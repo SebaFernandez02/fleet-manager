@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.application.search;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.vehicles.application.VehicleResponse;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleRepository;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,8 @@ public final class VehiclesAllSearcher {
         this.repository = repository;
     }
 
-    public List<VehicleResponse> execute() {
-        return this.repository.searchAll()
+    public List<VehicleResponse> execute(EnterpriseId enterpriseId) {
+        return this.repository.searchAll(enterpriseId)
                               .stream()
                               .map(VehicleResponse::map)
                               .toList();

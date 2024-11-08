@@ -4,6 +4,7 @@ import ar.edu.ungs.fleet_manager.controls.application.ControlProductResponse;
 import ar.edu.ungs.fleet_manager.controls.application.ControlResponse;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.application.find.ProductByIdFinder;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.services.PermissionsFinder;
@@ -29,8 +30,8 @@ public final class ControlAllSearcher {
         this.productFinder = productFinder;
     }
 
-    public List<ControlResponse> execute(){
-        return this.repository.searchAll().stream().map(this::apply).toList();
+    public List<ControlResponse> execute(EnterpriseId enterpriseId){
+        return this.repository.searchAll(enterpriseId).stream().map(this::apply).toList();
     }
 
     private ControlResponse apply(Control control){

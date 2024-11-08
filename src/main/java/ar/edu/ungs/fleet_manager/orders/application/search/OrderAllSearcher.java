@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.orders.application.search;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.orders.application.OrderProductResponse;
 import ar.edu.ungs.fleet_manager.orders.application.OrderResponse;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
@@ -24,8 +25,8 @@ public final class OrderAllSearcher {
         this.productFinder = productFinder;
     }
 
-    public List<OrderResponse> execute() {
-        return this.repository.searchAll()
+    public List<OrderResponse> execute(EnterpriseId enterpriseId) {
+        return this.repository.searchAll(enterpriseId)
                               .stream()
                               .map(this::apply)
                               .toList();

@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.analytics.domain.*;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,18 +17,19 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
     }
 
     @Override
-    public List<Analytic> search() {
-        return List.of(quantity(), brandCount(), categoryCount(), brandCategoryCount(), providerCount());
+    public List<Analytic> search(EnterpriseId enterpriseId) {
+        return List.of(quantity(enterpriseId), brandCount(enterpriseId), categoryCount(enterpriseId), brandCategoryCount(enterpriseId), providerCount(enterpriseId));
     }
 
-    public Analytic quantity() {
+    public Analytic quantity(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         count(1) as quantity
-                    from products;
+                    from products
+                    where enterprise_id = CAST(? AS UUID);
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.VALUE,
@@ -35,15 +37,16 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                 value);
     }
 
-    public Analytic brandCategoryCount() {
+    public Analytic brandCategoryCount(EnterpriseId enterpriseId) {
         var sql = """
                     select brand, category,
                         count(1) as quantity
                     from products
+                    where enterprise_id = CAST(? AS UUID)
                     group by brand, category;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -51,15 +54,16 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                 value);
     }
 
-    public Analytic brandCount() {
+    public Analytic brandCount(EnterpriseId enterpriseId) {
         var sql = """
                     select brand,
                         count(1) as quantity
                     from products
+                    where enterprise_id = CAST(? AS UUID)
                     group by brand;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -67,15 +71,16 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                 value);
     }
 
-    public Analytic categoryCount() {
+    public Analytic categoryCount(EnterpriseId enterpriseId) {
         var sql = """
                     select category,
                         count(1) as quantity
                     from products
+                    where enterprise_id = CAST(? AS UUID)
                     group by category;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -83,16 +88,17 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                 value);
     }
 
-    public Analytic providerCount() {
+    public Analytic providerCount(EnterpriseId enterpriseId) {
         var sql = """
                 select pr.name as provider_name,
                        COUNT(p.id) as quantity
                 from products p
                 join providers pr on CAST(p.pref_provider_id AS UUID) = pr.id
+                where p.enterprise_id = CAST(? AS UUID)
                 group by pr.name;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,

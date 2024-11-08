@@ -1,6 +1,8 @@
 package ar.edu.ungs.fleet_manager.vehicles.domain;
 
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -9,7 +11,6 @@ public final class Vehicle {
     private VehicleModel model;
     private VehicleBrand brand;
     private VehicleYear year;
-
     private VehicleType type;
     private VehicleColor color;
     private VehicleFuel fuelType;
@@ -19,9 +20,9 @@ public final class Vehicle {
     private VehicleSeats cantSeats;
     private VehicleLoad load;
     private boolean hasTrailer;
-
     private VehicleStatus status;
     private Coordinates coordinates;
+    private final EnterpriseId enterpriseId;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
 
@@ -39,7 +40,7 @@ public final class Vehicle {
                    VehicleLoad load,
                    boolean hasTrailer,
                    VehicleStatus status,
-                   Coordinates coordinates,
+                   Coordinates coordinates, EnterpriseId enterpriseId,
                    LocalDateTime dateCreated,
                    LocalDateTime dateUpdated) {
         this.id = id;
@@ -57,6 +58,7 @@ public final class Vehicle {
         this.hasTrailer = hasTrailer;
         this.status = status;
         this.coordinates = coordinates;
+        this.enterpriseId = enterpriseId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
     }
@@ -75,7 +77,8 @@ public final class Vehicle {
                                  Integer load,
                                  boolean hasTrailer,
                                  Double latitude,
-                                 Double longitude) {
+                                 Double longitude,
+                                 String enterpriseId) {
         final String initialStatus = "AVAILABLE";
 
         return build(id,
@@ -94,6 +97,7 @@ public final class Vehicle {
                      initialStatus,
                      latitude,
                      longitude,
+                     enterpriseId,
                      LocalDateTime.now(),
                      LocalDateTime.now());
     }
@@ -114,6 +118,7 @@ public final class Vehicle {
                                 String status,
                                 Double latitude,
                                 Double longitude,
+                                String enterpriseId,
                                 LocalDateTime dateCreated,
                                 LocalDateTime dateUpdated) {
         return new Vehicle(new VehicleId(id),
@@ -131,8 +136,8 @@ public final class Vehicle {
                 hasTrailer,
                 VehicleStatus.parse(status),
                 new Coordinates(latitude, longitude),
-                dateCreated,
-                dateUpdated);
+                new EnterpriseId(enterpriseId),
+                dateCreated, dateUpdated);
     }
 
     public VehicleId id() {
@@ -274,6 +279,10 @@ public final class Vehicle {
     public void updateCoordinates(Double latitude, Double longitude) {
         this.coordinates = new Coordinates(latitude, longitude);
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
     }
 
     public boolean isNotAvailable() { return VehicleStatus.UNAVAILABLE.equals(this.status);}

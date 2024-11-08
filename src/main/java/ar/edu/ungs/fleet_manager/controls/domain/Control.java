@@ -1,12 +1,11 @@
 package ar.edu.ungs.fleet_manager.controls.domain;
 
-import ar.edu.ungs.fleet_manager.orders.domain.OrderProduct;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,7 @@ public final class Control {
     private final ControlDescription description;
     private final VehicleId vehicleId;
     private final ControlPriority priority;
+    private final EnterpriseId enterpriseId;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
     private final List<ControlProduct> productList;
@@ -34,6 +34,7 @@ public final class Control {
                    ControlDescription description,
                    VehicleId vehicleId,
                    ControlPriority priority,
+                   EnterpriseId enterpriseId,
                    LocalDateTime dateCreated,
                    LocalDateTime dateUpdated,
                    List<ControlProduct> productList) {
@@ -45,6 +46,7 @@ public final class Control {
         this.priority = priority;
         this.status = status;
         this.operatorId = operatorId;
+        this.enterpriseId = enterpriseId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.productList = new ArrayList<>(productList);
@@ -55,7 +57,8 @@ public final class Control {
                                  String description,
                                  String vehicleId,
                                  String priority,
-                                 String operatorId){
+                                 String operatorId,
+                                 String enterpriseId){
         return build(UUID.randomUUID().toString(),
                      type,
                 "TODO",
@@ -64,6 +67,7 @@ public final class Control {
                      description,
                      vehicleId,
                      priority,
+                     enterpriseId,
                      LocalDateTime.now(), LocalDateTime.now(), new ArrayList<>());
     }
 
@@ -75,6 +79,7 @@ public final class Control {
                                 String description,
                                 String vehicleId,
                                 String priority,
+                                String enterpriseId,
                                 LocalDateTime dateCreated,
                                 LocalDateTime dateUpdated, List<ControlProduct> productList){
         return new Control(new ControlId(id),
@@ -85,6 +90,7 @@ public final class Control {
                            new ControlDescription(description),
                            new VehicleId(vehicleId),
                            ControlPriority.parse(priority),
+                           new EnterpriseId(enterpriseId),
                            dateCreated, dateUpdated, productList);
     }
 
@@ -138,6 +144,10 @@ public final class Control {
     public void setOperatorId(UserId operatorId) {
         this.operatorId = operatorId;
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
     }
 
     @Override

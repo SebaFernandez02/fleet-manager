@@ -61,7 +61,7 @@ public final class ControlStatusUpdater {
         }
 
         try {
-            Reserve reserve = this.reserveFinder.execute(control.vehicleId(), ReserveStatus.CREATED);
+            Reserve reserve = this.reserveFinder.execute(control.vehicleId(), control.enterpriseId(), ReserveStatus.CREATED);
 
             this.reserveStatusUpdater.execute(reserve.id().value(), "ACTIVATED");
         } catch (NotFoundException ignored) {

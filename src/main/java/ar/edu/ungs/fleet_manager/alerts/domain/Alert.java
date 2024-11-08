@@ -1,5 +1,7 @@
 package ar.edu.ungs.fleet_manager.alerts.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -9,6 +11,7 @@ public final class Alert {
     private final AlertPriority priority;
     private final AlertTitle title;
     private final AlertDescription description;
+    private final EnterpriseId enterpriseId;
     private Boolean acknowledge;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
@@ -17,6 +20,7 @@ public final class Alert {
                  AlertPriority priority,
                  AlertTitle title,
                  AlertDescription description,
+                 EnterpriseId enterpriseId,
                  Boolean acknowledge,
                  LocalDateTime dateCreated,
                  LocalDateTime dateUpdated) {
@@ -24,34 +28,39 @@ public final class Alert {
         this.priority = priority;
         this.title = title;
         this.description = description;
+        this.enterpriseId = enterpriseId;
         this.acknowledge = acknowledge;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
     }
 
-    public static Alert factory(AlertStrategy strategy, String vehicleId) {
+    public static Alert factory(AlertStrategy strategy,
+                                String vehicleId,
+                                String enterpriseId) {
         return switch (strategy) {
-            case CONTROL -> control(vehicleId);
-            case OUT_OF_RANGE -> outOfRange(vehicleId);
+            case CONTROL -> control(vehicleId, enterpriseId);
+            case OUT_OF_RANGE -> outOfRange(vehicleId, enterpriseId);
         };
     }
 
-    public static Alert control(String vehicleId) {
+    public static Alert control(String vehicleId, String enterpriseId) {
         return build(UUID.randomUUID().toString(),
                 "HIGH",
                 "Vehiculo averiado",
                 String.format("El conductor del vehiculo %s ha solicitado asistencia. Por favor, revisar con urgencia.", vehicleId),
                 Boolean.FALSE,
+                enterpriseId,
                 LocalDateTime.now(),
                 LocalDateTime.now());
     }
 
-    public static Alert outOfRange(String vehicleId) {
+    public static Alert outOfRange(String vehicleId, String enterpriseId) {
         return build(UUID.randomUUID().toString(),
                 "HIGH",
                 "Vehiculo fuera de rango",
                 String.format("El vehiculo %s está fuera de rango del viaje calculado. Por favor, revisar con urgencia.", vehicleId),
                 Boolean.FALSE,
+                enterpriseId,
                 LocalDateTime.now(),
                 LocalDateTime.now());
     }
@@ -61,15 +70,16 @@ public final class Alert {
                               String title,
                               String description,
                               Boolean acknowledge,
+                              String enterpriseId,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated) {
         return new Alert(new AlertId(id),
                 AlertPriority.valueOf(priority),
                 new AlertTitle(title),
                 new AlertDescription(description),
+                new EnterpriseId(enterpriseId),
                 acknowledge,
-                dateCreated,
-                dateUpdated);
+                dateCreated, dateUpdated);
     }
 
     public AlertId id() {
@@ -95,6 +105,10 @@ public final class Alert {
     public void ack() {
         this.acknowledge = Boolean.TRUE;
         this.dateUpdated = LocalDateTime.now();
+    }
+
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
     }
 
     public LocalDateTime dateCreated() {

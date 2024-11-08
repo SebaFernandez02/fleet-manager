@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.products.application.search;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.application.ProductResponse;
 import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,8 @@ public final class ProductsAllSearcher {
         this.repository = productRepository;
     }
 
-    public List<ProductResponse> execute(){
-       return this.repository.searchAll()
+    public List<ProductResponse> execute(EnterpriseId enterpriseId){
+       return this.repository.searchAll(enterpriseId)
                 .stream()
                 .map(ProductResponse::map)
                 .toList();

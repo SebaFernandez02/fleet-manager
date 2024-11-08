@@ -22,7 +22,7 @@ public final class OrderCreator {
     public void execute(OrderRequest request) {
         ensureProviderNotContainsActiveOrders(request);
 
-        Order order = Order.create(request.providerId());
+        Order order = Order.create(request.providerId(), request.enterpriseId());
 
         this.repository.save(order);
     }
