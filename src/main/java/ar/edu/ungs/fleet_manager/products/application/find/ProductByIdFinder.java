@@ -30,7 +30,7 @@ public class ProductByIdFinder {
 
     public ProductProvidersResponse executeProviders(String id){
         Product product = this.productFinder.execute(new ProductId(id));
-        List<ProviderResponse> providers = this.providerByProductSearcher.execute(new ProductId(id));
+        List<ProviderResponse> providers = this.providerByProductSearcher.execute(product.id().value());
 
         return ProductProvidersResponse.map(product, providers);
     }
