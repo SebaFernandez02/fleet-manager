@@ -33,7 +33,7 @@ public final class OrderProductAdder {
 
         Product product = this.productFinder.execute(new ProductId(request.productId()));
 
-        this.searcher.execute(product.id()).stream().map(ProviderResponse::id).filter(providerId -> providerId.equals(order.providerId().value())).findAny().orElseThrow(() -> new InvalidParameterException(String.format(
+        this.searcher.execute(product.id().value()).stream().map(ProviderResponse::id).filter(providerId -> providerId.equals(order.providerId().value())).findAny().orElseThrow(() -> new InvalidParameterException(String.format(
                 "The product with ID '%s' is not supplied by the provider associated with the order.",
                 request.productId())));
 

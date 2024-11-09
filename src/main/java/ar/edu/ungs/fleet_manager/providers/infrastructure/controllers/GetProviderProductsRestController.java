@@ -1,23 +1,20 @@
-package ar.edu.ungs.fleet_manager.products.infrastructure.controllers;
+package ar.edu.ungs.fleet_manager.providers.infrastructure.controllers;
 
 import ar.edu.ungs.fleet_manager.products.application.search.ProductsByProviderSearcher;
-import ar.edu.ungs.fleet_manager.providers.application.search.ProviderByProductSearcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class GetProductProvidersRestController {
-    private final ProviderByProductSearcher searcher;
+public class GetProviderProductsRestController {
+    private final ProductsByProviderSearcher searcher;
 
-    public GetProductProvidersRestController(ProviderByProductSearcher searcher) {
+    public GetProviderProductsRestController(ProductsByProviderSearcher searcher) {
         this.searcher = searcher;
     }
 
-    //ESTE
-
-    @GetMapping("/api/products/{id}/providers")
+    @GetMapping("/api/providers/{id}/products")
     public ResponseEntity<?> handle(@PathVariable String id){
         var result = this.searcher.execute(id);
 

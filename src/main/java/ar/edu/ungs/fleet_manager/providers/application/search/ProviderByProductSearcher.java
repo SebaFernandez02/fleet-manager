@@ -16,8 +16,8 @@ public final class ProviderByProductSearcher {
         this.repository = repository;
     }
 
-    public List<ProviderResponse> execute(ProductId id) {
-        return this.repository.searchProvidersByProduct(id)
+    public List<ProviderResponse> execute(String id) {
+        return this.repository.searchProvidersByProduct(new ProductId(id))
                 .stream()
                 .map(ProviderResponse::map)
                 .toList();

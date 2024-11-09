@@ -16,4 +16,6 @@ public interface ProviderRepository {
     List<Provider> searchProvidersByProduct(ProductId id);
 
     List<Provider> searchAll(EnterpriseId enterpriseId);
+
+
 }
