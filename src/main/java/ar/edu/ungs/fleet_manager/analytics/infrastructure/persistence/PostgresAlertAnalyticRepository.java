@@ -26,10 +26,11 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                     select 
                         count(1) as quantity
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS,
                 AnalyticType.VALUE,
@@ -42,10 +43,11 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                     select 
                         AVG(date_updated - date_created) as avg
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS,
                 AnalyticType.VALUE,
@@ -59,11 +61,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         title, 
                         count(1) as count
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Cantidad de alertas por tipo"), value);
     }
@@ -75,11 +78,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         acknowledge, 
                         count(1)
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title, acknowledge;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Cantidad de alertas por tipo y conocimiento"), value);
     }
@@ -91,11 +95,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         priority,                         
                         count(1) as count
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title, priority;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Cantidad de alertas por tipo y prioridad"), value);
     }
@@ -106,11 +111,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         acknowledge, 
                         count(1)
                     from alerts
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by acknowledge;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Cantidad de alertas por conocimiento"), value);
     }
@@ -122,11 +128,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         AVG(date_updated - date_created) as avg
                     from alerts
                     where acknowledge = true
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Promedio de tiempo de resolución de una alerta por tipo"), value);
     }
@@ -139,11 +146,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         AVG(date_updated - date_created) as avg
                     from alerts
                     where acknowledge = true
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title, acknowledge;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS,new AnalyticDescription("Promedio de tiempo de resolución de una alerta por tipo y conocimiento"), value);
 
@@ -157,11 +165,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         AVG(date_updated - date_created) as avg
                     from alerts
                     where acknowledge = true
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by title, priority;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS,new AnalyticDescription("Promedio de tiempo de resolución de una alerta por tipo y prioridad"), value);
     }
@@ -173,11 +182,12 @@ public final class PostgresAlertAnalyticRepository implements AnalyticRepository
                         AVG(date_updated - date_created) as avg
                     from alerts
                     where acknowledge = true
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by acknowledge;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
+
 
         return new Analytic(AnalyticOrigin.ALERTS, AnalyticType.BARS, new AnalyticDescription("Promedio de tiempo de resolución de una alerta por estado"), value);
     }

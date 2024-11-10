@@ -25,10 +25,10 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
         var sql = """
                     select count(1) 
                     from reserves
-                    where enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.VALUE,
@@ -40,11 +40,11 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
         var sql = """
                     select status, count(1)
                     from reserves
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,
@@ -59,11 +59,11 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                       count(1)
                     from reserves r
                       inner join vehicles v on v.id = r.vehicle_id
-                    where r.enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where r.enterprise_id = CAST(? AS UUID)" : "") + """
                     group by 1;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,
@@ -79,11 +79,11 @@ public final class PostgresReserveAnalyticRepository implements AnalyticReposito
                      count(1)
                     from reserves r
                       inner join users u on u.id = r.user_id
-                    where r.enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where r.enterprise_id = CAST(? AS UUID)" : "") + """
                     group by 1, 2;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.RESERVES,
                 AnalyticType.PIE,

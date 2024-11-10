@@ -27,11 +27,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                     select model,
                         count(1) as quantity
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by model;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES,
                 AnalyticType.BARS,
@@ -44,10 +44,10 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                     select 
                         count(1) as quantity
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES,
                 AnalyticType.VALUE,
@@ -62,11 +62,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         type, 
                         count(1) as count
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por tipo"), value);
     }
@@ -77,11 +77,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         brand, 
                         count(1) as count
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by brand;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por marca"), value);
 
@@ -94,11 +94,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         status, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por tipo y estado"), value);
     }
@@ -109,11 +109,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         year,                       
                         count(1) as count
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by year;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por año"), value);
     }
@@ -124,11 +124,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         status, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos por estado"), value);
     }
@@ -139,11 +139,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         fuel_type, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by fuel_type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos por tipo de combustible"), value);
     }
@@ -154,11 +154,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         axles, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by axles;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por cantidad de ejes"), value);
     }
@@ -169,11 +169,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         seats, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by seats;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por cantidad de asientos"), value);
     }
@@ -184,11 +184,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         has_trailer, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by has_trailer;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos con trailer"), value);
     }
@@ -199,11 +199,11 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                         load, 
                         count(1)
                     from vehicles
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by load;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por carga maxima"), value);
     }

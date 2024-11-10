@@ -26,10 +26,10 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                     select 
                         count(1) as quantity
                     from products
-                    where enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.VALUE,
@@ -42,11 +42,11 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                     select brand, category,
                         count(1) as quantity
                     from products
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by brand, category;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -59,11 +59,11 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                     select brand,
                         count(1) as quantity
                     from products
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by brand;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -76,11 +76,11 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                     select category,
                         count(1) as quantity
                     from products
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by category;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,
@@ -94,11 +94,11 @@ public class PostgresProductAnalyticRepository implements AnalyticRepository {
                        COUNT(p.id) as quantity
                 from products p
                 join providers pr on CAST(p.pref_provider_id AS UUID) = pr.id
-                where p.enterprise_id = CAST(? AS UUID)
+                """ + (enterpriseId != null ? "where p.enterprise_id = CAST(? AS UUID)" : "") + """
                 group by pr.name;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.PRODUCTS,
                 AnalyticType.BARS,

@@ -26,10 +26,10 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                     select 
                         count(1) as quantity
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS,
                             AnalyticType.VALUE,
@@ -42,10 +42,10 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                     select 
                         AVG(date_updated - date_created) as avg
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS,
                             AnalyticType.VALUE,
@@ -59,11 +59,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         type, 
                         count(1) as count
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Cantidad de controles por tipo"), value);
     }
@@ -75,11 +75,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         priority,                         
                         count(1) as count
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, priority;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Cantidad de controles por tipo y prioridad"), value);
     }
@@ -91,11 +91,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         status, 
                         count(1)
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Cantidad de controles por tipo y estado"), value);
     }
@@ -106,11 +106,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         status, 
                         count(1)
                     from controls
-                    WHERE enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Cantidad de controles por tipo"), value);
     }
@@ -122,11 +122,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         AVG(date_updated - date_created) as avg
                     from controls
                     where status = 'DONE'
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Promedio de tiempo de resolución de un control por tipo"), value);
     }
@@ -139,11 +139,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         AVG(date_updated - date_created) as avg
                     from controls
                     where status = 'DONE'
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, priority;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS,new AnalyticDescription("Promedio de tiempo de resolución de un control por tipo y prioridad"), value);
     }
@@ -156,11 +156,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         AVG(date_updated - date_created) as avg
                     from controls
                     where status = 'DONE'
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS,new AnalyticDescription("Promedio de tiempo de resolución de un control por tipo y estado"), value);
     }
@@ -172,11 +172,11 @@ public class PostgresControlAnalyticRepository implements AnalyticRepository {
                         AVG(date_updated - date_created) as avg
                     from controls
                     where status = 'DONE'
-                    and enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.CONTROLS, AnalyticType.BARS, new AnalyticDescription("Promedio de tiempo de resolución de un control por estado"), value);
     }

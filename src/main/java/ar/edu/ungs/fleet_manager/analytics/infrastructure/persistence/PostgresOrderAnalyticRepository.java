@@ -26,10 +26,10 @@ public final class PostgresOrderAnalyticRepository implements AnalyticRepository
                     select
                     	count(1) as quantity
                     from orders
-                    where enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.ORDERS,
                 AnalyticType.VALUE,
@@ -43,10 +43,10 @@ public final class PostgresOrderAnalyticRepository implements AnalyticRepository
                       avg(date_updated - date_created)
                     from orders
                     where status = 'COMPLETED'
-                    and enterprise_id = CAST(? AS UUID);
+                    """ + (enterpriseId != null ? "and enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.ORDERS,
                 AnalyticType.VALUE,
@@ -60,11 +60,11 @@ public final class PostgresOrderAnalyticRepository implements AnalyticRepository
                       status,
                       count(1)
                     from orders
-                    where enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.ORDERS,
                 AnalyticType.BARS,
@@ -80,11 +80,11 @@ public final class PostgresOrderAnalyticRepository implements AnalyticRepository
                       count(1)
                     from orders o
                       inner join providers p on p.id = o.provider_id
-                    where o.enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "where o.enterprise_id = CAST(? AS UUID)" : "") + """
                     group by p.id;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.ORDERS,
                 AnalyticType.BARS,
@@ -101,11 +101,11 @@ public final class PostgresOrderAnalyticRepository implements AnalyticRepository
                     from orders o
                       inner join providers p on p.id = o.provider_id
                     where o.status = 'COMPLETED'
-                    and o.enterprise_id = CAST(? AS UUID)
+                    """ + (enterpriseId != null ? "and o.enterprise_id = CAST(? AS UUID)" : "") + """
                     group by p.id;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql, enterpriseId.value());
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.ORDERS,
                 AnalyticType.BARS,

@@ -19,8 +19,8 @@ public final class GetAnalyticsRestController {
     }
 
     @GetMapping("/api/analytics")
-    public ResponseEntity<?> handle(@RequestParam("enterprise_id") String enterpriseId) {
-        List<AnalyticResponse> values = this.searcher.execute(new EnterpriseId(enterpriseId));
+    public ResponseEntity<?> handle(@RequestParam(value = "enterprise_id", defaultValue = "null", required = false) String enterpriseId) {
+        List<AnalyticResponse> values = this.searcher.execute(enterpriseId == null || enterpriseId.isBlank() || enterpriseId.equals("null") ? null : new EnterpriseId(enterpriseId));
 
         return ResponseEntity.ok(values);
     }
