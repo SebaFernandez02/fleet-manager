@@ -142,6 +142,8 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
     @Override
     public List<User> searchAll(EnterpriseId enterpriseId) {
         try {
+            var args = new ArrayList<Object>();
+
             var sql = """
                 select
                     u.id, 
@@ -154,8 +156,14 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                     u.date_updated
                 from users u
                     left join user_roles r on r.user_id = u.id
-                where u.enterprise_id = CAST(? AS UUID)
             """;
+
+            if (enterpriseId != null) {
+                sql = sql + "where u.enterprise_id = CAST(? AS UUID)";
+                args.add(enterpriseId.value());
+            } else {
+                sql = sql + "where u.enterprise_id is null";
+            }
 
             return this.jdbcTemplate.query(sql, rs -> {
                 Map<String, UserMapper> userMap = new HashMap<>();
@@ -192,7 +200,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                         x.getEnterpriseId(),
                         x.getDateCreated(),
                         x.getDateUpdated())).collect(Collectors.toList());
-            }, enterpriseId.value());
+            }, args.toArray());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }

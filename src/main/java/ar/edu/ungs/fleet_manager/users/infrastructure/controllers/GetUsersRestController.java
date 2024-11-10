@@ -17,8 +17,8 @@ public class GetUsersRestController {
     }
 
     @GetMapping("/api/users")
-    public ResponseEntity<?> handle(@RequestParam(value = "enterprise_id", required = true) String enterpriseId) {
-        List<UserResponse> values = this.searcher.execute(new EnterpriseId(enterpriseId));
+    public ResponseEntity<?> handle(@RequestParam(value = "enterprise_id", required = false, defaultValue = "null") String enterpriseId) {
+        List<UserResponse> values = this.searcher.execute(enterpriseId.isBlank() || enterpriseId.equals("null") ? null : new EnterpriseId(enterpriseId));
 
         return ResponseEntity.ok(values);
     }
