@@ -140,7 +140,7 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
             var status = rs.getString("status");
             var enterpriseId = rs.getString("enterprise_id");
-            var products = mapper.readValue(itemsJson, new TypeReference<List<OrderProductDto>>(){}).stream().map(OrderProductDto::map).toList();
+            var products = new ArrayList<>(mapper.readValue(itemsJson, new TypeReference<List<OrderProductDto>>(){}).stream().map(OrderProductDto::map).toList());
 
             return Order.build(id, providerId, products, amount, dateCreated, dateUpdated, status, enterpriseId);
         } catch (SQLException | JsonProcessingException e) {
