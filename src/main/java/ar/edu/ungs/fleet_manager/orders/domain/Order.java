@@ -36,7 +36,7 @@ public final class Order {
         return build(UUID.randomUUID().toString(),
                     providerId,
                     new ArrayList<>(),
-                    BigDecimal.ONE,
+                    BigDecimal.ZERO,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
                     initialStatus,
@@ -92,9 +92,7 @@ public final class Order {
     }
 
     public void updateAmount(BigDecimal value){
-        BigDecimal actualValue =  amount().value();
-        this.amount = new OrderAmount(actualValue.equals(BigDecimal.ONE)?value:actualValue.add(value));
-
+        this.amount = new OrderAmount(this.amount.value().add(value));
     }
 
     public EnterpriseId enterpriseId() {
