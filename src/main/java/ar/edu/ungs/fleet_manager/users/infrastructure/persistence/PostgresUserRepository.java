@@ -161,8 +161,6 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
             if (enterpriseId != null) {
                 sql = sql + "where u.enterprise_id = CAST(? AS UUID)";
                 args.add(enterpriseId.value());
-            } else {
-                sql = sql + "where u.enterprise_id is null";
             }
 
             return this.jdbcTemplate.query(sql, rs -> {
