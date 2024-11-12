@@ -105,8 +105,7 @@ public class ReserveCreator {
 
     private void ensureUserReservesLimit(User user){
         List<Reserve> reserves = this.repository.findByUserId(user.id(), user.enterpriseId().orElseThrow(() -> new NotFoundException("user without enterprise"))).stream().filter(x -> x.status().equals(ReserveStatus.CREATED) || x.status().equals(ReserveStatus.ACTIVATED)).toList();
-        int RESERVES_LIMIT = 2;
-        if(reserves.size() >= RESERVES_LIMIT){
+        if(reserves.size() >= 1){
             throw new InvalidParameterException("the user has reached the active reserves limit");
         }
     }
