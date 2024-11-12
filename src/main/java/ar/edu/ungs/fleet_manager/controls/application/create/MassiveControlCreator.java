@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.controls.application.create;
 
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.vehicles.application.search.VehiclesAllSearcherByModel;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleBrand;
@@ -21,7 +22,8 @@ public class MassiveControlCreator implements ControlCreator{
     }
 
     public void execute(ControlRequest request) {
-        List<Vehicle> vehicles = this.searcher.execute(new VehicleBrand(request.brand()),
+        List<Vehicle> vehicles = this.searcher.execute(new EnterpriseId(request.enterpriseId()),
+                                                        new VehicleBrand(request.brand()),
                                                         new VehicleModel(request.model()),
                                                         new VehicleYear(request.year()));
 
@@ -34,6 +36,7 @@ public class MassiveControlCreator implements ControlCreator{
                                     request.description(),
                                     vehicle.id().value(),
                                     request.priority(),
-                                    request.operatorId());
+                                    request.operatorId(),
+                                    vehicle.enterpriseId().value());
     }
 }

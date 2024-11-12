@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.providers.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface ProviderRepository {
 
     List<Provider> searchProvidersByProduct(ProductId id);
 
-    List<Provider> searchAll();
+    List<Provider> searchAll(EnterpriseId enterpriseId);
+
+
 }

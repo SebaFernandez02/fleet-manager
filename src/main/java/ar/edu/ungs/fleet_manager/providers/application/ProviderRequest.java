@@ -4,5 +4,6 @@ public record ProviderRequest(String name,
                               String email,
                               String cuit,
                               String phoneNumber,
-                              String address) {
+                              String address,
+                              String enterpriseId) {
 }

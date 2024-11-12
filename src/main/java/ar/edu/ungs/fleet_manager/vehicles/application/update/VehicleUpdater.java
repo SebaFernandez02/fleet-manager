@@ -59,10 +59,10 @@ public final class VehicleUpdater {
         vehicle.updateCoordinates(coordinatesRequest.latitude(), coordinatesRequest.longitude());
 
         try {
-            Reserve reserve = reserveFinder.execute(vehicle.id(), ReserveStatus.ACTIVATED);
+            Reserve reserve = reserveFinder.execute(vehicle.id(), vehicle.enterpriseId(), ReserveStatus.ACTIVATED);
 
             if (this.tripOutOfRangeValidator.execute(reserve.trip(), vehicle.coordinates())) {
-                this.alertCreator.execute(AlertStrategy.OUT_OF_RANGE, vehicle.id());
+                this.alertCreator.execute(AlertStrategy.OUT_OF_RANGE, vehicle.id().value(), vehicle.enterpriseId().value());
             }
         } catch (NotFoundException ignored) {
 

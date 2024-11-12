@@ -1,12 +1,12 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.orders.domain.Quantity;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 public final class Product {
@@ -21,6 +21,7 @@ public final class Product {
     private ProviderId preferenceProviderId;
     private ProductMinStock minStock;
     private ProductAutomaticPurchase automaticPurchase;
+    private final EnterpriseId enterpriseId;
 
     public Product(ProductId id,
                    ProductName name,
@@ -32,7 +33,8 @@ public final class Product {
                    ProductPrice price,
                    ProviderId preferenceProviderId,
                    ProductMinStock minStock,
-                   ProductAutomaticPurchase automaticPurchase) {
+                   ProductAutomaticPurchase automaticPurchase,
+                   EnterpriseId enterpriseId) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -44,6 +46,7 @@ public final class Product {
         this.preferenceProviderId = preferenceProviderId;
         this.minStock = minStock;
         this.automaticPurchase = automaticPurchase;
+        this.enterpriseId = enterpriseId;
     }
 
     public static Product create(String name,
@@ -54,7 +57,8 @@ public final class Product {
                                  String measurement,
                                  BigDecimal price,
                                  String preferenceProviderId,
-                                 Integer minStock) {
+                                 Integer minStock,
+                                 String enterpriseId) {
         final Integer minStockValue = minStock == null ? 0 : minStock;
         final String initialAutoPurchaseStatus = "DISABLED";
 
@@ -68,7 +72,8 @@ public final class Product {
                            new ProductPrice(price),
                            new ProviderId(preferenceProviderId),
                            new ProductMinStock(minStockValue),
-                           ProductAutomaticPurchase.parse(initialAutoPurchaseStatus));
+                           ProductAutomaticPurchase.parse(initialAutoPurchaseStatus),
+                           new EnterpriseId(enterpriseId));
     }
 
     public static Product build(String id,
@@ -81,7 +86,8 @@ public final class Product {
                                  BigDecimal price,
                                  String preferenceProviderId,
                                  Integer minStock,
-                                 String automaticPurchase) {
+                                 String automaticPurchase,
+                                 String enterpriseId) {
         return new Product(
                 new ProductId(id),
                 new ProductName(name),
@@ -93,7 +99,8 @@ public final class Product {
                 new ProductPrice(price),
                 new ProviderId(preferenceProviderId),
                 new ProductMinStock(minStock),
-                ProductAutomaticPurchase.parse(automaticPurchase));
+                ProductAutomaticPurchase.parse(automaticPurchase),
+                new EnterpriseId(enterpriseId));
     }
 
     public ProductId id() { return id;}
@@ -180,6 +187,10 @@ public final class Product {
 
     public ProductAutomaticPurchase automaticPurchase(){
         return automaticPurchase;
+    }
+
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
     }
 
     @Override

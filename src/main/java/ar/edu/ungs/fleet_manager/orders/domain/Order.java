@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.orders.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
@@ -14,29 +15,32 @@ public final class Order {
     private final ProviderId provider;
     private final List<OrderProduct> items;
     private  OrderAmount amount;
+    private final EnterpriseId enterpriseId;
     private final LocalDateTime dateCreated;
     private final LocalDateTime dateUpdated;
 
-    public Order(OrderId id, ProviderId provider, List<OrderProduct> items, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status) {
+    public Order(OrderId id, ProviderId provider, List<OrderProduct> items, OrderAmount amount, LocalDateTime dateCreated, LocalDateTime dateUpdated, OrderStatus status, EnterpriseId enterpriseId) {
         this.id = id;
         this.provider = provider;
-        this.items = new ArrayList<>(items);
+        this.items = items;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.amount = amount;
         this.status = status;
+        this.enterpriseId = enterpriseId;
     }
 
-    public static Order create(String providerId){
+    public static Order create(String providerId, String enterpriseId){
         final String initialStatus = "CREATED";
 
         return build(UUID.randomUUID().toString(),
                     providerId,
                     new ArrayList<>(),
-                    BigDecimal.ONE,
+                    BigDecimal.ZERO,
                     LocalDateTime.now(),
                     LocalDateTime.now(),
-                    initialStatus);
+                    initialStatus,
+                    enterpriseId);
     }
 
     public static Order build(String id,
@@ -45,14 +49,16 @@ public final class Order {
                               BigDecimal amount,
                               LocalDateTime dateCreated,
                               LocalDateTime dateUpdated,
-                              String status){
+                              String status,
+                              String enterpriseId){
         return new Order(new OrderId(id),
                         new ProviderId(providerId),
                         products,
                         new OrderAmount(amount),
                         dateCreated,
                         dateUpdated,
-                        OrderStatus.parse(status));
+                        OrderStatus.parse(status),
+                        new EnterpriseId(enterpriseId));
     }
 
     public OrderId id() {
@@ -86,9 +92,15 @@ public final class Order {
     }
 
     public void updateAmount(BigDecimal value){
-        BigDecimal actualValue =  amount().value();
-        this.amount = new OrderAmount(actualValue.equals(BigDecimal.ONE)?value:actualValue.add(value));
+        this.amount = new OrderAmount(this.amount.value().add(value));
+    }
 
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
+    }
+
+    public ProviderId provider() {
+        return provider;
     }
 
     public void setStatus(OrderStatus statusToUpdate){
@@ -134,5 +146,16 @@ public final class Order {
         OrderProduct orderProduct = new OrderProduct(productId, quantity, amount);
         updateAmount(amount);
         this.items.add(orderProduct);
+    }
+
+    public void addExistingproduct(OrderProduct product, BigDecimal amount){
+        for(OrderProduct p : items){
+            if(p.productId().equals(product.productId())){
+                this.items.remove(p);
+                this.items.add(product);
+                updateAmount(amount);
+
+            }
+        }
     }
 }

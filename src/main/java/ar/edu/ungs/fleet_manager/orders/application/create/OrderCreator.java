@@ -3,7 +3,6 @@ package ar.edu.ungs.fleet_manager.orders.application.create;
 import ar.edu.ungs.fleet_manager.orders.application.OrderRequest;
 import ar.edu.ungs.fleet_manager.orders.domain.Order;
 import ar.edu.ungs.fleet_manager.orders.domain.OrderRepository;
-
 import ar.edu.ungs.fleet_manager.orders.domain.services.OrderFinder;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
@@ -23,7 +22,7 @@ public final class OrderCreator {
     public void execute(OrderRequest request) {
         ensureProviderNotContainsActiveOrders(request);
 
-        Order order = Order.create(request.providerId());
+        Order order = Order.create(request.providerId(), request.enterpriseId());
 
         this.repository.save(order);
     }

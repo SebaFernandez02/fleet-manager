@@ -1,8 +1,8 @@
 package ar.edu.ungs.fleet_manager.reserves.application.search;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveResponse;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
-import ar.edu.ungs.fleet_manager.users.domain.UserId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,8 +15,8 @@ public final class ReservesAllSearcher {
         this.repository = repository;
     }
 
-    public List<ReserveResponse> execute() {
-        return this.repository.searchAll()
+    public List<ReserveResponse> execute(EnterpriseId enterpriseId) {
+        return this.repository.searchAll(enterpriseId)
                 .stream()
                 .map(ReserveResponse::map)
                 .toList();

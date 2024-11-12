@@ -12,6 +12,8 @@ import ar.edu.ungs.fleet_manager.providers.application.search.ProviderByProductS
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public final class OrderProductAdder {
     private final OrderRepository repository;
@@ -31,7 +33,7 @@ public final class OrderProductAdder {
 
         Product product = this.productFinder.execute(new ProductId(request.productId()));
 
-        this.searcher.execute(product.id()).stream().map(ProviderResponse::id).filter(providerId -> providerId.equals(order.providerId().value())).findAny().orElseThrow(() -> new InvalidParameterException(String.format(
+        this.searcher.execute(product.id().value()).stream().map(ProviderResponse::id).filter(providerId -> providerId.equals(order.providerId().value())).findAny().orElseThrow(() -> new InvalidParameterException(String.format(
                 "The product with ID '%s' is not supplied by the provider associated with the order.",
                 request.productId())));
 
@@ -43,10 +45,25 @@ public final class OrderProductAdder {
         if (orderContainsProduct.isEmpty()) {
             Quantity quantity = new Quantity(request.quantity());
 
-            order.add(product.id(), quantity, request.amount());
+            BigDecimal amount = product.price().value().multiply(BigDecimal.valueOf(quantity.value()));
+
+            order.add(product.id(), quantity, amount);
+
+            this.repository.save(order);
+        }else{
+            OrderProduct oldProduct = orderContainsProduct.get();
+
+            Quantity quantity = new Quantity(oldProduct.quantity().value() + request.quantity());
+
+            BigDecimal amount = product.price().value().multiply(BigDecimal.valueOf(quantity.value()));
+
+            OrderProduct newProduct = new OrderProduct(oldProduct.productId(), quantity , amount);
+
+            BigDecimal addOrderAmount = product.price().value().multiply(BigDecimal.valueOf(request.quantity()));
+
+            order.addExistingproduct(newProduct, addOrderAmount);
 
             this.repository.save(order);
         }
-
     }
 }

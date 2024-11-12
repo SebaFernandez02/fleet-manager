@@ -24,8 +24,9 @@ public class GetReservesRestController {
 
     @GetMapping("/api/reserves")
     public ResponseEntity<List<ReserveResponse>> handle(@RequestParam(defaultValue = "", required = false) String vehicleId,
-                                                        @RequestParam(defaultValue = "", required = false) String userId) {
-        var result = searcher.execute(vehicleId, userId);
+                                                        @RequestParam(defaultValue = "", required = false) String userId,
+                                                        @RequestParam(name = "enterprise_id", required = true) String enterpriseId) {
+        var result = searcher.execute(vehicleId, userId, enterpriseId);
 
         return ResponseEntity.ok(result);
     }

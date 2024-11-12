@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.orders.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.orders.domain.*;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
@@ -35,8 +36,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     private void create(Order order) {
         try {
             var sql = """
-                      insert into orders (id, provider_id, items, amount, date_created, date_updated, status)
-                      values (CAST(? as UUID), CAST(? as UUID), ?, ?, ?, ?, ?)
+                      insert into orders (id, provider_id, items, amount, date_created, date_updated, status, enterprise_id)
+                      values (CAST(? as UUID), CAST(? as UUID), ?, ?, ?, ?, ?, CAST(? as UUID))
                     """;
 
             String itemsJson = mapper.writeValueAsString(order.items().stream().map(OrderProductDto::map).toList());
@@ -48,7 +49,8 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
                     order.amount().value(),
                     order.dateCreated(),
                     order.dateUpdated(),
-                    order.status().name());
+                    order.status().name(),
+                    order.enterpriseId().value());
         } catch (DataAccessException | JsonProcessingException e) {
             throw new PostgresException(e.getMessage());
         }
@@ -96,15 +98,16 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
     }
 
     @Override
-    public List<Order> searchAll() {
+    public List<Order> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
                         select *
                         from orders o
+                        where o.enterprise_id = CAST(? AS UUID)
                         order by date_updated desc, date_created desc
                     """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -136,9 +139,10 @@ public final class PostgresOrderRepository implements OrderRepository, RowMapper
             var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
             var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
             var status = rs.getString("status");
-            var products = mapper.readValue(itemsJson, new TypeReference<List<OrderProductDto>>(){}).stream().map(OrderProductDto::map).toList();
+            var enterpriseId = rs.getString("enterprise_id");
+            var products = new ArrayList<>(mapper.readValue(itemsJson, new TypeReference<List<OrderProductDto>>(){}).stream().map(OrderProductDto::map).toList());
 
-            return Order.build(id, providerId, products, amount, dateCreated, dateUpdated, status);
+            return Order.build(id, providerId, products, amount, dateCreated, dateUpdated, status, enterpriseId);
         } catch (SQLException | JsonProcessingException e) {
             throw new PostgresException(e.getMessage());
         }

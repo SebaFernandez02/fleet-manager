@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.users.infrastructure.controllers;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.users.application.UserResponse;
 import ar.edu.ungs.fleet_manager.users.application.search.UserAllSearcher;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class GetUsersRestController {
     }
 
     @GetMapping("/api/users")
-    public ResponseEntity<?> handle() {
-        List<UserResponse> values = this.searcher.execute();
+    public ResponseEntity<?> handle(@RequestParam(value = "enterprise_id", required = false, defaultValue = "null") String enterpriseId) {
+        List<UserResponse> values = this.searcher.execute(enterpriseId.isBlank() || enterpriseId.equals("null") ? null : new EnterpriseId(enterpriseId));
 
         return ResponseEntity.ok(values);
     }

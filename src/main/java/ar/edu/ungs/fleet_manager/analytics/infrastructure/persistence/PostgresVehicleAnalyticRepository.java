@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.analytics.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.analytics.domain.*;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,19 +18,20 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
 
 
     @Override
-    public List<Analytic> search() {
-        return List.of(quantity(), typeCount(), brandCount(), modelCount(), typeStatusCount(), yearCount(), statusCount(), fuelTypeCount(), axlesCount(), seatsCount(), hasTrailerCount(), loadCount());
+    public List<Analytic> search(EnterpriseId enterpriseId) {
+        return List.of(quantity(enterpriseId), typeCount(enterpriseId), brandCount(enterpriseId), modelCount(enterpriseId), typeStatusCount(enterpriseId), yearCount(enterpriseId), statusCount(enterpriseId), fuelTypeCount(enterpriseId), axlesCount(enterpriseId), seatsCount(enterpriseId), hasTrailerCount(enterpriseId), loadCount(enterpriseId));
     }
 
-    private Analytic modelCount() {
+    private Analytic modelCount(EnterpriseId enterpriseId) {
         var sql = """
                     select model,
                         count(1) as quantity
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by model;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES,
                 AnalyticType.BARS,
@@ -37,14 +39,15 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
                 value);
     }
 
-    public Analytic quantity() {
+    public Analytic quantity(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         count(1) as quantity
-                    from vehicles;
+                    from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES,
                 AnalyticType.VALUE,
@@ -53,144 +56,154 @@ public class PostgresVehicleAnalyticRepository implements AnalyticRepository {
     }
 
 
-    public Analytic typeCount() {
+    public Analytic typeCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         type, 
                         count(1) as count
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por tipo"), value);
     }
 
-    public Analytic brandCount(){
+    public Analytic brandCount(EnterpriseId enterpriseId){
         var sql = """
                     select 
                         brand, 
                         count(1) as count
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by brand;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por marca"), value);
 
     }
 
-    public Analytic typeStatusCount() {
+    public Analytic typeStatusCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         type, 
                         status, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by type, status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por tipo y estado"), value);
     }
 
-    public Analytic yearCount() {
+    public Analytic yearCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         year,                       
                         count(1) as count
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by year;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por año"), value);
     }
 
-    public Analytic statusCount() {
+    public Analytic statusCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         status, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by status;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos por estado"), value);
     }
 
-    public Analytic fuelTypeCount() {
+    public Analytic fuelTypeCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         fuel_type, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by fuel_type;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos por tipo de combustible"), value);
     }
 
-    public Analytic axlesCount() {
+    public Analytic axlesCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         axles, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by axles;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por cantidad de ejes"), value);
     }
 
-    public Analytic seatsCount() {
+    public Analytic seatsCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         seats, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by seats;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por cantidad de asientos"), value);
     }
 
-    public Analytic hasTrailerCount() {
+    public Analytic hasTrailerCount(EnterpriseId enterpriseId) {
         var sql = """
                     select 
                         has_trailer, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by has_trailer;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.PIE, new AnalyticDescription("Cantidad de vehiculos con trailer"), value);
     }
 
-    public Analytic loadCount(){
+    public Analytic loadCount(EnterpriseId enterpriseId){
         var sql = """
                     select 
                         load, 
                         count(1)
                     from vehicles
+                    """ + (enterpriseId != null ? "where enterprise_id = CAST(? AS UUID)" : "") + """
                     group by load;
                 """;
 
-        List<Map<String, Object>> value = template.queryForList(sql);
+        List<Map<String, Object>> value = enterpriseId != null ? template.queryForList(sql, enterpriseId.value()) : template.queryForList(sql);
 
         return new Analytic(AnalyticOrigin.VEHICLES, AnalyticType.BARS, new AnalyticDescription("Cantidad de vehiculos por carga maxima"), value);
     }

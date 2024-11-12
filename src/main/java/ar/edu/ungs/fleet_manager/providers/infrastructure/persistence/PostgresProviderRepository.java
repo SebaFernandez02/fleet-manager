@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.providers.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.domain.ProductId;
 import ar.edu.ungs.fleet_manager.providers.domain.Provider;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderCuit;
@@ -30,8 +31,8 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
     @Override
     public void save(Provider provider) {
         var sql = """
-                    insert into providers (id, name, email, cuit, phone_number, address)
-                    values (CAST(? as UUID), ?, ?, ?, ?, ?)
+                    insert into providers (id, name, email, cuit, phone_number, address, enterprise_id)
+                    values (CAST(? as UUID), ?, ?, ?, ?, ?, CAST(? as UUID))
                   """;
         this.jdbcTemplate.update(sql,
                 provider.id().value(),
@@ -39,20 +40,15 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
                 provider.email().value(),
                 provider.cuit().value(),
                 provider.phoneNumber().value(),
-                provider.address().value());
+                provider.address().value(),
+                provider.enterpriseId().value());
     }
 
     @Override
     public Optional<Provider> findById(ProviderId id) {
         try {
             var sql = """
-                select 
-                id, 
-                name, 
-                email, 
-                cuit, 
-                phone_number, 
-                address
+                select *
                 from providers p
                 where p.id = CAST(? as UUID)
             """;
@@ -69,13 +65,7 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
     public Optional<Provider> findByCuit(ProviderCuit cuit) {
         try {
             var sql = """
-                select 
-                id, 
-                name, 
-                email, 
-                cuit, 
-                phone_number, 
-                address
+                select *
                 from providers p
                 where p.cuit = ?
             """;
@@ -92,8 +82,9 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
     public List<Provider> searchProvidersByProduct(ProductId id){
         try{
             var sql = """
-                        select p.id, p.name, p.email, p.cuit, p.phone_number,p.address from products_suppliers ps
-                        join providers p on ps.provider_id= p.id
+                        select p.* 
+                        from products_suppliers ps
+                        join providers p on ps.provider_id = p.id
                         where product_id = CAST(? as UUID)
                     
                     """;
@@ -106,20 +97,15 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
     }
 
     @Override
-    public List<Provider> searchAll() {
+    public List<Provider> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
-                select
-                    id,
-                    name,
-                    email,
-                    cuit,
-                    phone_number,
-                    address
+                select *
                 from providers p
+                where enterprise_id = CAST(? AS UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -133,7 +119,8 @@ public final class PostgresProviderRepository implements ProviderRepository, Row
         var cuit = rs.getString("cuit");
         var phoneNumber = rs.getString("phone_number");
         var address = rs.getString("address");
+        var enterpriseId = rs.getString("enterprise_id");
 
-        return Provider.build(id, name, email, cuit, phoneNumber, address);
+        return Provider.build(id, name, email, cuit, phoneNumber, address, enterpriseId);
     }
 }

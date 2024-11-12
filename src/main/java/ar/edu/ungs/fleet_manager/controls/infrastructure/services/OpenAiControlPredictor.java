@@ -1,6 +1,8 @@
 package ar.edu.ungs.fleet_manager.controls.infrastructure.services;
 
 import ar.edu.ungs.fleet_manager.controls.application.ControlResponse;
+import ar.edu.ungs.fleet_manager.controls.application.find.ControlByIdFinder;
+import ar.edu.ungs.fleet_manager.controls.application.search.ControlsSearcher;
 import ar.edu.ungs.fleet_manager.controls.domain.*;
 import ar.edu.ungs.fleet_manager.controls.domain.services.ControlPredictor;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveResponse;
@@ -19,10 +21,12 @@ import java.util.Map;
 @Component
 public class OpenAiControlPredictor implements ControlPredictor {
     private final ChatgptService service;
+    private final ControlByIdFinder controlByIdFinder;
     private final ObjectMapper mapper;
 
-    public OpenAiControlPredictor(ChatgptService service, ObjectMapper mapper) {
+    public OpenAiControlPredictor(ChatgptService service, ControlByIdFinder controlByIdFinder, ObjectMapper mapper) {
         this.service = service;
+        this.controlByIdFinder = controlByIdFinder;
         this.mapper = mapper;
     }
 
@@ -45,7 +49,7 @@ public class OpenAiControlPredictor implements ControlPredictor {
                 - controls: %s
                 - trips: %s
                 """.formatted(mapper.writeValueAsString(VehicleResponse.map(vehicle)),
-                    mapper.writeValueAsString(controls.stream().map(ControlResponse::map).toList()),
+                    mapper.writeValueAsString(controls.stream().map(x -> this.controlByIdFinder.execute(x.id().value())).toList()),
                     mapper.writeValueAsString(reserves.stream().map(ReserveResponse::map).toList()));
 
             var message = service.sendMessage(prompt);

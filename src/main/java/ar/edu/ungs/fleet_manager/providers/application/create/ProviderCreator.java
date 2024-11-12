@@ -22,10 +22,11 @@ public final class ProviderCreator {
         this.ensureProviderNotExists(request.cuit());
 
         Provider provider = Provider.create(request.name(),
-                request.email(),
-                request.cuit(),
-                request.phoneNumber(),
-                request.address());
+                                            request.email(),
+                                            request.cuit(),
+                                            request.phoneNumber(),
+                                            request.address(),
+                                            request.enterpriseId());
 
         this.repository.save(provider);
     }

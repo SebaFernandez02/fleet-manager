@@ -46,19 +46,18 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
 
     private void update(User user) {
         var sql = """
-                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, enterprise_id = ?, date_created = ?, date_updated = ?
+                    update users set id = CAST(? as UUID), username = ?, password = ?, full_name = ?, date_created = ?, date_updated = ?
                     where id = CAST(? as UUID)
                 """;
 
         this.jdbcTemplate.update(sql,
-                                 user.id().value(),
-                                 user.username().value(),
-                                 user.password().value(),
-                                 user.fullName().value(),
-                                 user.enterpriseId().map(EnterpriseId::value).orElse(null),
-                                 user.dateCreated(),
-                                 user.dateUpdated(),
-                                 user.id().value());
+                user.id().value(),
+                user.username().value(),
+                user.password().value(),
+                user.fullName().value(),
+                user.dateCreated(),
+                user.dateUpdated(),
+                user.id().value());
 
         this.saveRoles(user);
     }
@@ -141,8 +140,10 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
     }
 
     @Override
-    public List<User> searchAll() {
+    public List<User> searchAll(EnterpriseId enterpriseId) {
         try {
+            var args = new ArrayList<Object>();
+
             var sql = """
                 select
                     u.id, 
@@ -156,6 +157,11 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                 from users u
                     left join user_roles r on r.user_id = u.id
             """;
+
+            if (enterpriseId != null) {
+                sql = sql + "where u.enterprise_id = CAST(? AS UUID)";
+                args.add(enterpriseId.value());
+            }
 
             return this.jdbcTemplate.query(sql, rs -> {
                 Map<String, UserMapper> userMap = new HashMap<>();
@@ -192,7 +198,7 @@ public final class PostgresUserRepository implements UserRepository, RowMapper<U
                         x.getEnterpriseId(),
                         x.getDateCreated(),
                         x.getDateUpdated())).collect(Collectors.toList());
-            });
+            }, args.toArray());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }

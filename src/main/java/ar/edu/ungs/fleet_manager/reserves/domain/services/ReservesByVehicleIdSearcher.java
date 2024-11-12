@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.reserves.domain.services;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
@@ -15,7 +16,7 @@ public final class ReservesByVehicleIdSearcher {
         this.repository = repository;
     }
 
-    public List<Reserve> execute(VehicleId id) {
-        return this.repository.findByVehicleId(id);
+    public List<Reserve> execute(VehicleId id, EnterpriseId enterpriseId) {
+        return this.repository.findByVehicleId(id, enterpriseId);
     }
 }

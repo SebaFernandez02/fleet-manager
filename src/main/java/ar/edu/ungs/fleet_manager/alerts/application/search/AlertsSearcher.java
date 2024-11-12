@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.alerts.application.search;
 
 import ar.edu.ungs.fleet_manager.alerts.application.AlertResponse;
 import ar.edu.ungs.fleet_manager.alerts.domain.AlertRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public final class AlertsSearcher {
         this.repository = repository;
     }
 
-    public List<AlertResponse> execute() {
-        return this.repository.searchAll().stream().map(AlertResponse::map).toList();
+    public List<AlertResponse> execute(String enterpriseId) {
+        return this.repository.searchAll(new EnterpriseId(enterpriseId)).stream().map(AlertResponse::map).toList();
     }
 }

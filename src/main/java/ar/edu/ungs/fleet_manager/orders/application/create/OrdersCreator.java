@@ -44,11 +44,11 @@ public class OrdersCreator {
         try {
             Order order = this.orderFinder.execute(providerId);
 
-            var request = new AddOrderProductRequest(x.id().value(), x.minStock().value(), x.price().value().multiply(BigDecimal.valueOf(x.minStock().value())));
+            var request = new AddOrderProductRequest(x.id().value(), x.minStock().value());
 
             productAdder.execute(order.id().value(), request);
         } catch (NotFoundException ignored) {
-            OrderRequest request = new OrderRequest(providerId.value());
+            OrderRequest request = new OrderRequest(providerId.value(), x.enterpriseId().value());
 
             this.orderCreator.execute(request);
 

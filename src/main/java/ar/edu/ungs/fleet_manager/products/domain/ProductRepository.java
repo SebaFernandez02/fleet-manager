@@ -1,7 +1,9 @@
 package ar.edu.ungs.fleet_manager.products.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,10 +17,11 @@ public interface ProductRepository {
 
     Optional<Product> findById(ProductId id);
 
-    List<Product> searchAll();
+    List<Product> searchAll(EnterpriseId enterpriseId);
 
     List<Product> searchAllNoStock();
 
     List<Product> searchAllNoStockAutoPurchase();
 
+    List<Product> searchByProvider(ProviderId providerId);
 }

@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.alerts.infrastructure.persistence;
 import ar.edu.ungs.fleet_manager.alerts.domain.Alert;
 import ar.edu.ungs.fleet_manager.alerts.domain.AlertId;
 import ar.edu.ungs.fleet_manager.alerts.domain.AlertRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.products.domain.Product;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,35 +31,25 @@ public final class PostgresAlertRepository implements AlertRepository, RowMapper
 
     public void create(Alert alert) {
         var sql = """
-                    insert into alerts(id, priority, title, description, acknowledge, date_created, date_updated)
-                    values(CAST(? as UUID), ?, ?, ?, ?, ?, ?)
+                    insert into alerts(id, priority, title, description, acknowledge, enterprise_id, date_created, date_updated)
+                    values(CAST(? as UUID), ?, ?, ?, ?, CAST(? as UUID), ?, ?)
                 """;
         this.jdbcTemplate.update(sql, alert.id().value(),
                                       alert.priority().name(),
                                       alert.title().value(),
                                       alert.description().value(),
                                       alert.acknowledge(),
+                                      alert.enterpriseId().value(),
                                       alert.dateCreated(),
                                       alert.dateUpdated());
     }
 
     public void update(Alert alert) {
         String sql = """
-                        update alerts 
-                        set priority = ?, 
-                            title = ?, 
-                            description = ?, 
-                            acknowledge = ?, 
-                            date_updated = ?
+                        update alerts set acknowledge = ?, date_updated = ? 
                         where id = CAST(? as UUID)
                     """;
-        this.jdbcTemplate.update(sql,
-                alert.priority().name(),
-                alert.title().value(),
-                alert.description().value(),
-                alert.acknowledge(),
-                alert.dateUpdated(),
-                alert.id().value()
+        this.jdbcTemplate.update(sql, alert.acknowledge(), alert.dateUpdated(), alert.id().value()
         );
     }
 
@@ -77,17 +68,16 @@ public final class PostgresAlertRepository implements AlertRepository, RowMapper
     }
 
     @Override
-    public List<Alert> searchAll() {
+    public List<Alert> searchAll(EnterpriseId enterpriseId) {
         try {
 
             var sql = """
-                        SELECT * FROM alerts
+                        SELECT * FROM alerts where enterprise_id = CAST(? as UUID)
                     """;
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
 
         } catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
-
         }
     }
 
@@ -98,9 +88,10 @@ public final class PostgresAlertRepository implements AlertRepository, RowMapper
         var title = rs.getString("title");
         var description = rs.getString("description");
         var acknowledge = rs.getBoolean("acknowledge");
+        var enterpriseId = rs.getString("enterprise_id");
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
 
-        return Alert.build(id, priority, title, description, acknowledge, dateCreated, dateUpdated);
+        return Alert.build(id, priority, title, description, acknowledge, enterpriseId, dateCreated, dateUpdated);
     }
 }

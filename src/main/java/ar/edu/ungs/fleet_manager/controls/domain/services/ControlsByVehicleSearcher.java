@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.controls.domain.services;
 
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,8 @@ public final class ControlsByVehicleSearcher {
     public ControlsByVehicleSearcher(ControlRepository repository) {
         this.repository = repository;
     }
-    public List<Control> execute(VehicleId vehicleId){
-        return this.repository.searchAll().stream().filter(x -> x.vehicleId().value().equals(vehicleId.value())).toList();
+
+    public List<Control> execute(EnterpriseId enterpriseId, VehicleId vehicleId){
+        return this.repository.searchAll(enterpriseId).stream().filter(x -> x.vehicleId().value().equals(vehicleId.value())).toList();
     }
 }

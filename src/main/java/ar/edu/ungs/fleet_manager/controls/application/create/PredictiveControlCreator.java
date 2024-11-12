@@ -33,8 +33,8 @@ public class PredictiveControlCreator implements ControlCreator {
         var vehicleId = new VehicleId(request.vehicleId());
 
         var vehicle = this.vehicleFinder.execute(vehicleId);
-        var controls = this.controlsSearcher.execute(vehicleId);
-        var reserves = this.reservesSearcher.execute(vehicleId);
+        var controls = this.controlsSearcher.execute(vehicle.enterpriseId(), vehicleId);
+        var reserves = this.reservesSearcher.execute(vehicleId, vehicle.enterpriseId());
 
         var prediction = this.predictor.execute(vehicle, controls, reserves);
 
@@ -43,7 +43,8 @@ public class PredictiveControlCreator implements ControlCreator {
                                              prediction.description().value(),
                                              vehicleId.value(),
                                              prediction.priority().name(),
-                                             request.operatorId());
+                                             request.operatorId(),
+                                            vehicle.enterpriseId().value());
 
         this.creator.execute(newRequest);
     }

@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.vehicles.infrastructure.persistence;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -69,8 +70,8 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
 
     private void create(Vehicle vehicle) {
         var sql = """
-                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated, color, fuel_type, fuel_measurement, fuel_consumption, axles, seats, load, has_trailer, type) 
-                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    insert into vehicles (id, status, model, brand, year, latitude, longitude, date_created, date_updated, color, fuel_type, fuel_measurement, fuel_consumption, axles, seats, load, has_trailer, type, enterprise_id) 
+                    values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CAST(? AS UUID))
                     """;
         this.jdbcTemplate.update(sql, vehicle.id().value(),
                 vehicle.status().name(),
@@ -89,34 +90,15 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
                 vehicle.cantSeats().value(),
                 vehicle.load().value(),
                 vehicle.hasTrailer(),
-                vehicle.type().name());
+                vehicle.type().name(),
+                vehicle.enterpriseId().value());
     }
 
     @Override
     public Optional<Vehicle> findById(VehicleId id) {
         try {
             var sql = """
-                select 
-                    id, 
-                    status, 
-                    model, 
-                    brand, 
-                    year,
-                    latitude, 
-                    longitude, 
-                    date_created, 
-                    date_updated, 
-                    color,
-                    fuel_type,
-                    fuel_measurement,
-                    fuel_consumption,
-                    axles,
-                    seats,
-                    load,
-                    has_trailer,
-                    type
-                from vehicles v
-                where v.id = ?
+                select * from vehicles v where v.id = ?
             """;
 
             Vehicle result = this.jdbcTemplate.queryForObject(sql, this, id.value());
@@ -128,65 +110,28 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
     }
 
     @Override
-    public List<Vehicle> searchAll() {
+    public List<Vehicle> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
-                select
-                    id,
-                    status,
-                    model,
-                    brand,
-                    year,
-                    latitude,
-                    longitude,
-                    date_created,
-                    date_updated,
-                    color,
-                    fuel_type,
-                    fuel_measurement,
-                    fuel_consumption,
-                    axles,
-                    seats,
-                    load,
-                    has_trailer,
-                    type
-                from vehicles v
+                select * from vehicles v where enterprise_id = CAST(? AS UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this);
+            return this.jdbcTemplate.query(sql, this, enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public List<Vehicle> searchAllByModel(VehicleBrand brand, VehicleModel model, VehicleYear year) {
+    public List<Vehicle> searchAllByModel(EnterpriseId enterpriseId, VehicleBrand brand, VehicleModel model, VehicleYear year) {
         try {
             var sql = """
-                select 
-                    id, 
-                    status, 
-                    model, 
-                    brand,
-                    year,
-                    latitude, 
-                    longitude, 
-                    date_created, 
-                    date_updated,
-                    color,
-                    fuel_type,
-                    fuel_measurement,
-                    fuel_consumption,
-                    axles,
-                    seats,
-                    load,
-                    has_trailer,
-                    type 
+                select *
                 from vehicles v
-                where brand = ? and model = ? and year = ? 
+                where brand = ? and model = ? and year = ? and enterprise_id = CAST(? AS UUID)
             """;
 
-            return this.jdbcTemplate.query(sql, this, brand.value(), model.value(), year.value());
+            return this.jdbcTemplate.query(sql, this, brand.value(), model.value(), year.value(), enterpriseId.value());
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptyList();
         }
@@ -209,10 +154,11 @@ public final class PostgresVehicleRepository implements VehicleRepository, RowMa
         var hasTrailer = rs.getBoolean("has_trailer");
         var latitude = rs.getDouble("latitude");
         var longitude = rs.getDouble("longitude");
+        var enterpriseId = rs.getString("enterprise_id");
         var dateCreated = rs.getTimestamp("date_created").toLocalDateTime();
         var dateUpdated = rs.getTimestamp("date_updated").toLocalDateTime();
         var type = rs.getString("type");
 
-        return Vehicle.build(id, model, brand, year, type,color, fuelType, fuelMeasurement, fuelConsumption, axles, seats, load, hasTrailer, status, latitude, longitude, dateCreated, dateUpdated);
+        return Vehicle.build(id, model, brand, year, type,color, fuelType, fuelMeasurement, fuelConsumption, axles, seats, load, hasTrailer, status, latitude, longitude, enterpriseId, dateCreated, dateUpdated);
     }
 }

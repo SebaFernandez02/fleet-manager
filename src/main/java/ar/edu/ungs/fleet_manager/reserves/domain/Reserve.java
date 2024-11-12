@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.reserves.domain;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.trips.domain.Trip;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
@@ -14,6 +15,7 @@ public final class Reserve {
     private final VehicleId vehicleId;
     private final UserId userId;
     private final Trip trip;
+    private final EnterpriseId enterpriseId;
     private final LocalDateTime dateCreated;
     private LocalDateTime dateUpdated;
     private final LocalDateTime dateReserve;
@@ -24,7 +26,7 @@ public final class Reserve {
                    ReserveStatus status,
                    VehicleId vehicleId,
                    UserId userId,
-                   Trip trip,
+                   Trip trip, EnterpriseId enterpriseId,
                    LocalDateTime dateCreated,
                    LocalDateTime dateUpdated,
                    LocalDateTime dateReserve,
@@ -34,6 +36,7 @@ public final class Reserve {
         this.vehicleId = vehicleId;
         this.userId = userId;
         this.trip = trip;
+        this.enterpriseId = enterpriseId;
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.dateReserve = dateReserve;
@@ -46,12 +49,13 @@ public final class Reserve {
                                  Trip trip,
                                  LocalDateTime dateReserve,
                                  LocalDateTime dateFinishReserve,
-                                 Double fuelConsumption) {
+                                 Double fuelConsumption,
+                                 String enterpriseId) {
         ReserveStatus status = ReserveStatus.CREATED;
         VehicleId vehicleId = vehicle.id();
         LocalDateTime dateTime = LocalDateTime.now();
 
-        return new Reserve(ReserveId.create(), status, vehicleId, user.id(), trip, dateTime, dateTime, dateReserve, dateFinishReserve, fuelConsumption);
+        return new Reserve(ReserveId.create(), status, vehicleId, user.id(), trip, new EnterpriseId(enterpriseId), dateTime, dateTime, dateReserve, dateFinishReserve, fuelConsumption);
     }
 
     public static Reserve build(String id,
@@ -59,6 +63,7 @@ public final class Reserve {
                                 String vehicleId,
                                 String userId,
                                 Trip trip,
+                                String enterpriseId,
                                 LocalDateTime dateCreated,
                                 LocalDateTime dateUpdated,
                                 LocalDateTime dateReserve,
@@ -67,7 +72,7 @@ public final class Reserve {
         ReserveId reserveId = new ReserveId(id);
         ReserveStatus reserveStatus = ReserveStatus.valueOf(status);
 
-        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption);
+        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, new EnterpriseId(enterpriseId), dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption);
     }
 
     public ReserveId id() {
@@ -80,6 +85,10 @@ public final class Reserve {
 
     public VehicleId vehicleId() {
         return vehicleId;
+    }
+
+    public EnterpriseId enterpriseId() {
+        return enterpriseId;
     }
 
     public UserId userId() {

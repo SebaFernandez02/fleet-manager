@@ -1,5 +1,6 @@
 package ar.edu.ungs.fleet_manager.reserves.domain.services;
 
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveId;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
@@ -23,8 +24,8 @@ public final class ReserveFinder {
         return this.repository.findById(id).orElseThrow(() -> new NotFoundException("vehicle not found"));
     }
 
-    public Reserve execute(VehicleId id, ReserveStatus... status) {
-        return this.repository.findByVehicleId(id)
+    public Reserve execute(VehicleId id, EnterpriseId enterpriseId, ReserveStatus... status) {
+        return this.repository.findByVehicleId(id, enterpriseId)
                               .stream()
                               .filter(x -> List.of(status).contains(x.status()))
                               .findFirst()

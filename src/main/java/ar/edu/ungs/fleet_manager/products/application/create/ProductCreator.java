@@ -25,7 +25,8 @@ public final class ProductCreator {
                                          request.measurement(),
                                          request.price(),
                                          request.providerId(),
-                                         request.minStock());
+                                         request.minStock(),
+                                         request.enterpriseId());
 
         this.repository.save(product);
     }
