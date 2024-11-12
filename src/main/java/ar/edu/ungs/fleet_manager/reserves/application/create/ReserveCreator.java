@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.reserves.application.create;
 
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
+import ar.edu.ungs.fleet_manager.controls.domain.ControlStatus;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
@@ -19,6 +20,8 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ReserveCreator {
@@ -54,6 +57,7 @@ public class ReserveCreator {
 
         ensureVehicleIsAvailable(vehicle);
         ensureVehicleNotContainsReserve(vehicle);
+        ensureUserReservesLimit(user);
 
         var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
 
@@ -96,6 +100,14 @@ public class ReserveCreator {
     private void ensureVehicleIsAvailable(Vehicle vehicle) {
         if (vehicle.isNotAvailable()) {
             throw new InvalidParameterException("the vehicle is not available");
+        }
+    }
+
+    private void ensureUserReservesLimit(User user){
+        List<Reserve> reserves = this.repository.findByUserId(user.id(), user.enterpriseId().orElseThrow(() -> new NotFoundException("user without enterprise"))).stream().filter(x -> x.status().equals(ReserveStatus.CREATED) || x.status().equals(ReserveStatus.ACTIVATED)).toList();
+        int RESERVES_LIMIT = 2;
+        if(reserves.size() >= RESERVES_LIMIT){
+            throw new InvalidParameterException("the user has reached the active reserves limit");
         }
     }
 }
