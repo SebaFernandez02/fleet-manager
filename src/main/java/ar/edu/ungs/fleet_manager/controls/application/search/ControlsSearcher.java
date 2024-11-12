@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public final class ControlAllSearcher {
+public final class ControlsSearcher {
     private final ControlRepository repository;
     private final VehicleFinder vehicleFinder;
     private final UserFinder userFinder;
     private final ProductByIdFinder productFinder;
 
-    public ControlAllSearcher(ControlRepository repository, VehicleFinder vehicleFinder, UserFinder userFinder, PermissionsFinder permissionsFinder, ProductByIdFinder productFinder) {
+    public ControlsSearcher(ControlRepository repository, VehicleFinder vehicleFinder, UserFinder userFinder, PermissionsFinder permissionsFinder, ProductByIdFinder productFinder) {
         this.repository = repository;
         this.vehicleFinder = vehicleFinder;
         this.userFinder = userFinder;

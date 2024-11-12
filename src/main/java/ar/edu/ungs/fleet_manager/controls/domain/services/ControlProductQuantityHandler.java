@@ -15,8 +15,6 @@ public class ControlProductQuantityHandler {
     }
 
     public void subtractProducts(Control control){
-
         control.products().forEach(ControlProduct -> quantityRemover.execute(ControlProduct.productId(),ControlProduct.quantity()));
-
     }
 }
