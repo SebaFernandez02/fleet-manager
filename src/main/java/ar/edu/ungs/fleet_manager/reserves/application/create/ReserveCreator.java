@@ -1,6 +1,7 @@
 package ar.edu.ungs.fleet_manager.reserves.application.create;
 
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
+import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
 import ar.edu.ungs.fleet_manager.controls.application.create.DefaultControlCreator;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
@@ -18,7 +19,10 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.Coordinates;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ReserveCreator {
@@ -27,7 +31,7 @@ public class ReserveCreator {
     private final UserFinder userFinder;
     private final ReserveFinder reserveFinder;
     private final TripCalculator tripCalculator;
-    private final DefaultControlCreator controlCreator;
+    private final ControlCreator controlCreator;
     private final ReserveFuelConsumptionCalculator fuelConsumptionCalculator;
 
     public ReserveCreator(ReserveRepository repository,
@@ -35,7 +39,8 @@ public class ReserveCreator {
                           UserFinder userFinder,
                           ReserveFinder reserveFinder,
                           TripCalculator tripCalculator,
-                          DefaultControlCreator controlCreator, ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
+                          @Qualifier("default") ControlCreator controlCreator,
+                          ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
         this.repository = repository;
         this.finder = finder;
         this.userFinder = userFinder;
@@ -54,6 +59,7 @@ public class ReserveCreator {
 
         ensureVehicleIsAvailable(vehicle);
         ensureVehicleNotContainsReserve(vehicle);
+        ensureUserReservesLimit(user);
 
         var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
 
@@ -96,6 +102,14 @@ public class ReserveCreator {
     private void ensureVehicleIsAvailable(Vehicle vehicle) {
         if (vehicle.isNotAvailable()) {
             throw new InvalidParameterException("the vehicle is not available");
+        }
+    }
+
+    private void ensureUserReservesLimit(User user){
+        List<Reserve> reserves = this.repository.findByUserId(user.id(), user.enterpriseId().orElseThrow(() -> new NotFoundException("user without enterprise"))).stream().filter(x -> x.status().equals(ReserveStatus.CREATED) || x.status().equals(ReserveStatus.ACTIVATED)).toList();
+
+        if(!reserves.isEmpty()){
+            throw new InvalidParameterException("the user has reached the active reserves limit");
         }
     }
 }

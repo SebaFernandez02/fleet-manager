@@ -47,7 +47,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                 date_updated = ?,
                 date_reserve = ?,
                 date_finish_reserve = ?,
-                fuel_consumption = ?
+                fuel_consumption = ?,
+                control_id = CAST(? as UUID)
                 where id = CAST(? as UUID)
               """;
 
@@ -61,6 +62,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      reserve.dateReserve(),
                                      reserve.dateFinishReserve(),
                                      reserve.fuelConsumption(),
+                                     reserve.control() == null ? null : reserve.control().value(),
                                      reserve.id().value());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
@@ -71,8 +73,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     private void create(Reserve reserve) {
         try {
             var sql = """
-                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption, enterprise_id) 
-                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?, ?, ?, ?, CAST(? as UUID))
+                    insert into reserves (id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption, enterprise_id, control_id ) 
+                    values (CAST(? as UUID), ?, ?, CAST(? as UUID), ?, ?, ?, ?, ?, ?, CAST(? as UUID), CAST(? as UUID))
                     """;
             this.jdbcTemplate.update(sql,
                                      reserve.id().value(),
@@ -85,7 +87,8 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
                                      reserve.dateReserve(),
                                      reserve.dateFinishReserve(),
                                      reserve.fuelConsumption(),
-                                     reserve.enterpriseId().value());
+                                     reserve.enterpriseId().value(),
+                                     reserve.control() == null ? null : reserve.control().value());
         } catch (JsonProcessingException e) {
             throw new InfrastructureException(e.getMessage());
         }
@@ -95,7 +98,7 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
     public Optional<Reserve> findById(ReserveId id) {
         try {
             var sql = """
-                select id, status, vehicle_id, user_id, trip, date_created, date_updated, date_reserve, date_finish_reserve, fuel_consumption
+                select *
                 from reserves r
                 where r.id = CAST(? as UUID)
             """;
@@ -168,8 +171,9 @@ public final class PostgresReserveRepository implements ReserveRepository, RowMa
         var dateReserve = rs.getTimestamp("date_reserve").toLocalDateTime();
         var dateFinishReserve = rs.getTimestamp("date_finish_reserve").toLocalDateTime();
         var fuelConsumption = rs.getDouble("fuel_consumption");
+        var controlId = rs.getString("control_id");
 
-        return Reserve.build(id, status, vehicleId, userId, trip, enterpriseId, dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption);
+        return Reserve.build(id, status, vehicleId, userId, trip, enterpriseId, dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption, controlId);
     }
 
     private Trip mapTrip(String trip) {

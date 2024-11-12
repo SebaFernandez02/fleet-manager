@@ -3,6 +3,7 @@ package ar.edu.ungs.fleet_manager.controls.application.create;
 import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.domain.Control;
 import ar.edu.ungs.fleet_manager.controls.domain.ControlRepository;
+import ar.edu.ungs.fleet_manager.reserves.application.update.ReserveControlUpdater;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
 import ar.edu.ungs.fleet_manager.users.domain.User;
 import ar.edu.ungs.fleet_manager.users.domain.UserId;
@@ -20,12 +21,18 @@ public final class DefaultControlCreator implements ControlCreator {
     private final UserFinder userFinder;
     private final VehicleFinder vehicleFinder;
     private final VehicleMaintainer vehicleMaintainer;
+    private final ReserveControlUpdater reserveControlUpdater;
 
-    public DefaultControlCreator(ControlRepository repository, UserFinder userFinder, VehicleFinder vehicleFinder, VehicleMaintainer vehicleMaintainer) {
+    public DefaultControlCreator(ControlRepository repository,
+                                 UserFinder userFinder,
+                                 VehicleFinder vehicleFinder,
+                                 VehicleMaintainer vehicleMaintainer,
+                                 ReserveControlUpdater reserveControlUpdater) {
         this.repository = repository;
         this.userFinder = userFinder;
         this.vehicleFinder = vehicleFinder;
         this.vehicleMaintainer = vehicleMaintainer;
+        this.reserveControlUpdater = reserveControlUpdater;
     }
 
     public void execute(ControlRequest request){
@@ -42,6 +49,7 @@ public final class DefaultControlCreator implements ControlCreator {
 
         this.repository.save(control);
         this.vehicleMaintainer.execute(control.vehicleId());
+        this.reserveControlUpdater.execute(control.id().value());
     }
 
     private void ensureVehicleValid(ControlRequest request) {
