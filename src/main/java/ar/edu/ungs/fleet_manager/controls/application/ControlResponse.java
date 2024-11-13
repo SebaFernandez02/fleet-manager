@@ -10,7 +10,7 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record ControlResponse (String id,
+public record ControlResponse(String id,
                                String type,
                                String subject,
                                String description,

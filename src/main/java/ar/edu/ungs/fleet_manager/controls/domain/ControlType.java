@@ -6,8 +6,7 @@ import java.util.Locale;
 
 public enum ControlType {
     PREVENTIVE,
-    CORRECTIVE,
-    PREDICTIVE;
+    CORRECTIVE;
 
     public static ControlType parse(String type){
         try {
