@@ -1,16 +1,15 @@
 package ar.edu.ungs.fleet_manager.products.infrastructure.controllers;
 
-import ar.edu.ungs.fleet_manager.products.application.ProductProviderRequest;
 import ar.edu.ungs.fleet_manager.products.application.update.ProductProviderUpdater;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class PutProductDeleteProviderRestController {
+public class DeleteProductProviderRestController {
     private final ProductProviderUpdater updater;
 
-    public PutProductDeleteProviderRestController(ProductProviderUpdater updater) {
+    public DeleteProductProviderRestController(ProductProviderUpdater updater) {
         this.updater = updater;
     }
 
