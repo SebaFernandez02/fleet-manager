@@ -78,7 +78,7 @@ public final class Reserve {
         ReserveId reserveId = new ReserveId(id);
         ReserveStatus reserveStatus = ReserveStatus.valueOf(status);
 
-        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, new EnterpriseId(enterpriseId), dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption, new ControlId(controlId));
+        return new Reserve(reserveId, reserveStatus, new VehicleId(vehicleId), new UserId(userId), trip, new EnterpriseId(enterpriseId), dateCreated, dateUpdated, dateReserve, dateFinishReserve, fuelConsumption, controlId != null ? new ControlId(controlId) : null);
     }
 
     public ReserveId id() {
