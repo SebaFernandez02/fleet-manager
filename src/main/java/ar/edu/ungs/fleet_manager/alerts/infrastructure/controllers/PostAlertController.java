@@ -23,7 +23,7 @@ public class PostAlertController {
     public ResponseEntity<?> handle(@RequestBody AlertRequest request) {
         AlertStrategy strategy = AlertStrategy.valueOf(request.strategy().toUpperCase(Locale.ROOT));
 
-        this.creator.execute(strategy, request.vehicleId(), request.vehicleId());
+        this.creator.execute(strategy, request.vehicleId(), request.enterpriseId());
 
         return ResponseEntity.status(HttpStatus.CREATED.value()).build();
     }
