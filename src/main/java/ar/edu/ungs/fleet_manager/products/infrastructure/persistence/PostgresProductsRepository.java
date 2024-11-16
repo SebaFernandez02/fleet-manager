@@ -1,10 +1,7 @@
 package ar.edu.ungs.fleet_manager.products.infrastructure.persistence;
 
 import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
-import ar.edu.ungs.fleet_manager.products.domain.Product;
-import ar.edu.ungs.fleet_manager.products.domain.ProductId;
-import ar.edu.ungs.fleet_manager.products.domain.ProductRepository;
-import ar.edu.ungs.fleet_manager.providers.domain.Provider;
+import ar.edu.ungs.fleet_manager.products.domain.*;
 import ar.edu.ungs.fleet_manager.providers.domain.ProviderId;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -165,6 +162,21 @@ public final class PostgresProductsRepository implements ProductRepository, RowM
         }catch (EmptyResultDataAccessException e){
             return Collections.emptyList();
 
+        }
+    }
+
+    @Override
+    public Optional<Product> searchByNameBrand(ProductName name, ProductBrand brand) {
+        try{
+            var sql = """
+                            SELECT *
+                            FROM products p
+                            where p.name = ? and p.brand = ? 
+                        """;
+            var result = this.jdbcTemplate.queryForObject(sql, this, name.value(), brand.value());
+            return Optional.ofNullable(result);
+        }catch(EmptyResultDataAccessException e){
+            return Optional.empty();
         }
     }
 
