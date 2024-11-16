@@ -1,8 +1,8 @@
 package ar.edu.ungs.fleet_manager.configs.infrastructure.persistence;
 
-import ar.edu.ungs.fleet_manager.configs.domain.ApiKey;
-import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyRepository;
-import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyType;
+import ar.edu.ungs.fleet_manager.configs.domain.Config;
+import ar.edu.ungs.fleet_manager.configs.domain.ConfigRepository;
+import ar.edu.ungs.fleet_manager.configs.domain.ConfigType;
 import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.persistence.PostgresException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,43 +18,43 @@ import java.util.Optional;
 
 
 @Component
-public final class PostgresApiKeyRespository implements ApiKeyRepository, RowMapper<ApiKey> {
+public final class PostgresConfigRespository implements ConfigRepository, RowMapper<Config> {
     private final JdbcTemplate jdbcTemplate;
 
-    public PostgresApiKeyRespository(JdbcTemplate jdbcTemplate) {
+    public PostgresConfigRespository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public void save(ApiKey apiKey) {
-        this.findByType(apiKey.type(), apiKey.enterpriseId()).ifPresentOrElse(x -> update(apiKey), () -> create(apiKey));
+    public void save(Config config) {
+        this.findByType(config.type(), config.enterpriseId()).ifPresentOrElse(x -> update(config), () -> create(config));
     }
 
-    private void create(ApiKey apiKey) {
+    private void create(Config config) {
         try {
             var sql = """
-                      insert into api_keys (type, key, secret, enterprise_id)
+                      insert into configs (type, key, secret, enterprise_id)
                       values (?, ?, ?, CAST(? as UUID))
                     """;
 
-            this.jdbcTemplate.update(sql, apiKey.type().name(), apiKey.key(), apiKey.secret(), apiKey.enterpriseId().value());
+            this.jdbcTemplate.update(sql, config.type().name(), config.key(), config.secret(), config.enterpriseId().value());
         } catch (Exception e) {
             throw new PostgresException(e.getMessage());
         }
 
     }
 
-    private void update(ApiKey apiKey) {
+    private void update(Config config) {
 
         var sql = """
-                  update api_keys set
+                  update configs set
                    key = ?, secret = ?
                   where enterprise_id = CAST(? AS UUID) and type = ?
                 """;
         try {
 
 
-            this.jdbcTemplate.update(sql,apiKey.key(), apiKey.secret(), apiKey.enterpriseId().value(), apiKey.type().name());
+            this.jdbcTemplate.update(sql, config.key(), config.secret(), config.enterpriseId().value(), config.type().name());
         } catch (Exception e) {
             throw new PostgresException(e.getMessage());
         }
@@ -62,15 +62,15 @@ public final class PostgresApiKeyRespository implements ApiKeyRepository, RowMap
     }
 
     @Override
-    public Optional<ApiKey> findByType(ApiKeyType type, EnterpriseId enterpriseId) {
+    public Optional<Config> findByType(ConfigType type, EnterpriseId enterpriseId) {
         try {
             var sql = """
                         select *
-                        from api_keys ak
+                        from configs ak
                         where ak.type = ? and enterprise_id = CAST(? as UUID)
                     """;
 
-            ApiKey result = this.jdbcTemplate.queryForObject(sql, this, type.name(), enterpriseId.value());
+            Config result = this.jdbcTemplate.queryForObject(sql, this, type.name(), enterpriseId.value());
 
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException e) {
@@ -79,11 +79,11 @@ public final class PostgresApiKeyRespository implements ApiKeyRepository, RowMap
     }
 
     @Override
-    public List<ApiKey> searchAll(EnterpriseId enterpriseId) {
+    public List<Config> searchAll(EnterpriseId enterpriseId) {
         try {
             var sql = """
                         select *
-                        from api_keys ak
+                        from configs ak
                         where ak.enterprise_id = CAST(? AS UUID)
                         order by date_updated desc, date_created desc
                     """;
@@ -95,15 +95,15 @@ public final class PostgresApiKeyRespository implements ApiKeyRepository, RowMap
     }
 
     @Override
-    public Optional<ApiKey> findBySecret(EnterpriseId enterpriseId) {
+    public Optional<Config> findBySecret(EnterpriseId enterpriseId) {
         try {
             var sql = """
                         select *
-                        from api_keys ak
+                        from configs ak
                         where ak.secret = false and enterprise_id = CAST(? as UUID)
                     """;
 
-            ApiKey result = this.jdbcTemplate.queryForObject(sql, this, enterpriseId.value());
+            Config result = this.jdbcTemplate.queryForObject(sql, this, enterpriseId.value());
 
             return Optional.ofNullable(result);
         } catch (EmptyResultDataAccessException e) {
@@ -112,12 +112,12 @@ public final class PostgresApiKeyRespository implements ApiKeyRepository, RowMap
     }
 
     @Override
-    public ApiKey mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Config mapRow(ResultSet rs, int rowNum) throws SQLException {
         var type = rs.getString("type");
         var key = rs.getString("key");
         var secret = rs.getBoolean("secret");
         var enterpriseId = rs.getString("enterprise_id");
 
-        return ApiKey.create(type, key, secret, enterpriseId);
+        return Config.create(type, key, secret, enterpriseId);
     }
 }
