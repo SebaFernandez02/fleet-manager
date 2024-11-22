@@ -5,12 +5,13 @@ import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterExcept
 import java.util.Locale;
 
 
-public enum ApiKeyType {
+public enum ConfigType {
     GOOGLE_DIRECTIONS_KEY,
     OPSGENIE_LINK,
-    OPSGENIE_KEY;
+    OPSGENIE_KEY,
+    OC_THRESHOLD;
 
-    public static ApiKeyType parse(String keyType){
+    public static ConfigType parse(String keyType){
         try {
             return valueOf(keyType.toUpperCase(Locale.ROOT));
         } catch (Exception e) {

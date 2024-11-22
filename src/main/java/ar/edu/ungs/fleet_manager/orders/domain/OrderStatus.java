@@ -9,7 +9,8 @@ public enum OrderStatus {
     REJECTED,
     APPROVED,
     COMPLETED,
-    INACTIVE;
+    INACTIVE,
+    REVIEW;
 
     public static OrderStatus parse(String status) {
         try {
