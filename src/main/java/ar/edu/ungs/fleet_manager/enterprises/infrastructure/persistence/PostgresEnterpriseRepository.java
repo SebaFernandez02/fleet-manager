@@ -25,7 +25,7 @@ public class PostgresEnterpriseRepository implements EnterpriseRepository, RowMa
 
     @Override
     public void save(Enterprise enterprise) {
-        this.findById(enterprise.id()).ifPresentOrElse(this::update, () -> this.create(enterprise));
+        this.findById(enterprise.id()).ifPresentOrElse(x ->this.update(enterprise), () -> this.create(enterprise));
     }
 
     private void create(Enterprise enterprise) {
