@@ -2,6 +2,8 @@ package ar.edu.ungs.fleet_manager.alerts.infrastructure.opsgenie;
 
 import ar.edu.ungs.fleet_manager.alerts.domain.Alert;
 import ar.edu.ungs.fleet_manager.alerts.domain.AlertNotifier;
+import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyType;
+import ar.edu.ungs.fleet_manager.configs.domain.services.ApiKeyFinder;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions.InfrastructureException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -15,12 +17,13 @@ import java.util.Map;
 
 @Component
 public final class OpsgenieAlertNotifier implements AlertNotifier {
-    private static final String API_KEY = "9c0bbd88-b847-4f46-a703-c3efa254eb63";
+    //private static final String API_KEY = "9c0bbd88-b847-4f46-a703-c3efa254eb63";
     private static final String BASE_URL = "https://api.opsgenie.com/v2/alerts";
-
+    private final ApiKeyFinder keyFinder;
     private final ObjectMapper objectMapper;
 
-    public OpsgenieAlertNotifier(ObjectMapper objectMapper) {
+    public OpsgenieAlertNotifier(ApiKeyFinder keyFinder, ObjectMapper objectMapper) {
+        this.keyFinder = keyFinder;
         this.objectMapper = objectMapper;
     }
 
@@ -28,6 +31,8 @@ public final class OpsgenieAlertNotifier implements AlertNotifier {
     public void execute(Alert alert) {
         try {
             var httpClient = HttpClient.newHttpClient();
+
+            String API_KEY = keyFinder.execute(ApiKeyType.OPSGENIE_KEY,alert.enterpriseId()).key();
 
             Map<String, Object> requestBody = Map.of(
                     "message", alert.title().value(),

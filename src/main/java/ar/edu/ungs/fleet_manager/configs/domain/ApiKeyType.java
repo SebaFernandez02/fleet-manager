@@ -6,6 +6,7 @@ import java.util.Locale;
 
 
 public enum ApiKeyType {
+    CHATGPT_KEY,
     GOOGLE_DIRECTIONS_KEY,
     OPSGENIE_LINK,
     OPSGENIE_KEY;
