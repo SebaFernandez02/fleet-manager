@@ -7,6 +7,7 @@ import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
+import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.vehicles.domain.VehicleId;
 import org.springframework.stereotype.Component;
 
@@ -25,10 +26,14 @@ public final class ReserveControlUpdater {
     public void execute(String controlId){
         Control control = this.controlFinder.execute(new ControlId(controlId));
 
-        Reserve reserve = this.reserveFinder.execute(control.vehicleId(), control.enterpriseId(), ReserveStatus.CREATED);
+        try {
+            Reserve reserve = this.reserveFinder.execute(control.vehicleId(), control.enterpriseId(), ReserveStatus.CREATED);
 
-        reserve.setControl(controlId);
+            reserve.setControl(controlId);
 
-        this.repository.save(reserve);
+            this.repository.save(reserve);
+        } catch (NotFoundException ignored) {
+
+        }
     }
 }
