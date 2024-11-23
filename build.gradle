@@ -22,13 +22,14 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation ('org.springframework.boot:spring-boot-starter-web')
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 	implementation 'org.locationtech.jts:jts-core:1.19.0'
 	implementation 'com.google.maps:google-maps-services:2.2.0'
 	implementation 'org.slf4j:slf4j-simple:1.7.25'
+	implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.5'
+
 
 	runtimeOnly 'org.postgresql:postgresql'
 

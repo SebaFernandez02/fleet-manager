@@ -1,10 +1,11 @@
 package ar.edu.ungs.fleet_manager.controls.infrastructure.services;
 
-import ar.edu.ungs.fleet_manager.controls.application.ControlResponse;
+import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyType;
+import ar.edu.ungs.fleet_manager.configs.domain.services.ApiKeyFinder;
 import ar.edu.ungs.fleet_manager.controls.application.find.ControlByIdFinder;
-import ar.edu.ungs.fleet_manager.controls.application.search.ControlsSearcher;
 import ar.edu.ungs.fleet_manager.controls.domain.*;
 import ar.edu.ungs.fleet_manager.controls.domain.services.ControlPredictor;
+import ar.edu.ungs.fleet_manager.enterprises.domain.Enterprise;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveResponse;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.shared.infrastructure.exceptions.InfrastructureException;
@@ -12,7 +13,7 @@ import ar.edu.ungs.fleet_manager.vehicles.application.VehicleResponse;
 import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
-import org.apache.commons.lang3.tuple.Triple;
+import io.github.flashvayne.chatgpt.property.ChatgptProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,15 +24,19 @@ public class OpenAiControlPredictor implements ControlPredictor {
     private final ChatgptService service;
     private final ControlByIdFinder controlByIdFinder;
     private final ObjectMapper mapper;
+    private final ChatgptProperties chatgptProperties;
+    private final ApiKeyFinder keyFinder;
 
-    public OpenAiControlPredictor(ChatgptService service, ControlByIdFinder controlByIdFinder, ObjectMapper mapper) {
+    public OpenAiControlPredictor(ChatgptService service, ControlByIdFinder controlByIdFinder, ObjectMapper mapper, ChatgptProperties chatgptProperties, ApiKeyFinder keyFinder) {
         this.service = service;
         this.controlByIdFinder = controlByIdFinder;
         this.mapper = mapper;
+        this.chatgptProperties = chatgptProperties;
+        this.keyFinder = keyFinder;
     }
 
     @Override
-    public ControlPrediction execute(Vehicle vehicle, List<Control> controls, List<Reserve> reserves) {
+    public ControlPrediction execute(Vehicle vehicle, List<Control> controls, List<Reserve> reserves, Enterprise enterprise) {
         try {
             var prompt = """
                 Eres un mecánico de vehículos. A partir de las especificaciones del vehículo, los viajes y controles mecánicos, necesito un diagnóstico del mismo para generar un control mecánico predictivo.
@@ -51,6 +56,9 @@ public class OpenAiControlPredictor implements ControlPredictor {
                 """.formatted(mapper.writeValueAsString(VehicleResponse.map(vehicle)),
                     mapper.writeValueAsString(controls.stream().map(x -> this.controlByIdFinder.execute(x.id().value())).toList()),
                     mapper.writeValueAsString(reserves.stream().map(ReserveResponse::map).toList()));
+
+            this.chatgptProperties.setApiKey(keyFinder.execute(ApiKeyType.CHATGPT_KEY,enterprise.id()).key());
+            
 
             var message = service.sendMessage(prompt);
 

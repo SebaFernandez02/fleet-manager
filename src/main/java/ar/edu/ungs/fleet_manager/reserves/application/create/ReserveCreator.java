@@ -63,7 +63,7 @@ public class ReserveCreator {
 
         var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
 
-        var trip = this.tripCalculator.execute(vehicle.coordinates(), destination);
+        var trip = this.tripCalculator.execute(vehicle.coordinates(), destination, request.enterpriseId());
 
         var fuelConsumption = this.fuelConsumptionCalculator.execute(trip, vehicle);
 

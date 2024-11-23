@@ -1,5 +1,8 @@
 package ar.edu.ungs.fleet_manager.trips.infrastructure.services;
 
+import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyType;
+import ar.edu.ungs.fleet_manager.configs.domain.services.ApiKeyFinder;
+import ar.edu.ungs.fleet_manager.enterprises.domain.EnterpriseId;
 import ar.edu.ungs.fleet_manager.trips.domain.Point;
 import ar.edu.ungs.fleet_manager.trips.domain.Route;
 import ar.edu.ungs.fleet_manager.trips.domain.Trip;
@@ -18,8 +21,22 @@ import java.util.List;
 
 @Service
 public class GoogleTripCalculator implements TripCalculator {
-    public Trip execute(Coordinates from, Coordinates to) {
-        GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyALC8T9CUeF7wQTIpSRFoGOVFlOlf7-OwM").build();
+
+    private final ApiKeyFinder keyFinder;
+
+    public GoogleTripCalculator(ApiKeyFinder keyFinder) {
+        this.keyFinder = keyFinder;
+    }
+
+
+    public Trip execute(Coordinates from, Coordinates to, String enterpriseId) {
+
+        GeoApiContext context = new GeoApiContext.Builder()
+                                                   .apiKey(keyFinder
+                                                           .execute(ApiKeyType.GOOGLE_DIRECTIONS_KEY,new EnterpriseId(enterpriseId)).key())
+                                                           .build();
+
+       // GeoApiContext context = new GeoApiContext.Builder().apiKey("AIzaSyALC8T9CUeF7wQTIpSRFoGOVFlOlf7-OwM").build();
 
         LatLng origin = new LatLng(from.latitude(), from.longitude());
         LatLng destination = new LatLng(to.latitude(), to.longitude());
