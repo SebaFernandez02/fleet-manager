@@ -4,11 +4,14 @@ import ar.edu.ungs.fleet_manager.controls.application.ControlRequest;
 import ar.edu.ungs.fleet_manager.controls.application.create.ControlCreator;
 import ar.edu.ungs.fleet_manager.controls.application.create.DefaultControlCreator;
 import ar.edu.ungs.fleet_manager.reserves.application.ReserveRequest;
+import ar.edu.ungs.fleet_manager.reserves.application.ReserveResponse;
+import ar.edu.ungs.fleet_manager.reserves.application.search.ReservesByVehicleSearcher;
 import ar.edu.ungs.fleet_manager.reserves.domain.Reserve;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveRepository;
 import ar.edu.ungs.fleet_manager.reserves.domain.ReserveStatus;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFinder;
 import ar.edu.ungs.fleet_manager.reserves.domain.services.ReserveFuelConsumptionCalculator;
+import ar.edu.ungs.fleet_manager.reserves.domain.services.ReservesByVehicleIdSearcher;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.NotFoundException;
 import ar.edu.ungs.fleet_manager.trips.domain.TripCalculator;
 import ar.edu.ungs.fleet_manager.shared.domain.exceptions.InvalidParameterException;
@@ -22,6 +25,7 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.services.VehicleFinder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -30,6 +34,7 @@ public class ReserveCreator {
     private final VehicleFinder finder;
     private final UserFinder userFinder;
     private final ReserveFinder reserveFinder;
+    private final ReservesByVehicleIdSearcher byVehicleSearcher;
     private final TripCalculator tripCalculator;
     private final ControlCreator controlCreator;
     private final ReserveFuelConsumptionCalculator fuelConsumptionCalculator;
@@ -37,7 +42,7 @@ public class ReserveCreator {
     public ReserveCreator(ReserveRepository repository,
                           VehicleFinder finder,
                           UserFinder userFinder,
-                          ReserveFinder reserveFinder,
+                          ReserveFinder reserveFinder, ReservesByVehicleIdSearcher byVehicleSearcher,
                           TripCalculator tripCalculator,
                           @Qualifier("default") ControlCreator controlCreator,
                           ReserveFuelConsumptionCalculator fuelConsumptionCalculator) {
@@ -45,6 +50,7 @@ public class ReserveCreator {
         this.finder = finder;
         this.userFinder = userFinder;
         this.reserveFinder = reserveFinder;
+        this.byVehicleSearcher = byVehicleSearcher;
         this.tripCalculator = tripCalculator;
         this.controlCreator = controlCreator;
         this.fuelConsumptionCalculator = fuelConsumptionCalculator;
@@ -58,7 +64,7 @@ public class ReserveCreator {
         var vehicle = this.finder.execute(new VehicleId(request.vehicleId()));
 
         ensureVehicleIsAvailable(vehicle);
-        ensureVehicleNotContainsReserve(vehicle);
+        ensureVehicleNotContainsReserve(vehicle, request.dateReserve(), request.dateFinishReserve());
         ensureUserReservesLimit(user);
 
         var destination = new Coordinates(request.destination().latitude(), request.destination().longitude());
@@ -74,11 +80,23 @@ public class ReserveCreator {
         this.createControl(vehicle);
     }
 
-    private void ensureVehicleNotContainsReserve(Vehicle vehicle) {
+    private void ensureVehicleNotContainsReserve(Vehicle vehicle, LocalDateTime dateReserve, LocalDateTime dateFinishReserve) {
         try {
-            reserveFinder.execute(vehicle.id(), vehicle.enterpriseId(), ReserveStatus.CREATED, ReserveStatus.ACTIVATED);
+            List<Reserve> reserves = byVehicleSearcher.execute(vehicle.id(), vehicle.enterpriseId());
 
-            throw new InvalidParameterException("vehicle contains an reserve");
+            for(Reserve r : reserves){
+                if( r.status().equals(ReserveStatus.CREATED) || r.status().equals(ReserveStatus.ACTIVATED)){
+
+                    if(     dateReserve.isAfter(r.dateReserve()) && dateReserve.isBefore(r.dateFinishReserve()) ||
+                            dateFinishReserve.isAfter(r.dateReserve()) && dateFinishReserve.isBefore(r.dateFinishReserve()) ||
+                            r.dateReserve().isAfter(dateReserve) && r.dateFinishReserve().isBefore(dateFinishReserve) ||
+                            dateReserve.isEqual(r.dateReserve()) && dateFinishReserve.isEqual(r.dateFinishReserve())
+                    ){
+                        throw new InvalidParameterException("vehicle contains an reserve");
+                    }
+                }
+            }
+
         } catch (NotFoundException ignored) {
 
         }
