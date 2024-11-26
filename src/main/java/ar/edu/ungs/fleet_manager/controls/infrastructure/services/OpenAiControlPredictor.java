@@ -2,6 +2,7 @@ package ar.edu.ungs.fleet_manager.controls.infrastructure.services;
 
 import ar.edu.ungs.fleet_manager.configs.domain.ApiKeyType;
 import ar.edu.ungs.fleet_manager.configs.domain.services.ApiKeyFinder;
+import ar.edu.ungs.fleet_manager.controls.application.ControlResponse;
 import ar.edu.ungs.fleet_manager.controls.application.find.ControlByIdFinder;
 import ar.edu.ungs.fleet_manager.controls.domain.*;
 import ar.edu.ungs.fleet_manager.controls.domain.services.ControlPredictor;
@@ -14,24 +15,22 @@ import ar.edu.ungs.fleet_manager.vehicles.domain.Vehicle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
 import io.github.flashvayne.chatgpt.property.ChatgptProperties;
+import io.github.flashvayne.chatgpt.service.impl.DefaultChatgptService;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class OpenAiControlPredictor implements ControlPredictor {
-    private final ChatgptService service;
     private final ControlByIdFinder controlByIdFinder;
     private final ObjectMapper mapper;
-    private final ChatgptProperties chatgptProperties;
     private final ApiKeyFinder keyFinder;
 
-    public OpenAiControlPredictor(ChatgptService service, ControlByIdFinder controlByIdFinder, ObjectMapper mapper, ChatgptProperties chatgptProperties, ApiKeyFinder keyFinder) {
-        this.service = service;
+    public OpenAiControlPredictor(ControlByIdFinder controlByIdFinder, ObjectMapper mapper, ApiKeyFinder keyFinder) {
         this.controlByIdFinder = controlByIdFinder;
         this.mapper = mapper;
-        this.chatgptProperties = chatgptProperties;
         this.keyFinder = keyFinder;
     }
 
@@ -54,13 +53,16 @@ public class OpenAiControlPredictor implements ControlPredictor {
                 - controls: %s
                 - trips: %s
                 """.formatted(mapper.writeValueAsString(VehicleResponse.map(vehicle)),
-                    mapper.writeValueAsString(controls.stream().map(x -> this.controlByIdFinder.execute(x.id().value())).toList()),
-                    mapper.writeValueAsString(reserves.stream().map(ReserveResponse::map).toList()));
+                    mapper.writeValueAsString(controls.stream().map(x -> this.controlByIdFinder.execute(x.id().value())).sorted(Comparator.comparing(ControlResponse::dateCreated)).limit(3).toList()),
+                    mapper.writeValueAsString(reserves.stream().map(ReserveResponse::map).sorted(Comparator.comparing(ReserveResponse::dateCreated)).limit(2).toList()));
 
-            this.chatgptProperties.setApiKey(keyFinder.execute(ApiKeyType.CHATGPT_KEY,enterprise.id()).key());
-            
+            String key = keyFinder.execute(ApiKeyType.CHATGPT_KEY, enterprise.id()).key();
 
-            var message = service.sendMessage(prompt);
+            ChatgptProperties properties = new ChatgptProperties();
+
+            properties.setApiKey(key);
+
+            var message = new DefaultChatgptService(properties).sendMessage(prompt);
 
             var map = mapper.readValue(message, Map.class);
 

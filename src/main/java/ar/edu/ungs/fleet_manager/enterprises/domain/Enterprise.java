@@ -16,7 +16,7 @@ public record Enterprise(EnterpriseId id, EnterpriseName name, List<Module> modu
     public static Enterprise build(String id, String name, String modules) {
         return new Enterprise(new EnterpriseId(id),
                               new EnterpriseName(name),
-                              !modules.isBlank() ? Arrays.stream(modules.split(",")).map(Module::parse).toList() : new ArrayList<>());
+                              !modules.isBlank() ? new ArrayList<>(Arrays.stream(modules.split(",")).map(Module::parse).toList()) : new ArrayList<>());
     }
 
     public void add(Module module) {
